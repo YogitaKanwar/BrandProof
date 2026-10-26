@@ -2,17 +2,20 @@ import type { ReviewOut } from './api/reviewRuns'
 import { codePointExcerpt } from './api/reviewRuns'
 import PrivatePoster from './PrivatePoster'
 import type { BackendClient } from './api/backend'
+import { incompleteChecks } from './api/workflow'
 
 const readable = (value: unknown) => typeof value === 'string' ? value.replaceAll('_', ' ') : String(value ?? '')
+const checkLabels: Record<string, string> = { exact_text: 'Facts check', contextual: 'Contextual AI', poster: 'Poster text' }
 export default function ReviewResults({ run, stale, currentCaption, api, onApply }: { run: ReviewOut; stale: boolean; currentCaption: string; api?: BackendClient; onApply?: (findingId:string)=>void }) {
   return <div className="review-evidence">
+    {incompleteChecks(run).length > 0 && <p className="coverage-notice" role="note">Incomplete coverage: {incompleteChecks(run).map(name=>checkLabels[name]||readable(name)).join(', ')}. These checks are not a pass.</p>}
     <p className="form-help">Content revision {run.content_revision} · Source revision {run.source_revision} · {new Date(run.created_at).toLocaleString()}</p>
     {stale && <p className="error">Historical result: content or sources changed. Run a new review before relying on this result.</p>}
     {run.status === 'failed' && <p className="error" role="alert">This review failed. Empty findings do not establish a successful check.</p>}
     {run.status === 'running' && <p role="status">This saved snapshot is still running. Refresh saved runs to check completion; it is not ready for approval.</p>}
     {run.sources_used.length === 0 && <p className="form-help">No approved reference facts were used. Add and confirm applicable facts before checking claims against them; brand context alone is not an approved rule.</p>}
     {!!run.finding_groups?.length && <details><summary>Related issues ({run.finding_groups.length})</summary><ul>{run.finding_groups.map((group,index)=><li key={index}>{readable(group.category)} · {group.assets.join(' / ')} · {group.finding_ids.length} individual locations · source v{group.source_version??'not supplied'}</li>)}</ul></details>}
-    <div className="coverage" aria-label="Review coverage">{Object.entries(run.checks).map(([name, check]) => <div key={name}><h4>{readable(name)}</h4><span className="badge">{readable(check.status)}</span>{check.reason && <p>{check.reason}</p>}{check.rules?.length > 0 && <details><summary>Rule coverage</summary><ul>{check.rules.map((rule,index) => <li key={`${rule.source_id}-${index}`}>{readable(rule.kind)} · source v{rule.source_version} · {readable(rule.status)}{rule.reason ? ` — ${rule.reason}` : ''}</li>)}</ul></details>}</div>)}</div>
+    <div className="coverage" aria-label="Review coverage">{Object.entries(run.checks).map(([name, check]) => <div key={name}><h4>{checkLabels[name] || readable(name)}</h4><span className="badge">{readable(check.status)}</span>{check.reason && <p>{check.reason}</p>}{check.rules?.length > 0 && <details><summary>Rule coverage</summary><ul>{check.rules.map((rule,index) => <li key={`${rule.source_id}-${index}`}>{readable(rule.kind)} · source v{rule.source_version} · {readable(rule.status)}{rule.reason ? ` — ${rule.reason}` : ''}</li>)}</ul></details>}</div>)}</div>
     <h4>Findings</h4>{run.findings.length === 0 ? <p className="form-help">{run.status === 'failed' ? 'No reliable findings available.' : 'No exact-text findings in this run. This does not establish approval or cover unavailable checks.'}</p> : <div className="findings-list">{run.findings.map(finding => {
       const excerpt = codePointExcerpt(run.caption, finding.location.start, finding.location.end)
       const located = excerpt !== null && excerpt === finding.location.quote

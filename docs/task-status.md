@@ -24,13 +24,23 @@ Six task flows are implemented and verified against the local API; four tasks re
 - Fixed direct `/#/new` entry, connected draft creation and discoverable owner confirmation. Local-only drafts remain explicit and separate; local deletion supports confirmation and persists.
 - Run Review has visible busy feedback, automatic focus/scroll to actual results and visible request failures. No approved sources used is explained honestly.
 - Added expired-session regression, genuine visible-pointer entry/confirmation tests and fail-fast `npm.cmd run verify`.
-- Backend implementation is unchanged from PR #1. Latest frontend fixes/docs are included in this local checkpoint; no integration push, deployment or main merge performed.
+- Backend implementation is unchanged from PR #1. Checkpoint `031ccd1` was pushed to this integration branch; the user-walkthrough fixes below are recorded in the next checkpoint on the same branch. Main and deployments are unchanged.
+- Team update: [rushab-update-email.md](rushab-update-email.md) contains the handoff email draft; it has not been sent.
+
+## User-walkthrough fixes
+
+- Unsaved captions, reference edits, pending images, comments and reviewer notes trigger a leave warning. Cancel preserves edits; reload warns before losing temporary state. No automatic server save or token persistence was added.
+- Run Review is blocked while an image is selected, validating or uploading. Upload/remove is explicit. A caption saved after choosing an image advances only its acknowledged local revision; a real concurrent poster write still returns 409 and requires explicit reconciliation.
+- Automated summaries show check coverage and snapshot freshness. Human readiness comes from the actual receipt; Recent Reviews now loads receipt statuses, including approval with manual checks, changes requested and stale readiness.
+- Missing publication dates get a focused, accessible field error before any request. Lost demo access explains the refresh limitation and separate-workspace consequences instead of claiming the draft is deleted.
+- Removed the main development banner and duplicate setup choices. Preview details stay in the header, revisions are collapsed, source context explicitly remains unparsed, and optional tone/claim-policy rules require actual consented AI coverage.
+- Sticky References / Content / Results shortcuts and a direct Human Review link reduce mobile scrolling. Unavailable checks have a compact coverage warning. Server deletion remains unavailable; disabled delete buttons were removed from server campaigns.
 
 ## Verification observed
 
-- Latest run: production build and lint passed; **33 frontend tests**, **all 7 genuine HTTP scripts**, and **19 browser check groups** passed on both dev `:5173` and production preview `:4173`.
+- Latest run: production build and lint passed; **33 frontend tests**, **all 7 genuine HTTP scripts**, and **22 browser check groups** passed on both dev `:5173` and production preview `:4173`.
 - Real API coverage: campaigns/session/auth/errors, INR 499 pending v1 → approved v2, source/caption revisions, evidence, poster upload/private retrieval, corrections/comments, reviewer permissions, manual-note guards, receipts, stale approvals and explicit AI consent.
-- Browser checks include the reported `/#/new` URL, visible owner confirmation, Run Review spinner/result focus, failed-request error focus, local deletion, mobile widths 390/320 and no uncaught JavaScript errors. Test data/notes are fictional scripted actions, not human feedback.
+- Browser checks include the reported `/#/new` URL, owner confirmation, visible review progress/results/errors, unsaved-edit cancellation on Back/navigation/reload, explicit discard, selected-image blocking, genuine concurrent-upload 409, receipt-based dashboard status, local deletion, mobile widths 390/320 and no uncaught JavaScript errors. Test data/notes are fictional scripted actions, not human feedback.
 - Backend latest full run: **310 passed, 21 failed, 1 collection error**. Twenty failures plus collection are missing Linux Noto fonts; the other failure expects OCR partial but missing Tesseract produces unavailable. Backend Ruff lint/format passed. This suite is not fully green.
 
 ## Remaining blockers and acceptance
@@ -41,7 +51,7 @@ Six task flows are implemented and verified against the local API; four tasks re
 - **Deletion:** only browser-local drafts can be deleted. Backend campaign/poster deletion requires an actual API contract.
 - See [configured-backend-tests.md](configured-backend-tests.md), [regression-report.md](regression-report.md) and [release-checklist.md](release-checklist.md).
 
-## Manual review before push
+## Manual verification
 
 1. Open `http://127.0.0.1:5173/#/new`, start connected review and create a campaign.
 2. Add a price fact, save it, then explicitly confirm as owner. Enter a conflicting caption and save it.
