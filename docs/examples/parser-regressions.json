@@ -1,0 +1,858 @@
+{
+  "type": "actual_local_http_parser_regressions",
+  "fictional_input": true,
+  "cases": [
+    {
+      "case": "repeated_decimal_same_prefix",
+      "caption": "Book for INR499..99.",
+      "persisted_review": {
+        "id": "6a65503e-6b4a-4b95-8062-507bb8130d18",
+        "campaign_id": "97c765b1-73d2-47c1-995e-9c01bd3f58af",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Book for INR499..99.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "1c86ac4a-696d-4d71-977f-08dac4a1d0d8",
+                "source_version": 2,
+                "kind": "price",
+                "status": "not_assessed",
+                "reason": "No comparable supported expression was parsed; missing/unsupported formats are not a successful evaluation."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "1c86ac4a-696d-4d71-977f-08dac4a1d0d8",
+            "version_id": "8b15afa9-fce6-4071-8386-5b8c0e88849c",
+            "version": 2,
+            "title": "repeated_decimal_same_prefix",
+            "status": "approved",
+            "rule": {
+              "kind": "price",
+              "amount": "499",
+              "currency": "INR",
+              "scope": "campaign_main_price"
+            },
+            "text": "The approved campaign price is INR 499.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:53.880094"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "67652e22-51f7-4233-9f3a-8a97435b4832",
+            "category": "price",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Malformed or unsupported currency-qualified numeric token.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 9,
+              "end": 19,
+              "quote": "INR499..99"
+            },
+            "evidence": {
+              "source_id": "1c86ac4a-696d-4d71-977f-08dac4a1d0d8",
+              "source_version_id": "8b15afa9-fce6-4071-8386-5b8c0e88849c",
+              "source_version": 2,
+              "quote": "The approved campaign price is INR 499."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:53.900033"
+      }
+    },
+    {
+      "case": "repeated_decimal_other_prefix",
+      "caption": "Book for INR599..99.",
+      "persisted_review": {
+        "id": "9616a708-7cba-4005-aef6-d00fdbf5ff7a",
+        "campaign_id": "51d5cb10-f11c-4d1e-ad4d-7d40e7f3f043",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Book for INR599..99.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "1d83dd9e-74b2-4caf-8008-e10d9000ec34",
+                "source_version": 2,
+                "kind": "price",
+                "status": "not_assessed",
+                "reason": "No comparable supported expression was parsed; missing/unsupported formats are not a successful evaluation."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "1d83dd9e-74b2-4caf-8008-e10d9000ec34",
+            "version_id": "a41bbf14-72e2-48eb-a98e-7c99f7e7a8e4",
+            "version": 2,
+            "title": "repeated_decimal_other_prefix",
+            "status": "approved",
+            "rule": {
+              "kind": "price",
+              "amount": "499",
+              "currency": "INR",
+              "scope": "campaign_main_price"
+            },
+            "text": "The approved campaign price is INR 499.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:53.928570"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "4fc20b82-1a76-4127-9499-50e88ad66ddf",
+            "category": "price",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Malformed or unsupported currency-qualified numeric token.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 9,
+              "end": 19,
+              "quote": "INR599..99"
+            },
+            "evidence": {
+              "source_id": "1d83dd9e-74b2-4caf-8008-e10d9000ec34",
+              "source_version_id": "a41bbf14-72e2-48eb-a98e-7c99f7e7a8e4",
+              "source_version": 2,
+              "quote": "The approved campaign price is INR 499."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:53.946738"
+      }
+    },
+    {
+      "case": "extra_fractional_digits",
+      "caption": "Book for INR499.999.",
+      "persisted_review": {
+        "id": "59d4fd75-9ac5-48e9-8749-09c0c4ab560d",
+        "campaign_id": "09a7ced1-bcf0-439f-a23f-e7130426d308",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Book for INR499.999.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "fd1f2667-646c-4c77-9ede-c19d4fae7c0c",
+                "source_version": 2,
+                "kind": "price",
+                "status": "not_assessed",
+                "reason": "No comparable supported expression was parsed; missing/unsupported formats are not a successful evaluation."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "fd1f2667-646c-4c77-9ede-c19d4fae7c0c",
+            "version_id": "bfa6114c-a841-48fd-815f-4de7b14d49b6",
+            "version": 2,
+            "title": "extra_fractional_digits",
+            "status": "approved",
+            "rule": {
+              "kind": "price",
+              "amount": "499",
+              "currency": "INR",
+              "scope": "campaign_main_price"
+            },
+            "text": "The approved campaign price is INR 499.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:53.975920"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "415d248c-b84f-42a0-a2a1-a455e5531367",
+            "category": "price",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Malformed or unsupported currency-qualified numeric token.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 9,
+              "end": 19,
+              "quote": "INR499.999"
+            },
+            "evidence": {
+              "source_id": "fd1f2667-646c-4c77-9ede-c19d4fae7c0c",
+              "source_version_id": "bfa6114c-a841-48fd-815f-4de7b14d49b6",
+              "source_version": 2,
+              "quote": "The approved campaign price is INR 499."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:53.995786"
+      }
+    },
+    {
+      "case": "indian_grouping_unassessed",
+      "caption": "Book for INR1,00,000.",
+      "persisted_review": {
+        "id": "53b0433f-6007-49c7-ae8f-ca0345b4da98",
+        "campaign_id": "d99a4db1-ac24-4dc5-becf-e27bb483fd9d",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Book for INR1,00,000.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "eba9d797-4da3-4fc7-9f33-3c365cf0747c",
+                "source_version": 2,
+                "kind": "price",
+                "status": "not_assessed",
+                "reason": "No comparable supported expression was parsed; missing/unsupported formats are not a successful evaluation."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "eba9d797-4da3-4fc7-9f33-3c365cf0747c",
+            "version_id": "342e2d28-2d74-4b5e-b513-718128da7d48",
+            "version": 2,
+            "title": "indian_grouping_unassessed",
+            "status": "approved",
+            "rule": {
+              "kind": "price",
+              "amount": "499",
+              "currency": "INR",
+              "scope": "campaign_main_price"
+            },
+            "text": "The approved campaign price is INR 499.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:54.024508"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "b39325dc-bf52-4644-abd8-209db12e6a65",
+            "category": "price",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Malformed or unsupported currency-qualified numeric token.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 9,
+              "end": 20,
+              "quote": "INR1,00,000"
+            },
+            "evidence": {
+              "source_id": "eba9d797-4da3-4fc7-9f33-3c365cf0747c",
+              "source_version_id": "342e2d28-2d74-4b5e-b513-718128da7d48",
+              "source_version": 2,
+              "quote": "The approved campaign price is INR 499."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:54.043741"
+      }
+    },
+    {
+      "case": "cashback_scope",
+      "caption": "Get INR100 cashback when you register.",
+      "persisted_review": {
+        "id": "aee02f45-548e-4ac2-b069-e664f5e59d80",
+        "campaign_id": "477e1401-cab8-477e-ad62-1293f69db66a",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Get INR100 cashback when you register.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "ca944b41-44da-4118-a204-b31c83e774f7",
+                "source_version": 2,
+                "kind": "price",
+                "status": "partial",
+                "reason": "Some candidate expressions or approved sources require format/scope clarification."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "ca944b41-44da-4118-a204-b31c83e774f7",
+            "version_id": "5f54335f-6ebd-4995-9679-84e550ddf360",
+            "version": 2,
+            "title": "cashback_scope",
+            "status": "approved",
+            "rule": {
+              "kind": "price",
+              "amount": "499",
+              "currency": "INR",
+              "scope": "campaign_main_price"
+            },
+            "text": "The approved campaign price is INR 499.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:54.071090"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "d7ed2841-2fc2-4016-8d3f-b1b8916efca6",
+            "category": "price",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "This expression is not an explicit unqualified main-campaign value in the supported grammar; confirm its scope.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 4,
+              "end": 10,
+              "quote": "INR100"
+            },
+            "evidence": {
+              "source_id": "ca944b41-44da-4118-a204-b31c83e774f7",
+              "source_version_id": "5f54335f-6ebd-4995-9679-84e550ddf360",
+              "source_version": 2,
+              "quote": "The approved campaign price is INR 499."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:54.089732"
+      }
+    },
+    {
+      "case": "mixed_price_formats",
+      "caption": "Book for INR499. Book for 599 INR.",
+      "persisted_review": {
+        "id": "df79a540-c5f5-45ff-a6f8-6c273ac69f4d",
+        "campaign_id": "4436ecdc-f0f9-4d5a-82d3-2eed1b21ba0a",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Book for INR499. Book for 599 INR.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "a87a71eb-0de0-4852-bb95-1624bfcde2c3",
+                "source_version": 2,
+                "kind": "price",
+                "status": "partial",
+                "reason": "Some candidate expressions or approved sources require format/scope clarification."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "a87a71eb-0de0-4852-bb95-1624bfcde2c3",
+            "version_id": "9877f663-ac87-4441-a518-0324ba2e6dbf",
+            "version": 2,
+            "title": "mixed_price_formats",
+            "status": "approved",
+            "rule": {
+              "kind": "price",
+              "amount": "499",
+              "currency": "INR",
+              "scope": "campaign_main_price"
+            },
+            "text": "The approved campaign price is INR 499.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:54.118637"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "83641d28-a386-4578-b12f-3604aebe256d",
+            "category": "price",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Malformed or unsupported currency-qualified numeric token.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 30,
+              "end": 33,
+              "quote": "INR"
+            },
+            "evidence": {
+              "source_id": "a87a71eb-0de0-4852-bb95-1624bfcde2c3",
+              "source_version_id": "9877f663-ac87-4441-a518-0324ba2e6dbf",
+              "source_version": 2,
+              "quote": "The approved campaign price is INR 499."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:54.136716"
+      }
+    },
+    {
+      "case": "deadline_scope",
+      "caption": "Early-bird registration closes on 2026-11-10.",
+      "persisted_review": {
+        "id": "6b4d9615-3f43-433d-b399-9ab9515b52a4",
+        "campaign_id": "b2dbb8e8-09d0-4655-a80f-b92b7c3d3c6e",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Early-bird registration closes on 2026-11-10.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "3d46e909-3979-4714-8da4-2aae3d98e9eb",
+                "source_version": 2,
+                "kind": "date",
+                "status": "partial",
+                "reason": "Some candidate expressions or approved sources require format/scope clarification."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "3d46e909-3979-4714-8da4-2aae3d98e9eb",
+            "version_id": "9e87e1d6-0237-4190-ad2d-368e48135e18",
+            "version": 2,
+            "title": "deadline_scope",
+            "status": "approved",
+            "rule": {
+              "kind": "date",
+              "date": "2026-11-12",
+              "scope": "campaign_main_date"
+            },
+            "text": "The approved campaign date is 2026-11-12.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:54.166813"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "5f1049c0-5997-4224-a9ca-063c40c72c5a",
+            "category": "date",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "This expression is not an explicit unqualified main-campaign value in the supported grammar; confirm its scope.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 34,
+              "end": 44,
+              "quote": "2026-11-10"
+            },
+            "evidence": {
+              "source_id": "3d46e909-3979-4714-8da4-2aae3d98e9eb",
+              "source_version_id": "9e87e1d6-0237-4190-ad2d-368e48135e18",
+              "source_version": 2,
+              "quote": "The approved campaign date is 2026-11-12."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:54.189005"
+      }
+    },
+    {
+      "case": "mixed_date_formats",
+      "caption": "Workshop on 2026-11-12. Workshop on 13 November 2026.",
+      "persisted_review": {
+        "id": "899b47c7-a7bd-47c9-a25b-02c90643ae7c",
+        "campaign_id": "91cd81ef-68fd-4dc8-8a3d-62d88445b1ea",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Workshop on 2026-11-12. Workshop on 13 November 2026.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "05ff865c-71b9-4abc-8420-ca77b8bffa7e",
+                "source_version": 2,
+                "kind": "date",
+                "status": "partial",
+                "reason": "Some candidate expressions or approved sources require format/scope clarification."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "05ff865c-71b9-4abc-8420-ca77b8bffa7e",
+            "version_id": "ab9874b0-d93b-4cc9-a026-e9fb421f51be",
+            "version": 2,
+            "title": "mixed_date_formats",
+            "status": "approved",
+            "rule": {
+              "kind": "date",
+              "date": "2026-11-12",
+              "scope": "campaign_main_date"
+            },
+            "text": "The approved campaign date is 2026-11-12.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:54.218049"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "de3c8184-7fa9-4759-affa-0f1bb6ea25b7",
+            "category": "date",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Recognised date expression is outside the supported valid ISO-date grammar.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 36,
+              "end": 52,
+              "quote": "13 November 2026"
+            },
+            "evidence": {
+              "source_id": "05ff865c-71b9-4abc-8420-ca77b8bffa7e",
+              "source_version_id": "ab9874b0-d93b-4cc9-a026-e9fb421f51be",
+              "source_version": 2,
+              "quote": "The approved campaign date is 2026-11-12."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:54.236740"
+      }
+    },
+    {
+      "case": "malformed_date",
+      "caption": "Workshop on 2026-11-12..99.",
+      "persisted_review": {
+        "id": "9aa5fc5b-b8ce-407d-9e38-eb86a9b6cae1",
+        "campaign_id": "9389017a-4c4e-473d-8e37-5feb515f8040",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Workshop on 2026-11-12..99.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "69b15a0c-8521-4271-bf58-457a344f79a9",
+                "source_version": 2,
+                "kind": "date",
+                "status": "not_assessed",
+                "reason": "No comparable supported expression was parsed; missing/unsupported formats are not a successful evaluation."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "69b15a0c-8521-4271-bf58-457a344f79a9",
+            "version_id": "592d6dc9-e01c-4603-a501-188164c5ec27",
+            "version": 2,
+            "title": "malformed_date",
+            "status": "approved",
+            "rule": {
+              "kind": "date",
+              "date": "2026-11-12",
+              "scope": "campaign_main_date"
+            },
+            "text": "The approved campaign date is 2026-11-12.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:54.266291"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "24cc5b3e-a197-4272-a010-fd122615640f",
+            "category": "date",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Recognised date expression is outside the supported valid ISO-date grammar.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 12,
+              "end": 26,
+              "quote": "2026-11-12..99"
+            },
+            "evidence": {
+              "source_id": "69b15a0c-8521-4271-bf58-457a344f79a9",
+              "source_version_id": "592d6dc9-e01c-4603-a501-188164c5ec27",
+              "source_version": 2,
+              "quote": "The approved campaign date is 2026-11-12."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:54.285864"
+      }
+    },
+    {
+      "case": "prose_date_unassessed",
+      "caption": "Workshop on 13 November 2026.",
+      "persisted_review": {
+        "id": "dee721c9-c64d-4682-83cd-b48327407ec2",
+        "campaign_id": "429ae2b9-84f7-4f57-89c2-a0fd5a9d72a2",
+        "content_revision": 2,
+        "source_revision": 2,
+        "caption": "Workshop on 13 November 2026.",
+        "status": "partial",
+        "is_current": true,
+        "readiness": "not_approved",
+        "checks": {
+          "exact_text": {
+            "status": "partial",
+            "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+            "rules": [
+              {
+                "source_id": "c43c12e5-3d16-4059-9bfb-c5d48a00f1e7",
+                "source_version": 2,
+                "kind": "date",
+                "status": "not_assessed",
+                "reason": "No comparable supported expression was parsed; missing/unsupported formats are not a successful evaluation."
+              }
+            ]
+          },
+          "contextual": {
+            "status": "unavailable",
+            "reason": "No AI provider is connected in this milestone.",
+            "rules": []
+          },
+          "poster": {
+            "status": "not_assessed",
+            "reason": "Poster review is not implemented in this milestone.",
+            "rules": []
+          }
+        },
+        "sources_used": [
+          {
+            "id": "c43c12e5-3d16-4059-9bfb-c5d48a00f1e7",
+            "version_id": "9a6c50c9-9a13-41a7-ad45-002f413d9469",
+            "version": 2,
+            "title": "prose_date_unassessed",
+            "status": "approved",
+            "rule": {
+              "kind": "date",
+              "date": "2026-11-12",
+              "scope": "campaign_main_date"
+            },
+            "text": "The approved campaign date is 2026-11-12.",
+            "valid_from": null,
+            "valid_until": null,
+            "confirmed_by": "65e2cd0e-bbe1-49c1-85a9-e149670177f7",
+            "created_at": "2026-10-26T10:17:54.316101"
+          }
+        ],
+        "excluded_sources": [],
+        "findings": [
+          {
+            "id": "64edba66-e6d6-447f-8bee-1c8cc2bb99d0",
+            "category": "date",
+            "severity": "warning",
+            "evidence_status": "needs_clarification",
+            "message": "Recognised date expression is outside the supported valid ISO-date grammar.",
+            "location": {
+              "asset": "caption",
+              "content_revision": 2,
+              "start": 12,
+              "end": 28,
+              "quote": "13 November 2026"
+            },
+            "evidence": {
+              "source_id": "c43c12e5-3d16-4059-9bfb-c5d48a00f1e7",
+              "source_version_id": "9a6c50c9-9a13-41a7-ad45-002f413d9469",
+              "source_version": 2,
+              "quote": "The approved campaign date is 2026-11-12."
+            },
+            "suggested_replacement": null
+          }
+        ],
+        "created_at": "2026-10-26T10:17:54.335166"
+      }
+    }
+  ],
+  "oversized_revision_http_status": 422,
+  "oversized_revision_error": {
+    "error": {
+      "code": "validation_error",
+      "message": "Request validation failed",
+      "details": [
+        {
+          "location": [
+            "body",
+            "expected_revision"
+          ],
+          "message": "Input should be less than or equal to 2147483646"
+        }
+      ]
+    }
+  }
+}

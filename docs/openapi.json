@@ -1,0 +1,1720 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BrandProof API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/demo-sessions": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Create Demo",
+        "operationId": "create_demo_api_v1_demo_sessions_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSessionOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns": {
+      "get": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "List Campaigns",
+        "operationId": "list_campaigns_api_v1_campaigns_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CampaignOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Campaigns Api V1 Campaigns Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Create Campaign",
+        "operationId": "create_campaign_api_v1_campaigns_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}": {
+      "get": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Get Campaign",
+        "operationId": "get_campaign_api_v1_campaigns__campaign_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/sources": {
+      "post": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "Create Source",
+        "operationId": "create_source_api_v1_campaigns__campaign_id__sources_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "List Sources",
+        "operationId": "list_sources_api_v1_campaigns__campaign_id__sources_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SourceOut"
+                  },
+                  "title": "Response List Sources Api V1 Campaigns  Campaign Id  Sources Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/sources/{source_id}/versions": {
+      "get": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "Versions",
+        "operationId": "versions_api_v1_campaigns__campaign_id__sources__source_id__versions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SourceOut"
+                  },
+                  "title": "Response Versions Api V1 Campaigns  Campaign Id  Sources  Source Id  Versions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/sources/{source_id}": {
+      "put": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "Revise",
+        "operationId": "revise_api_v1_campaigns__campaign_id__sources__source_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/sources/{source_id}/confirm": {
+      "post": {
+        "tags": [
+          "sources"
+        ],
+        "summary": "Confirm",
+        "operationId": "confirm_api_v1_campaigns__campaign_id__sources__source_id__confirm_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/caption": {
+      "put": {
+        "tags": [
+          "reviews"
+        ],
+        "summary": "Update Caption",
+        "operationId": "update_caption_api_v1_campaigns__campaign_id__caption_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/reviews": {
+      "post": {
+        "tags": [
+          "reviews"
+        ],
+        "summary": "Start Review",
+        "operationId": "start_review_api_v1_campaigns__campaign_id__reviews_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "reviews"
+        ],
+        "summary": "List Reviews",
+        "operationId": "list_reviews_api_v1_campaigns__campaign_id__reviews_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewOut"
+                  },
+                  "title": "Response List Reviews Api V1 Campaigns  Campaign Id  Reviews Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/reviews/{review_id}": {
+      "get": {
+        "tags": [
+          "reviews"
+        ],
+        "summary": "Get Review",
+        "operationId": "get_review_api_v1_campaigns__campaign_id__reviews__review_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CampaignCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "publication_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Publication Date"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "publication_date"
+        ],
+        "title": "CampaignCreate"
+      },
+      "CampaignOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "title": "Workspace Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "publication_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Publication Date"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "workspace_id",
+          "name",
+          "publication_date",
+          "caption",
+          "content_revision",
+          "source_revision",
+          "created_at"
+        ],
+        "title": "CampaignOut"
+      },
+      "CaptionUpdate": {
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "maximum": 2147483646.0,
+            "minimum": 1.0,
+            "title": "Expected Revision"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_revision",
+          "text"
+        ],
+        "title": "CaptionUpdate"
+      },
+      "CheckStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "partial",
+              "unavailable",
+              "not_assessed"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/RuleCoverage"
+            },
+            "type": "array",
+            "title": "Rules"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "CheckStatus"
+      },
+      "DateRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "date",
+            "title": "Kind"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "scope": {
+            "type": "string",
+            "const": "campaign_main_date",
+            "title": "Scope",
+            "default": "campaign_main_date"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "date"
+        ],
+        "title": "DateRule"
+      },
+      "DemoActor": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "creator",
+              "reviewer"
+            ],
+            "title": "Role"
+          },
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "access_token"
+        ],
+        "title": "DemoActor"
+      },
+      "DemoSessionOut": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "title": "Workspace Id"
+          },
+          "mode": {
+            "type": "string",
+            "const": "synthetic_demo",
+            "title": "Mode"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "actors": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DemoActor"
+            },
+            "type": "object",
+            "title": "Actors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "mode",
+          "notice",
+          "expires_at",
+          "actors"
+        ],
+        "title": "DemoSessionOut"
+      },
+      "Evidence": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "source_version_id": {
+            "type": "string",
+            "title": "Source Version Id"
+          },
+          "source_version": {
+            "type": "integer",
+            "title": "Source Version"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "source_version_id",
+          "source_version",
+          "quote"
+        ],
+        "title": "Evidence"
+      },
+      "Finding": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning",
+              "info"
+            ],
+            "title": "Severity"
+          },
+          "evidence_status": {
+            "type": "string",
+            "enum": [
+              "contradicted",
+              "needs_clarification",
+              "insufficient_evidence"
+            ],
+            "title": "Evidence Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "location": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Evidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "suggested_replacement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Replacement"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "severity",
+          "evidence_status",
+          "message",
+          "location",
+          "evidence"
+        ],
+        "title": "Finding"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Location": {
+        "properties": {
+          "asset": {
+            "type": "string",
+            "const": "caption",
+            "title": "Asset",
+            "default": "caption"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content_revision"
+        ],
+        "title": "Location"
+      },
+      "PriceRule-Input": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "price",
+            "title": "Kind"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "INR",
+              "USD",
+              "EUR",
+              "GBP"
+            ],
+            "title": "Currency"
+          },
+          "scope": {
+            "type": "string",
+            "const": "campaign_main_price",
+            "title": "Scope",
+            "default": "campaign_main_price"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "amount",
+          "currency"
+        ],
+        "title": "PriceRule"
+      },
+      "PriceRule-Output": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "price",
+            "title": "Kind"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "INR",
+              "USD",
+              "EUR",
+              "GBP"
+            ],
+            "title": "Currency"
+          },
+          "scope": {
+            "type": "string",
+            "const": "campaign_main_price",
+            "title": "Scope",
+            "default": "campaign_main_price"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "amount",
+          "currency"
+        ],
+        "title": "PriceRule"
+      },
+      "RequiredRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "required_text",
+            "title": "Kind"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "text"
+        ],
+        "title": "RequiredRule"
+      },
+      "ReviewCreate": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision"
+        ],
+        "title": "ReviewCreate"
+      },
+      "ReviewOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "partial",
+              "completed",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "is_current": {
+            "type": "boolean",
+            "title": "Is Current"
+          },
+          "readiness": {
+            "type": "string",
+            "const": "not_approved",
+            "title": "Readiness",
+            "default": "not_approved"
+          },
+          "checks": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CheckStatus"
+            },
+            "type": "object",
+            "title": "Checks"
+          },
+          "sources_used": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Sources Used"
+          },
+          "excluded_sources": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Excluded Sources"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "campaign_id",
+          "content_revision",
+          "source_revision",
+          "caption",
+          "status",
+          "is_current",
+          "checks",
+          "sources_used",
+          "excluded_sources",
+          "findings",
+          "created_at"
+        ],
+        "title": "ReviewOut"
+      },
+      "RuleCoverage": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "source_version": {
+            "type": "integer",
+            "title": "Source Version"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "partial",
+              "not_assessed"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "source_version",
+          "kind",
+          "status"
+        ],
+        "title": "RuleCoverage"
+      },
+      "SourceCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "rule": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PriceRule-Input"
+              },
+              {
+                "$ref": "#/components/schemas/DateRule"
+              },
+              {
+                "$ref": "#/components/schemas/TerminologyRule"
+              },
+              {
+                "$ref": "#/components/schemas/RequiredRule"
+              },
+              {
+                "$ref": "#/components/schemas/ToneRule"
+              }
+            ],
+            "title": "Rule",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "claim_policy": "#/components/schemas/ToneRule",
+                "date": "#/components/schemas/DateRule",
+                "price": "#/components/schemas/PriceRule-Input",
+                "required_text": "#/components/schemas/RequiredRule",
+                "terminology": "#/components/schemas/TerminologyRule",
+                "tone": "#/components/schemas/ToneRule"
+              }
+            }
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "rule"
+        ],
+        "title": "SourceCreate"
+      },
+      "SourceOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "version_id": {
+            "type": "string",
+            "title": "Version Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved"
+            ],
+            "title": "Status"
+          },
+          "rule": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PriceRule-Output"
+              },
+              {
+                "$ref": "#/components/schemas/DateRule"
+              },
+              {
+                "$ref": "#/components/schemas/TerminologyRule"
+              },
+              {
+                "$ref": "#/components/schemas/RequiredRule"
+              },
+              {
+                "$ref": "#/components/schemas/ToneRule"
+              }
+            ],
+            "title": "Rule",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "claim_policy": "#/components/schemas/ToneRule",
+                "date": "#/components/schemas/DateRule",
+                "price": "#/components/schemas/PriceRule-Output",
+                "required_text": "#/components/schemas/RequiredRule",
+                "terminology": "#/components/schemas/TerminologyRule",
+                "tone": "#/components/schemas/ToneRule"
+              }
+            }
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "confirmed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version_id",
+          "version",
+          "title",
+          "status",
+          "rule",
+          "text",
+          "valid_from",
+          "valid_until",
+          "confirmed_by",
+          "created_at"
+        ],
+        "title": "SourceOut"
+      },
+      "SourceUpdate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "rule": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PriceRule-Input"
+              },
+              {
+                "$ref": "#/components/schemas/DateRule"
+              },
+              {
+                "$ref": "#/components/schemas/TerminologyRule"
+              },
+              {
+                "$ref": "#/components/schemas/RequiredRule"
+              },
+              {
+                "$ref": "#/components/schemas/ToneRule"
+              }
+            ],
+            "title": "Rule",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "claim_policy": "#/components/schemas/ToneRule",
+                "date": "#/components/schemas/DateRule",
+                "price": "#/components/schemas/PriceRule-Input",
+                "required_text": "#/components/schemas/RequiredRule",
+                "terminology": "#/components/schemas/TerminologyRule",
+                "tone": "#/components/schemas/ToneRule"
+              }
+            }
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "expected_version": {
+            "type": "integer",
+            "maximum": 2147483646.0,
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "rule",
+          "expected_version"
+        ],
+        "title": "SourceUpdate"
+      },
+      "TerminologyRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "terminology",
+            "title": "Kind"
+          },
+          "term": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Term"
+          },
+          "preferred": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Preferred"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "term",
+          "preferred"
+        ],
+        "title": "TerminologyRule"
+      },
+      "ToneRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "tone",
+              "claim_policy"
+            ],
+            "title": "Kind"
+          },
+          "guidance": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "title": "Guidance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "guidance"
+        ],
+        "title": "ToneRule"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VersionRequest": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "maximum": 2147483646.0,
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version"
+        ],
+        "title": "VersionRequest"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

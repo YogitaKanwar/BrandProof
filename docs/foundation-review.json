@@ -1,0 +1,19 @@
+{
+  "scope": "Local candidate-first exact-text backend milestone; not production security, comprehensive semantics or the completed product",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "reviewer_summary": "No concrete regressions found within the declared finite grammar. All 48 targeted tests passed, including malformed amounts, date suffix junk, invalid calendars, and mixed supported/unsupported candidates. Additional persisted local API checks confirmed whole-token INR499..99/INR599..99 findings without replacements, and partial coverage with no same-kind replacements for supported values mixed with 599INR or prose/slash dates. Corrected demo copy retained zero findings, four completed exact rules, and overall partial/not_approved status. No repository files modified; no network services or commits.",
+  "parent_verification": {
+    "full_test_suite_passed": 100,
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "http_smoke_flawed_findings": 4,
+    "http_smoke_corrected_findings": 0,
+    "persisted_parser_regression_cases": 10,
+    "oversized_revision_http_status": 422,
+    "live_health": {"status": "ok", "database": "ok", "version": "0.1.0"}
+  },
+  "not_verified": ["PostgreSQL execution", "remote deployment", "private-user authentication", "AI inference", "poster OCR", "human content approval", "held-out evaluation"]
+}

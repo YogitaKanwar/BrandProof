@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "brandproof-backend"
+version = "0.1.0"
+description = "Evidence-first campaign review API for Codex 48"
+requires-python = ">=3.12,<3.15"
+dependencies = ["fastapi>=0.115,<1", "uvicorn[standard]>=0.30,<1", "sqlalchemy>=2.0,<3", "psycopg[binary]>=3.2,<4", "pydantic-settings>=2.5,<3"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<10",
+    "httpx>=0.27,<1",
+    "ruff>=0.9,<1",
+    "httpx2>=2.16.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/brandproof"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "B008"]
