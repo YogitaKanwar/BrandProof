@@ -4,12 +4,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from brandproof.approval import router as approval_router
 from brandproof.config import Settings
 from brandproof.db import Base, make_engine, session_factory
 from brandproof.errors import install_errors
+from brandproof.posters import router as posters_router
 from brandproof.reviews import router as reviews_router
 from brandproof.routes import router
 from brandproof.sources import router as sources_router
+from brandproof.suggestions import router as suggestions_router
+from brandproof.workflow import router as workflow_router
 
 
 def create_app(*, database_url: str | None = None):
@@ -28,8 +32,13 @@ def create_app(*, database_url: str | None = None):
     app.include_router(router)
     app.include_router(sources_router)
     app.include_router(reviews_router)
+    app.include_router(workflow_router)
+    app.include_router(approval_router)
+    app.include_router(suggestions_router)
+    app.include_router(posters_router)
     app.state.engine = engine
     app.state.sessions = sessions
+    app.state.settings = settings
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

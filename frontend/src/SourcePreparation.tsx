@@ -46,6 +46,6 @@ export default function SourcePreparation({ reviewId }: { reviewId: string }) {
       <div className="source-save"><small>{dirty ? 'Unsaved changes' : 'Local reference draft'}</small><button type="submit" disabled={!!initial.error}>Save reference draft</button></div>
       {error && <p className="error" role="alert">{error}</p>}<p className="form-help" role="status">{notice}</p>
     </form>
-    <div className="confirmed-sources"><p className="form-help">Owner-confirmed sources: not connected to this UI.</p><button type="button" disabled aria-describedby="confirm-reason">Confirm as owner</button><p id="confirm-reason" className="form-help">Unavailable until Y02 source integration. Confirmation requires an owner role and a server-created source version.</p></div>
+    <div className="confirmed-sources"><p className="form-help">Local draft: not connected to server approval. Y02 confirmation works in the connected backend demo.</p><button type="button" onClick={()=>{const connection=document.querySelector<HTMLDetailsElement>('.connection-status');if(connection){connection.open=true;connection.querySelector<HTMLButtonElement>('button')?.focus()}}}>Open backend connection</button><p className="form-help">Save local edits first. Connect a backend demo, create a server campaign, add a fact and save it as pending. Local drafts stay separate and are not automatically uploaded.</p></div>
   </section>
 }

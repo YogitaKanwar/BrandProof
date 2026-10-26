@@ -1,4 +1,6 @@
-import { ApiError, requestJson } from './client.ts'
+import { ApiError, requestJson, requestResponse } from './client.ts'
+import type { PosterOut } from './posters.ts'
+import type {Snapshot,Revision,Comment,FindingDecision,DemoRole,ReviewRequest,Approval,Receipt} from './workflow.ts'
 import type { ReviewInput, ReviewResult } from './reviews.ts'
 import { isSource } from './sources.ts'
 import type { SourceCreate, SourceOut } from './sources.ts'
@@ -109,9 +111,9 @@ export function createBackendClient(base = '/api/v1') {
       campaigns.set(record.id, record)
       return result()
     },
-    async runReview(campaignId: string, contentRevision: number, sourceRevision: number) {
+    async runReview(campaignId: string, contentRevision: number, sourceRevision: number, externalConsent = false) {
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews`, {
-        method: 'POST', headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_content_revision: contentRevision, expected_source_revision: sourceRevision }),
+        method: 'POST', signal: AbortSignal.timeout(120000), headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_content_revision: contentRevision, expected_source_revision: sourceRevision, external_ai_consent: externalConsent }),
       }))
     },
     async listReviews(campaignId: string) {
@@ -121,6 +123,34 @@ export function createBackendClient(base = '/api/v1') {
     },
     async getReview(campaignId: string, reviewId: string) {
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}`, { headers: auth() }))
+    },
+    async poster(campaignId: string, posterId?: string) {
+      return requestJson<PosterOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/posters${posterId ? `/${encodeURIComponent(posterId)}` : ''}`, {headers: auth()})
+    },
+    async posterContent(campaignId: string, posterId: string) {
+      const response = await requestResponse(`${base}/campaigns/${encodeURIComponent(campaignId)}/posters/${encodeURIComponent(posterId)}/content`, {headers: {...auth(), Accept: 'image/png'}, cache:'no-store'})
+      return response.blob()
+    },
+    async uploadPoster(campaignId: string, file: File, revision: number) {
+      return requestJson<PosterOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/posters?expected_revision=${revision}`, {method:'PUT',headers:{...auth(),'Content-Type':file.type},body:file,signal:AbortSignal.timeout(45000)})
+    },
+    async revisions(campaignId:string){return requestJson<Revision[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/revisions`,{headers:auth()})},
+    async comments(campaignId:string){return requestJson<Comment[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/comments`,{headers:auth()})},
+    async comment(campaignId:string,snapshot:Snapshot,text:string,reviewId:string|null,role:DemoRole='creator'){
+      return requestJson<Comment>(`${base}/campaigns/${encodeURIComponent(campaignId)}/comments`,{method:'POST',headers:{...auth(role),'Content-Type':'application/json'},body:JSON.stringify({...snapshot,text,review_id:reviewId})})
+    },
+    async applySuggestion(campaignId:string,reviewId:string,findingId:string,snapshot:Snapshot){
+      const record=validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}/findings/${encodeURIComponent(findingId)}/apply`,{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify(snapshot)}))
+      campaigns.set(record.id,record);return result()
+    },
+    async decisions(campaignId:string,reviewId:string,findingId:string){return requestJson<FindingDecision[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}/findings/${encodeURIComponent(findingId)}/decisions`,{headers:auth()})},
+    async decideFinding(campaignId:string,reviewId:string,findingId:string,snapshot:Snapshot,version:number,decision:FindingDecision['decision'],reason:string,role:DemoRole='reviewer'){
+      return requestJson<FindingDecision>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}/findings/${encodeURIComponent(findingId)}/decisions`,{method:'POST',headers:{...auth(role),'Content-Type':'application/json'},body:JSON.stringify({...snapshot,expected_decision_version:version,decision,reason})})
+    },
+    async receipt(campaignId:string){return requestJson<Receipt>(`${base}/campaigns/${encodeURIComponent(campaignId)}/receipt`,{headers:auth()})},
+    async requestReview(campaignId:string,reviewId:string,snapshot:Snapshot){return requestJson<ReviewRequest>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}/requests`,{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify(snapshot)})},
+    async approve(campaignId:string,reviewId:string,snapshot:Snapshot,requestId:string,decision:'approve'|'request_changes',reason:string,manualChecks:Record<string,string>,role:DemoRole='reviewer'){
+      return requestJson<Approval>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}/approvals`,{method:'POST',headers:{...auth(role),'Content-Type':'application/json'},body:JSON.stringify({...snapshot,request_id:requestId,decision,reason,manual_checks:manualChecks})})
     },
   }
 }

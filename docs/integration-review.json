@@ -1,0 +1,44 @@
+{
+  "scope": "Final focused local contextual/OCR integration acceptance; not deployment or model-quality certification",
+  "delegation": "deleg_2f31f0e6",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "reviewer_tests": "358 full offline tests and 5 original independent scratch regressions passed",
+  "parent_ocr_rerun": "53 passed in 17.58s",
+  "reviewed_file_sha256": {
+    "backend/brandproof/poster_review.py": "4fa5c5ea6b491c644fae483fed9c6c31b070562131cb83b5e0507abff05340b6",
+    "backend/tests/test_poster_uncertainty.py": "969a85f0bc2fdf66bcc519ba0ae1c1e4c9a72a15e1cab839a003493f52ba31d0",
+    "backend/brandproof/finding_groups.py": "751b5222401a42602c293eb94085f5a3008f97d6bc70155bd55d8b232a8ef0b1",
+    "backend/brandproof/reviews.py": "7ff26e1ed84eaadfb30c30614440af6a15020595c983b756438d300a924ef412",
+    "backend/brandproof/review_schemas.py": "526fb920004b90806b7f20cf45b0013fa4c85b2379e31699b8587d2f6818de95",
+    "backend/brandproof/contextual.py": "beec5ff678b163a38959a367bd1f4b9d2e51391d3ff5824f10b79222ad56678c",
+    "backend/tests/test_provider_error_metadata.py": "d9179388389743d2ee49f9291e2160ef5e077f5697c72d95c0a4a30330fc797f",
+    "backend/tests/test_finding_groups.py": "2c10272bdf252afb85a07d880c3a4014ac032ed05eb89c250a78d003c9aec3ca",
+    "backend/tests/test_poster_integration.py": "63b1fb442509cafea69304a879fd00f757214b96c33c24137facc064099b260d",
+    "backend/tests/conftest.py": "00a3371d877ca8855dab964061038ba4ae40886f51de273130fe05c9257e916f",
+    "backend/brandproof/ocr.py": "0e40a5ac10974b37552b3c5d75ae2c02078e50f0ef33882c81e3dfce6f9e45a7",
+    "backend/brandproof/rules.py": "87cc5a42478bca6468ab424395598d732772a6d15e6d0f9a0be3ca69a866da11"
+  },
+  "parent_hash_verification": {
+    "backend/brandproof/poster_review.py": true,
+    "backend/tests/test_poster_uncertainty.py": true,
+    "backend/brandproof/finding_groups.py": true,
+    "backend/brandproof/reviews.py": true,
+    "backend/brandproof/review_schemas.py": true,
+    "backend/brandproof/contextual.py": true,
+    "backend/tests/test_provider_error_metadata.py": true,
+    "backend/tests/test_finding_groups.py": true,
+    "backend/tests/test_poster_integration.py": true,
+    "backend/tests/conftest.py": true,
+    "backend/brandproof/ocr.py": true,
+    "backend/brandproof/rules.py": true
+  },
+  "boundaries": [
+    "Provenance is not semantic entailment",
+    "No visual AI/accessibility certification",
+    "No public deployment or PostgreSQL execution",
+    "Small live evaluation has three unassessed holdouts; no representative accuracy claim"
+  ]
+}

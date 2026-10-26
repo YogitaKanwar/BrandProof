@@ -2,6 +2,8 @@
 
 Sources: `FRONTEND_HANDOFF.md` (actual filename), `openapi.json`, backend routes/schemas and `plan.md`. All protected routes use Bearer demo actor tokens. No model credentials belong in the frontend.
 
+Historical foundation map below is superseded where PR #1 adds capabilities. Current integration, receipt/AI/OCR routes and remaining runtime acceptance are in `integration-sprint.md`, `task-status.md` and `configured-backend-tests.md`. Comments, decisions, requests, approvals, images and OCR APIs are now wired; older "missing" entries below describe the prior checkpoint only.
+
 | Task | Actual contract | Frontend reuse / gap |
 | --- | --- | --- |
 | Y01 | POST `/api/v1/demo-sessions`, no body/auth -> `DemoSessionOut`: workspace_id, mode=synthetic_demo, notice, expires_at, actors[role]={role,access_token}. POST `/api/v1/campaigns` with `CampaignCreate`={name,publication_date}; GET same route -> CampaignOut[]; GET `/{campaign_id}` -> CampaignOut. Creator/owner create; all demo roles read. | Reuse dashboard, form, transport and ReviewAdapter. Backend campaign is a draft grouping, NOT a ReviewOut. Add publication date. Preserve exact response: id,workspace_id,name,publication_date,caption,content_revision,source_revision,created_at. Brand/brief are local context, not CampaignCreate fields. |

@@ -1,0 +1,11 @@
+{
+  "scope": "Persistent provider quota/admission, manual stopped-worker recovery, container entry/configuration; not the full release",
+  "delegation": "deleg_c51b25de",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "conditions": ["Synthetic local demo only", "Stop every worker before manual recovery", "Docker image/runtime and PostgreSQL execution remain unverified"],
+  "parent_verification": {"promoted_tests": "backend/tests/test_ops_edges.py", "command": "uv run pytest backend/tests/test_ops_edges.py backend/tests/test_ai_quota.py backend/tests/test_recovery.py backend/tests/test_serve.py -q", "result": "34 passed in 13.97s", "lint_format": "passed"},
+  "reviewed_hash_verification": {"quota.py": true, "recovery.py": true, "serve.py": true, "config.py": true, "Dockerfile": true, "compose.yaml": true, ".dockerignore": true, "reviews.py": "Whole-file hash changed after review due to additive finding_groups output; final integration acceptance remains separate."},
+  "nonblocking_notes": ["Manual recovery age alone cannot distinguish an active slow worker; supported procedure requires workers stopped.", "A finalization status guard could add defense in depth against violating that procedure.", "Five independent edge cases were promoted and rerun: zero caps, cross-campaign/workspace concurrency, slot release and config bounds."]
+}

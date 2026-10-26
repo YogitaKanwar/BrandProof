@@ -12,6 +12,11 @@
     "test:api": "node tests/backend-live.mjs",
     "test:sources": "node tests/sources-live.mjs",
     "test:reviews": "node tests/reviews-live.mjs",
+    "test:posters": "node tests/posters-live.mjs",
+    "test:collaboration": "node tests/collaboration-live.mjs",
+    "test:approval": "node tests/approval-live.mjs",
+    "test:consent": "node tests/consent-live.mjs",
+    "verify": "node tests/verify.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

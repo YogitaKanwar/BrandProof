@@ -56,6 +56,7 @@ def test_price_conflict_has_exact_versioned_evidence_and_persisted_result(client
     stored = client.get(f"/api/v1/campaigns/{campaign['id']}/reviews/{run['id']}", headers=owner)
     assert stored.status_code == 200
     assert stored.json()["findings"] == run["findings"]
+    assert stored.json()["created_at"] == run["created_at"]
 
 
 def test_multiple_prices_request_clarification_instead_of_overwriting_offer_conditions(
