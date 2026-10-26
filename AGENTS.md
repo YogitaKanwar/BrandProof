@@ -1,12 +1,11 @@
-# BrandProof — Codex 48 Round 2
+# BrandProof agent instructions
 
-- Use `docs/plan.md`, supplied by Yogita, as the implementation guide. Keep `docs/plan.pdf` as the original reference; PDF extraction is resolved and must not be repeated.
-- Yogita owns frontend/product integration; Rushab owns backend, AI, RAG, OCR and database. Backend changes require approval.
-- Use React + TypeScript + Vite, primarily in `frontend/`; prefer existing dependencies.
-- Complete Y01–Y10 sequentially with relevant checks after each. Stop after Y01 for Yogita's review before Y02.
-- Never fabricate AI findings, backend success or approvals.
-- Y01 redesign awaits Yogita's approval. Do not deploy until she approves the design and authorises deployment.
-- Yogita explicitly authorised Y02 despite the documented Y01 refresh/session-resume blocker. Complete Y02, run real source API checks, and stop for review before Y03. Tokens stay in memory; never modify backend files or deploy without approval.
-- Keep `docs/task-status.md` current. Report status, changed files, checks, user verification and next task concisely.
-- Yogita later authorised continued planned frontend work. Y03 caption/review integration and Y05 evidence rendering are implemented. Keep Y04/Y06-Y08 partial/blocked where backend contracts are absent.
-- Yogita authorised a GitHub checkpoint on a separate frontend branch. Preserve shared main and backend history; do not deploy. Design refinement can follow the checkpoint.
+- Use docs/plan.md for product scope and updated docs/FRONTEND_HANDOFF.md plus docs/openapi.json for actual API contracts. Keep original plan.pdf; do not repeat extraction.
+- Yogita owns React/TypeScript/Vite frontend and integration. Rushab owns backend/AI/OCR/database. Backend modifications require a confirmed defect and user agreement.
+- Current sprint authorised all frontend integration slices, locally and independently. Do not wait for hosting; report unavailable OCR/Groq truthfully. Do not install unrelated infrastructure.
+- Work on integration/round2-backend-pr1. Preserve main and pushed frontend checkpoint a93f782. PR #1 exact backend commit: cdda60fd48371662a1380f82029836960271aa76. No reset, force-push or merge into main without approval.
+- Demo workspace/tokens stay in memory, never logs/storage/URLs. No provider secrets in frontend. AI requires explicit per-review consent and server enablement.
+- Source confirmation != content approval. Never invent findings, boxes, attestations or approvals. Use actual versions/roles; require explicit suggestion acceptance and real manual-check notes.
+- Preserve the minimal navy/white/teal design and one review workspace. Reuse dependencies/components. Verify each slice with lint/build and relevant genuine API/browser tests.
+- Update docs/task-status.md after slices. Keep final configured-runtime acceptance separate in docs/configured-backend-tests.md.
+- No deployment or publication of main authorised. Keep updates concise: completed, tests, blockers, next action.

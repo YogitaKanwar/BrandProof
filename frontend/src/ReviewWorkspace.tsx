@@ -69,7 +69,7 @@ export default function ReviewWorkspace() {
     connectionInFlight.current = true
     setConnecting(true); setNotice('')
     // Explicit action always means a new isolated demo, never silent session renewal.
-    const client = createBackendClient()
+    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
     try {
       const data = await client.connect()
       service.current = client
@@ -123,7 +123,7 @@ export default function ReviewWorkspace() {
       <p className="sidebar-note">Brand governance</p>
     </aside>
     <div className="workspace">
-      <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Synthetic demo · connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? result.notice : 'Drafts are stored in this browser. Live verification is not connected.'}</p><p className="form-help">Demo tokens stay in memory. Refresh ends access; a new demo creates a new workspace. Typed sources use the real API with demo owner permissions. Guidelines are local context. Captions and exact-text reviews use the backend; AI, OCR and human approval remain unavailable.</p><button type="button" disabled={connecting || saving} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start new demo workspace' : 'Connect backend demo'}</button>{result?.mode === 'backend' && <><button type="button" disabled={saving} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving} onClick={() => void openLocalDrafts()}>Open local drafts</button></>}</div></details></header>
+      <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Synthetic demo · connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? result.notice : 'Drafts are stored in this browser. Live verification is not connected.'}</p><p className="form-help">Demo tokens stay in memory. Refresh ends access; a new demo creates a new workspace. Typed sources use the real API with demo owner permissions. Guidelines are local context. Content, comments and human decisions use the API. AI requires consent and server configuration; OCR coverage is reported by the server.</p><button type="button" disabled={connecting || saving} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start new demo workspace' : 'Connect backend demo'}</button>{result?.mode === 'backend' && <><button type="button" disabled={saving} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving} onClick={() => void openLocalDrafts()}>Open local drafts</button></>}</div></details></header>
       <main id="main" tabIndex={-1}>
         {result?.mode === 'backend' && <p className="form-help">Fictional-data demo · Creator role · Refresh ends workspace access.</p>}
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>

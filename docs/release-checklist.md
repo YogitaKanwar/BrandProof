@@ -1,29 +1,18 @@
-# BrandProof review / GitHub handoff
+# BrandProof release handoff
 
-The connected local milestone is ready for team testing, not public deployment or final submission.
+Current integration branch: integration/round2-backend-pr1. Protected frontend checkpoint: a93f782. Merged backend PR #1: cdda60fd48371662a1380f82029836960271aa76. No changes to backend implementation beyond that merge; no main merge/deployment.
 
-## Try the real flow
+- [x] Existing frontend protected and new backend merged without conflicts.
+- [x] Sources/caption/reviews reverified against current schemas.
+- [x] Private raw PNG/JPEG upload/replacement/retrieval connected, including real error/conflict responses.
+- [x] Poster findings render historical canonical images and responsive boxes; bounds/geometry tested.
+- [x] Persisted comments, explicit corrections, revisions and reviewer finding decisions connected.
+- [x] Creator requests, reviewer decisions, exact incomplete-check manual notes, receipts and stale history connected.
+- [x] Consent-required contextual calls wired with no browser secrets or automatic opt-in.
+- [x] Local frontend build/lint/service/browser and genuine HTTP checks pass; backend runtime failures recorded rather than masked.
+- [ ] Real Tesseract/Groq final acceptance on a configured backend. Local missing prerequisites are not success. See configured-backend-tests.md.
+- [ ] Real-user accessibility/usability feedback and hosted end-to-end/restart/private-image tests.
+- [ ] Session-resume contract, public security/CORS/durable storage and final submission evidence.
+- [ ] Yogita's explicit deployment/main-merge approval.
 
-1. Start the backend from repository root: `.\.venv\Scripts\python.exe -m uvicorn brandproof.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log`.
-2. In `frontend/`, run `npm.cmd run dev`; open http://127.0.0.1:5173/.
-3. Preview mode -> Connect backend demo -> New Review; enter publication date -> Continue.
-4. Add Price 499 INR -> Save pending fact -> Confirm as owner. Observe approved v2.
-5. Save caption `Book for INR 599.` -> Run Review. Inspect contradiction, source evidence, coverage and partial/not-approved status.
-6. Manually correct caption to `Book for INR 499.` and save. Old run becomes stale; new run may have zero findings but remains partial/not approved.
-7. Inspect source versions and run history. Pasted guidelines are not automatically approved. Poster preview is temporary and not checked.
-
-## Verified / outstanding
-
-- Real API: demo sessions, campaigns, typed owner-confirmed sources, version conflicts, server caption revisions, synchronous exact-text reviews, persisted run history and evidence rendering.
-- Frontend regression: service tests, real HTTP smoke scripts, browser keyboard/focus, stale edits, image validation and responsive widths.
-- Backend foundation regression suite unchanged and exercised locally.
-- Y01 refresh access needs an authenticated server-managed session-resume contract. Tokens remain memory-only.
-- Y04 upload persistence, Y06 comments/decisions/full caption revision history, Y07 approval receipts/permissions workflow and Y08 OCR need backend contracts. No corresponding success is fabricated.
-- Contextual AI is unavailable. Unsupported placement guarantees cannot be represented as proven false; unavailable semantic checking must remain visible. Poster price contradictions cannot be detected without OCR.
-- Y09 needs team/manual usability feedback; Y10 needs hosted release verification and final submission materials.
-
-## GitHub and deployment
-
-Yogita authorised a checkpoint on branch frontend/connected-review-milestone. Scope: frontend source/config/lockfile/tests, task/release docs and AGENTS.md. Shared main and Rushab's backend remain unchanged. Runtime dependencies, databases, .env files and tokens are excluded by existing ignore rules. Later design changes can be committed on the same branch before deployment.
-
-Deploy only after Yogita approves the connected journey, Rushab supplies a safe hosted API/session contract, and frontend/API integration is tested together at the actual URLs. A production Vite build alone does not establish deployment or connectivity.
+Testing flow and API mappings: integration-sprint.md. Current counts/task status: task-status.md. Backend hosting/security scope: BACKEND_DEPLOYMENT.md. A built bundle is not a deployed or fully configured product.
