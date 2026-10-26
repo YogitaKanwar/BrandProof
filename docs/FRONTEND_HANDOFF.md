@@ -1,96 +1,95 @@
 # Yogita's frontend integration handoff
 
-## Scope and address
+## Setup and scope
 
-The implemented surface is the source/copy/exact-findings path. Comments, content approval, AI and images are not implemented. Build those screens against agreed future contracts only; do not display them as working.
+Run locally from this repository. http://127.0.0.1:8000 is not a public URL. Swagger: /docs; live contract: /openapi.json; saved contract: docs/openapi.json. Default CORS: http://localhost:5173 and http://127.0.0.1:5173. Never put provider keys in browser code.
 
-Rushab's running local API uses http://127.0.0.1:8000. That address only reaches the current machine. On your own machine, run the backend locally from this repository or use an explicitly provided hosted API once deployment is complete. There is no public backend URL yet.
+Sources, caption/poster revisions, exact findings, real local OCR, contextual-provider integration, comments, explicit suggestions, decisions, requests and receipts are implemented. Provider contract tests simulate the network. A genuine Groq openai/gpt-oss-120b API probe is also recorded; a reduced six-case evaluation had three assessed development matches and three unassessed holdouts, not a validated accuracy benchmark. Visual branding, accessibility and contextual poster analysis are not automated. Independent foundation acceptance does not cover this new milestone; see STATUS.md.
 
-Interactive contract: /docs. Machine contract: /openapi.json (snapshot in docs/openapi.json). CORS currently permits http://localhost:5173 and http://127.0.0.1:5173. Vite can proxy /api to localhost:8000, or a frontend can use an API base URL. Browser code must never contain a model key.
+POST /api/v1/demo-sessions without a body creates an isolated fictional workspace and owner/creator/reviewer tokens. Store tokens in memory, never logs; attach Authorization: Bearer <token>. Every new session creates another sandbox. Show the synthetic-demo notice. Role switching is not production auth or proof of independent human sign-off. Do not upload confidential materials.
 
-## Integration order
+Owner configures sources and can perform content/reviewer actions except self-approval. Creator edits content, comments and requests review; no source confirmation/decisions/approval. Reviewer reads/comments, decides findings and approves/requests changes; no content/source edits. Server permissions are authoritative.
 
-1. POST /api/v1/demo-sessions with no body. Store the returned workspace ID and demo actor tokens in memory for the session. Show the synthetic-demo notice. Do not log tokens. Every new call creates a fresh isolated workspace.
-2. Use the owner bearer token for source setup; creator for content work; reviewer for read-only inspection at this stage. Attach Authorization: Bearer <access_token> to protected requests. These are demo roles, not production identity or actual sign-off.
-3. POST /api/v1/campaigns with name and publication_date (YYYY-MM-DD). GET /campaigns lists only the current workspace. GET /campaigns/{id} returns caption/content_revision/source_revision.
-4. Create sources, then explicitly confirm them. Reload campaign state after source actions because source_revision changes.
-5. Save a caption using its expected content revision.
-6. Read current campaign state and start a review with BOTH expected content/source revisions.
-7. Display findings, evidence, coverage, excluded sources and historical status. All runs remain partial in this milestone.
+POST /api/v1/campaigns with {"name":"Workshop","publication_date":"2026-11-12"}. GET /campaigns lists this workspace; GET /campaigns/{id} returns caption/content_revision/source_revision. Remaining paths below start with /api/v1/campaigns/{id}. Fetch actual revisions; never hardcode examples.
 
-## Source setup
+## Sources
 
-POST /api/v1/campaigns/{id}/sources
+POST /sources with {"title":"Workshop price","rule":{"kind":"price","amount":"499","currency":"INR"}} returns pending version 1. Owner POST /sources/{source_id}/confirm with {"expected_version":1} creates approved version 2. Source text is server-generated from typed rules, not PDF extraction or independent proof. Its status determines authority.
 
-    {"title":"Workshop price","rule":{"kind":"price","amount":"499","currency":"INR"}}
+PUT /sources/{source_id} includes expected_version plus full title/rule/validity fields; omitted optional dates are cleared. Edits create pending versions; old approvals remain historical, not active. GET /sources lists heads; GET /sources/{source_id}/versions reads history. Source actions increment source_revision.
 
-The response is pending version 1. Text is derived on the server from the typed rule; it is not a quote extracted from an uploaded PDF. Mark its status clearly even though the canonical wording says 'approved campaign price'. To confirm:
-
-POST /api/v1/campaigns/{id}/sources/{source_id}/confirm
-
-    {"expected_version":1}
-
-Confirmation produces a new approved version 2 and records confirmed_by. The owner can revise a source with PUT to the source path, including expected_version plus its full title/rule/validity fields. Omitted optional dates are cleared, not preserved. Every edit is pending; the previous approved version is no longer active. GET /sources lists current heads; GET /sources/{source_id}/versions returns history.
-
-Other rule examples:
+Other rules:
 
     {"kind":"date","date":"2026-11-12"}
     {"kind":"terminology","term":"cheap","preferred":"affordable"}
     {"kind":"required_text","text":"Terms apply"}
-    {"kind":"tone","guidance":"Clear and helpful; avoid exaggeration."}
-    {"kind":"claim_policy","guidance":"Objective promises need approved supporting evidence."}
+    {"kind":"tone","guidance":"Use a calm, respectful tone."}
+    {"kind":"claim_policy","guidance":"Objective promises require supporting evidence."}
 
-Sources accept optional valid_from and valid_until dates. Price currency is currently one of INR, USD, EUR, GBP; scope is campaign_main_price. Date scope is campaign_main_date. Tone/claim guidance is stored but contextual checks are not connected.
+Optional valid_from/valid_until are checked against publication_date. Price currencies: INR/USD/EUR/GBP. Price/date represent only the main campaign value. Pending/expired/not-yet-valid sources are explicitly excluded.
 
-## Caption and review
+## Caption, images and history
 
-PUT /api/v1/campaigns/{id}/caption
+PUT /caption with {"expected_revision":1,"text":"Our cheap workshop. Terms apply."}. Whitespace is preserved; max 20,000 characters, no blank text. Saves increment content_revision. GET /revisions returns chronological {revision,caption,created_at}, including the initial revision. Poster uploads share this revision and preserve the caption.
 
-    {"expected_revision":1,"text":"A cheap workshop on 2026-11-13. Book for INR 599."}
+PUT /posters?expected_revision=<current content revision> takes raw PNG/JPEG bytes with matching Content-Type, not JSON/base64/multipart. Limits: 5 MiB input, 16 million pixels. The server validates format, normalises orientation/transparency into PNG, runs local Tesseract, then rechecks revision; concurrent edits return 409.
 
-The result increments content_revision. Whitespace is preserved so offsets refer to the stored exact caption. Empty/whitespace-only and oversized captions are rejected.
+GET /posters returns latest metadata. GET /posters/{poster_id} returns historical metadata. GET /posters/{poster_id}/content returns authenticated canonical PNG. Fetch with Authorization and create a temporary object URL; a bare img URL lacks the bearer header. Revoke object URLs on replacement/unmount.
 
-POST /api/v1/campaigns/{id}/reviews
+Metadata includes id/content_revision/dimensions/SHA-256 and ocr:{engine,status,reason,text,words}. Words include text, code-point start/end, x/y/width/height and confidence [0,1]. Coordinates refer to canonical PNG; scale overlays by displayed/stored dimensions. Below 0.7 confidence is partial; unreadable/tool failures are not clean results.
 
-    {"expected_content_revision":2,"expected_source_revision":8}
+OCR is not complete image review: logos, typography, contrast/accessibility and contextual poster claims require manual inspection. Revise an image by reuploading it.
 
-The source revision above is illustrative: always fetch the actual value, never hardcode it. The endpoint synchronously completes a bounded exact review and returns HTTP 201 with a persisted run. It is NOT yet a queued AI job. Use GET /reviews or /reviews/{review_id} to load historical results.
+## Review, evidence and privacy
 
-## Finding rendering
+POST /reviews with {"expected_content_revision":2,"expected_source_revision":4,"external_ai_consent":false}. Normally returns HTTP 201 after analysis. This is not a durable task queue. A running snapshot is persisted before an external call; GET /reviews or /reviews/{review_id} may show running. Wait for completion before approval. A crash can leave a running record; start a new review, never treat it as approved.
 
-Each finding includes id, category, severity, evidence_status, message, location, evidence and optional suggested_replacement. Location is currently caption-only with start/end offsets (Python Unicode code-point indices, end-exclusive) and quote. JavaScript uses UTF-16 indices; convert using Array.from(caption) before slicing when emojis/non-BMP characters occur. A missing required phrase has null offsets and quote: show it as a whole-caption action, not a fabricated highlight.
+Contextual calls require BOTH server enablement and explicit external_ai_consent:true per request. Default is off. Consent must explain that caption and selected approved source text leave this server for the configured provider. Never silently opt users in. No frontend keys. Missing config, denial, quota/timeout/refusal/invalid output leave incomplete coverage, not fabricated results.
 
-Evidence includes source_id, source_version_id, source_version and the exact canonical source quote. It proves which owner-confirmed rule produced the finding; it is not independent substantiation of a promotional claim.
+Retrieval is bounded keyword selection with mandatory tone/claim-policy rules, not embeddings. Citations/spans are validated against the selected pack. Provenance is not proof of semantic entailment or claim truth. Contextual replacements are withheld; contextual poster analysis is not included.
 
-When evidence_status is needs_clarification, show the reason and request owner input rather than an automatic replacement. Do not interpret severity as certainty. Never apply suggested_replacement automatically; explicit edit saving is available, but individual suggestion-acceptance and concurrency-safe suggestion application are future workflow work.
+Runs bind immutable caption, approved sources, poster identity/extraction and findings to content/source revisions. External calls do not hold a campaign writer lock. An edit during inference can make the returned snapshot historical (is_current:false); show that and rerun.
 
-## Coverage and stale state
+The additive finding_groups array groups issues by category and the same approved source/version, retaining individual finding_ids and assets. The findings array remains authoritative for exact locations; no locations are merged or invented. Findings expose id/category/severity/evidence_status/message/location/evidence/suggested_replacement. Caption offsets are Python Unicode code points, end-exclusive: use Array.from(caption).slice(start,end) in JS for emojis/non-BMP characters. Missing wording has null offsets; show a whole-asset action, not a fake highlight. Render all text as text, not unsanitised HTML.
 
-- status: partial for all runs until contextual/poster scope is implemented.
-- checks.exact_text: completed / partial / not_assessed, with reason. Its rules array reports source_id, source_version, kind, status and reason for each applicable exact rule. No comparable supported price/date expression means not_assessed; do not display it as a successful comparison. Missing required wording and terminology are independently assessed.
-- Price/date scope follows a deliberately narrow grammar. Ambiguous amounts, cashback/deposits, offer qualifiers, registration deadlines and negation require clarification without automatic replacements. Candidate discovery also recognizes suffix-currency notation, selected prose/slash dates and malformed numerical tokens as unsupported. If one recognized candidate of a kind is unsupported, the engine suppresses all numerical replacements for that kind and downgrades coverage; one supported expression cannot hide the unsupported one. This is not exhaustive natural-language extraction.
-- checks.contextual: unavailable; checks.poster: not_assessed.
-- excluded_sources: source ID/version/kind and reason for pending or invalid sources.
-- sources_used: immutable approved source snapshots used by that run.
-- is_current: compares run content/source revisions with campaign's current versions.
-- readiness: not_approved. No approve control should appear functional yet.
+Poster locations include asset=poster, poster_id, boxes and optional ocr_confidence. Highlight the historical poster belonging to this run, not latest now. Boxes can be empty for missing wording. Low-confidence affected words need clarification; OCR findings ask reviewers to verify the image.
 
-A corrected caption can have zero exact findings and still need contextual review. Editing a caption/source makes historical runs not current without changing their findings. Conservative invalidation includes pending source changes.
+Evidence includes source_id/source_version_id/source_version and exact canonical quote. Distinguish contradicted, needs_clarification and insufficient_evidence. Lack of support is not proof of falsehood; severity is not certainty.
 
-## Errors and permissions
+Checks report status/reason, per-rule coverage and details. No supported price/date expression means not_assessed, not pass. Finite parsing abstains on ambiguous scope/qualifiers/cashback/deposits/deadlines/negation/recognised unsupported numeric tokens. One unsupported candidate can suppress same-kind numerical replacements. This is not unrestricted language understanding.
 
-All API errors use {"error":{"code":"...","message":"..."}}; validation can also include safe location/message details. Check HTTP status:
-- 401: missing/invalid/expired token; start a new demo session.
-- 403: current demo role cannot perform that action.
-- 404: missing or inaccessible resource; never assume the other workspace exists.
-- 409: expected revision/version is stale; reload and let the user reconcile. A source snapshot at its supported limit also returns a conflict rather than overflowing.
-- 422: invalid input; show a useful field-level message. Expectation fields have portable integer limits; mutation expectations reserve room for the next version.
+A completed run means its declared checks completed, not human approval. Attached posters remain partial because visual/accessibility/contextual image checks are incomplete. is_current is a snapshot, not a guarantee against later edits.
 
-Owner: create campaigns, create/edit/confirm sources, save caption and run review.
-Creator: create campaigns, save captions and run review; cannot edit/confirm sources.
-Reviewer: read campaigns, sources and runs; approval is not implemented yet.
-Server enforces these permissions; changing UI visibility does not grant a role.
+## Collaboration and approval
 
-## What you can finish now
+Creator/owner POST /reviews/{review_id}/findings/{finding_id}/apply with both expected revisions explicitly applies an available verified caption substitution, checks the exact original span and creates a revision. Replay/staleness returns 409. Contextual/unsupported/image edits require manual action. Reload and rerun after edits.
 
-Y01/Y02/Y03/Y05 can connect to real endpoints. Y06 can start caption revision interactions but comments/decision APIs are still pending. Y04/Y07/Y08 need later poster/approval contracts. Use labelled development fixtures for unfinished areas, never fake working results in the submitted live path.
+All roles POST /comments with {"expected_content_revision":2,"expected_source_revision":4,"review_id":"<review id>","text":"Please verify this wording."}. review_id is optional. Comments bind to current revisions and remain historical. GET /comments reads the thread.
+
+Owner/reviewer POST /reviews/{review_id}/findings/{finding_id}/decisions with both expected revisions, expected_decision_version (initially 0), decision (dismiss/exception/reopen) and a required reason. Each append increments version. GET the same path reads history. Error findings, insufficient evidence and clarification block approval until corrected or explicitly decided; ordinary warnings remain visible.
+
+Creator/owner POST /reviews/{review_id}/requests with both expected revisions creates a request, NOT approval.
+
+Reviewer/eligible owner POST /reviews/{review_id}/approvals:
+
+    {"expected_content_revision":2,"expected_source_revision":4,"request_id":"<request id>","decision":"approve","reason":"Explain the decision.","manual_checks":{"contextual":"Describe the actual manual tone and claim checks performed."}}
+
+Decision is approve or request_changes. Approver must differ from requester and must not have edited ANY content revision in this campaign. Switching requester cannot bypass self-approval. One decision per request; another decision needs a fresh request.
+
+Latest review/request must be current and not running. Approval requires active sources, no excluded sources and no unresolved blocking findings. manual_checks must name EXACTLY the incomplete required checks: exact_text/contextual, plus poster when attached. Collect actual reviewer notes (minimum 20 characters); never auto-fill claims that the person performed them. request_changes uses an empty manual_checks object.
+
+Manual notes do not change automated coverage. approved_with_manual_checks can coexist with partial automation: a reviewer attestation, not an AI pass or legal certification.
+
+GET /receipt returns readiness, scope, checks, sources, request/approval history and latest finding decisions. Readiness: not_approved/approved/approved_with_manual_checks/changes_requested/stale. Never infer readiness from zero findings. Caption/poster/source edits, newer reviews/requests and decision changes stale earlier readiness while retaining history. BrandProof does not control external publication.
+
+## Errors and acceptance
+
+Errors: {"error":{"code":"...","message":"..."}}. 401 invalid/expired token; 403 forbidden role/self-approval; 404 absent/inaccessible resource; 409 stale/superseded state, unresolved findings, incomplete checks or unsafe edit (reload/reconcile, do not blindly replay); 413 byte limit; 415 unsupported media; 422 invalid fields/image/bounds. Never turn errors into green checks.
+
+With a running API:
+
+    uv run python scripts/smoke.py
+    uv run python scripts/parser_smoke.py
+    uv run python scripts/workflow_smoke.py
+
+The last script uses real HTTP and Tesseract. Its exceptions/notes/approval are scripted demo actions, not user feedback. Saved results contain no tokens. These tests do not establish frontend completion, deployment, PostgreSQL support or real user testing.

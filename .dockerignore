@@ -1,0 +1,9 @@
+*
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!backend/
+!backend/brandproof/
+!backend/brandproof/**
+backend/**/__pycache__/
+backend/**/*.pyc
