@@ -14,6 +14,8 @@ Copy .env.example to an ignored .env.local for API locations only. VITE_API_BASE
 
 Checks with running local backend: npm.cmd run test:api, test:sources, test:reviews, test:posters, test:collaboration, test:approval, test:consent. Fixtures and scripted reviewer notes are fictional test data, not user feedback. No tokens logged.
 
+Run npm.cmd run verify for a fail-fast build/lint/unit/HTTP pass. Set BRANDPROOF_RUN_BROWSER=1 and BRANDPROOF_TEST_BACKEND=1 to include the documented browser environment too. Latest broad results and user entry-path fixes: ../docs/regression-report.md. New Review is connected by default; local-only drafts use #/local-new explicitly.
+
 Browser: start preview on :4173 plus dedicated headless Chrome CDP :9223. Set BRANDPROOF_TEST_BACKEND=1 and run npm.cmd run test:browser. Optional BRANDPROOF_TEST_URL targets :5173. The test clears only its dedicated profile's origin storage. BRANDPROOF_SCREENSHOTS=1 saves ignored screenshots under node_modules/.cache/brandproof-screenshots.
 
 No frontend dependencies added. Existing starter/previous components are retained; the app mounts one current workspace. Backend files are unchanged beyond merging PR #1. No deployment or main-branch merge authorised.

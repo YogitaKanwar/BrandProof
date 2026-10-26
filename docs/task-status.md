@@ -1,41 +1,49 @@
-# BrandProof task status
+﻿# BrandProof task status
 
-Updated: 2026-10-26. Current branch: integration/round2-backend-pr1.
+Updated: 2026-10-26. Branch: `integration/round2-backend-pr1`.
 
-## Repository safety
+Six task flows are implemented and verified against the local API; four tasks remain partial. This is a local integration milestone, not final hosted acceptance.
 
-- Existing frontend is protected by pushed checkpoint a93f782 on frontend/connected-review-milestone.
-- Fetched PR #1 and verified exact cdda60fd48371662a1380f82029836960271aa76. Merged cleanly into a new integration branch; main/checkpoint unchanged. No reset, force push or deployment.
-- Read updated FRONTEND_HANDOFF.md, OpenAPI, STATUS, RUSHAB_TASKS, BACKEND_DEPLOYMENT and plan. Backend files equal PR #1; no backend fixes or test modifications made.
+| Task | Status | Implemented / remaining |
+| --- | --- | --- |
+| Y01 | Partial | App shell, navigation, real demo sessions and campaign create/list/get work. Server data persists; refresh loses memory-only demo access. Session resume and deployment remain. |
+| Y02 | Implemented locally | Six typed rules, explicit owner confirmation, pending/approved states, validity, versions/history and conflict preservation. Brand context is separate and unparsed. |
+| Y03 | Implemented locally | Caption saves, expected revisions, conflict reconciliation, real review initiation/history and honest running/partial/failed states. Run Review now shows a spinner and brings returned results/errors into view. |
+| Y04 | Implemented locally | Validated PNG/JPEG selection/drop/preview, real upload/replacement and private canonical/historical retrieval. No server-delete route exists. |
+| Y05 | Implemented locally | Severity, evidence/source snapshots, suggested actions, coverage, related findings and stale runs. Empty or unavailable checks never imply success. |
+| Y06 | Implemented locally | Persisted comments, explicit correction acceptance, before/current comparison, revisions and versioned finding decisions. No automatic correction or stale overwrite. |
+| Y07 | Implemented locally | Creator requests, authorised demo reviewer decisions/request-changes, exact incomplete-check notes, receipts and stale readiness/history. Synthetic roles are not production authentication. |
+| Y08 | Partial | Historical poster binding and responsive OCR-box renderer implemented; bounds/geometry tested. Genuine extracted-box acceptance requires working OCR. |
+| Y09 | Partial | Local regression, responsive/error/permission checks pass. Configured-backend, real-user accessibility/usability and hosted acceptance remain. |
+| Y10 | Partial | Integration/setup/release documentation prepared. Final public verification, release URL and submission materials remain. |
 
-## Implemented slices
+## Changes ready for review
 
-| Task | Current observation |
-| --- | --- |
-| Y01 | Campaign/session create-list-get reverified. Server persistence works; memory-only demo access still cannot survive reload. Deployment pending. |
-| Y02 | Real typed sources, explicit owner confirmation, versions/history/validity/conflicts reverified. Guidelines stay unparsed local context. |
-| Y03 | Real caption revisions, conflict reconciliation and review/history reverified; running/partial/completed/failed statuses supported. External AI consent is per request, default false and reset after a run. |
-| Y04 | Raw PNG/JPEG upload, byte/pixel checks, canonical private retrieval, replacement and historical access connected. Real 401/409/413/415/422 verified. Server poster deletion has no contract. |
-| Y08 | Frontend poster findings bind their historical poster_id and real boxes. Canonical percentage geometry scales responsively and rejects invalid bounds. Genuine extracted-box acceptance pending a working OCR runtime. No fake boxes. |
-| Y06 | Persisted comments, explicit suggestion confirmation/application, caption revision history, before/current comparison, reviewer decisions/history and conflict preservation connected. |
-| Y07 | Creator requests, separate demo reviewer approve/request-changes, required manual-check notes, receipts/history and stale readiness connected. Source confirmation remains separate. No prefilled notes or automatic approval. |
-| Y05 | Existing evidence/coverage/stale display preserved; poster locations, OCR confidence, finding groups, running status and expanded server readiness supported. |
-| Y09 | Local build/lint, 32 service tests and 15 browser groups pass. Seven genuine HTTP scripts pass. Backend full suite has environment failures below; hosted/manual usability acceptance remains. |
-| Y10 | Current setup, integration/release handoff and separate configured-backend test checklist prepared. Public deployment/final submission remain pending. |
+- Backend PR #1 (`cdda60fd48371662a1380f82029836960271aa76`) merged on the integration branch. Original frontend checkpoint `a93f782` remains protected on `frontend/connected-review-milestone`; main is unchanged.
+- One Sources → Content → Findings → Human Review workspace retains the navy/white/teal design. Brand inputs are simplified; optional fact and technical details are collapsed.
+- Fixed direct `/#/new` entry, connected draft creation and discoverable owner confirmation. Local-only drafts remain explicit and separate; local deletion supports confirmation and persists.
+- Run Review has visible busy feedback, automatic focus/scroll to actual results and visible request failures. No approved sources used is explained honestly.
+- Added expired-session regression, genuine visible-pointer entry/confirmation tests and fail-fast `npm.cmd run verify`.
+- Backend implementation is unchanged from PR #1. Latest frontend fixes/docs are included in this local checkpoint; no integration push, deployment or main merge performed.
 
-## Actual verification
+## Verification observed
 
-- Frontend: production build/lint, 32 tests, 15 real browser journey groups; dev and production preview exercised during integration.
-- HTTP: Y01 campaigns, Y02 sources, Y03 runs, private poster upload/retrieval/replacement, collaboration, approval and consent scripts pass. Fixtures are fictional; scripted reviewer notes are test actions, not real user feedback.
-- Approval tests: creator denied; missing manual checks rejected; reviewer receipt recorded; caption/poster/source edits stale it; request-changes persists. Blocking findings still require explicit decisions before approval.
-- Poster HTTP: actual OCR unavailable/tool_missing on this Windows host. Groq consent true returns unavailable because local provider configuration is absent. Neither is reported as successful inference.
-- Backend pytest with continue-on-collection-errors: 310 passed, 21 failed, 1 collection error in 102.82s. Twenty failures plus the collection error are missing Linux Noto font resources; the other failure expects blank-image OCR partial but the absent Tesseract returns unavailable. Backend Ruff check/format pass (68 files). No environment-specific backend patches made.
+- Latest run: production build and lint passed; **33 frontend tests**, **all 7 genuine HTTP scripts**, and **19 browser check groups** passed on both dev `:5173` and production preview `:4173`.
+- Real API coverage: campaigns/session/auth/errors, INR 499 pending v1 → approved v2, source/caption revisions, evidence, poster upload/private retrieval, corrections/comments, reviewer permissions, manual-note guards, receipts, stale approvals and explicit AI consent.
+- Browser checks include the reported `/#/new` URL, visible owner confirmation, Run Review spinner/result focus, failed-request error focus, local deletion, mobile widths 390/320 and no uncaught JavaScript errors. Test data/notes are fictional scripted actions, not human feedback.
+- Backend latest full run: **310 passed, 21 failed, 1 collection error**. Twenty failures plus collection are missing Linux Noto fonts; the other failure expects OCR partial but missing Tesseract produces unavailable. Backend Ruff lint/format passed. This suite is not fully green.
 
-## Remaining acceptance / deployment
+## Remaining blockers and acceptance
 
-- Continue independently per Yogita's instruction; do not install unrelated infrastructure or modify backend code. Configured runtime acceptance is listed separately in configured-backend-tests.md.
-- OCR/Tesseract and live Groq/citation quality must be exercised on a configured backend; geometry tests and unavailable-state tests do not prove extraction/model success.
-- Refresh/session-resume needs a backend contract change. No tokens in localStorage/sessionStorage/logs/URLs.
-- Public HTTPS API/frontend, CORS, durable storage/restart, security/retention and human usability tests remain deployment gates. No hosted success or final task completion is fabricated.
-- Use frontend/.env.example to configure a later public API location (never provider keys). Production requires actual API/reverse-proxy hosting, not Vite's dev proxy.
-- See integration-sprint.md and configured-backend-tests.md for route mapping, local commands and final acceptance.
+- **Session refresh:** no documented resume route. Rushab must provide a same-workspace resume/refresh contract that can restore authorised actor access without persisting bearer tokens in browser storage. No undocumented localStorage/sessionStorage workaround is used.
+- **OCR / contextual AI:** local OCR returns `unavailable/tool_missing`; consented contextual checking returns unavailable because Groq is unconfigured. Real extraction, INR 499 vs poster INR 599, responsive real boxes and contextual claim/citation quality require configured-runtime testing.
+- **Release:** public HTTPS API/frontend, CORS/private images, durable storage/restart, security/retention, accessibility/usability acceptance and submission evidence remain. No confidential-data or production-identity claims.
+- **Deletion:** only browser-local drafts can be deleted. Backend campaign/poster deletion requires an actual API contract.
+- See [configured-backend-tests.md](configured-backend-tests.md), [regression-report.md](regression-report.md) and [release-checklist.md](release-checklist.md).
+
+## Manual review before push
+
+1. Open `http://127.0.0.1:5173/#/new`, start connected review and create a campaign.
+2. Add a price fact, save it, then explicitly confirm as owner. Enter a conflicting caption and save it.
+3. Run review: check visible progress, actual results/evidence and unavailable coverage. For poster-only review, upload the file to the server first.
+4. Exercise explicit corrections/comments and creator/reviewer controls. Source confirmation is not content approval; refreshing still loses demo access.
