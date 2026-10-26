@@ -3,6 +3,24 @@ from brandproof.main import create_app
 from fastapi.testclient import TestClient
 
 
+@pytest.fixture(autouse=True)
+def offline_provider_environment(monkeypatch):
+    import httpx
+
+    def blocked(*args, **kwargs):
+        raise RuntimeError("Network access is disabled in tests; use an explicit MockTransport")
+
+    monkeypatch.setattr(httpx.HTTPTransport, "handle_request", blocked)
+    # Real credentials may exist locally. Only explicit MockTransport tests opt in.
+    for key, value in {
+        "BRANDPROOF_AI_PROVIDER": "none",
+        "BRANDPROOF_AI_MODEL": "",
+        "BRANDPROOF_AI_API_KEY": "",
+        "BRANDPROOF_EXTERNAL_AI_ENABLED": "false",
+    }.items():
+        monkeypatch.setenv(key, value)
+
+
 @pytest.fixture
 def client(tmp_path):
     with TestClient(create_app(database_url=f"sqlite:///{tmp_path / 'api.db'}")) as client:

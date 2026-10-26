@@ -1,0 +1,93 @@
+{
+  "type": "local_backend_candidate_evidence",
+  "scope": "Rushab-owned backend only; not frontend, public deployment or final submission",
+  "generated_at": "2026-10-26T12:42:09.637634+00:00",
+  "git_base_commit": "b73d53505a1f74ad06ad93192e54b0d8159803b7",
+  "working_tree_uncommitted": true,
+  "automated_tests": {
+    "tests": 358,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": "passed",
+  "format": "passed",
+  "http_smoke": {
+    "exact_flawed_findings": 4,
+    "corrected_findings": 0,
+    "parser_readback_cases": 10,
+    "workflow": "real OCR and persisted human-decision API passed; approval stale after new poster"
+  },
+  "installed_wheel": {
+    "api_ocr_workflow": "passed",
+    "real_process_restart_readback": "passed",
+    "sha256": "2f81948bc80d756c8a007438d65d0a3e71ac1e19988ae875ca4bcb1bf7957c98"
+  },
+  "compose_config": "valid",
+  "container_build_runtime": "unverified: Docker daemon permission denied",
+  "deployment": "deferred by user; no public backend URL",
+  "live_model": {
+    "provider": "groq",
+    "model": "openai/gpt-oss-120b",
+    "evaluation_summary": {
+      "matched_expectation": 3,
+      "mismatch": 0,
+      "unassessed": 3,
+      "total": 6,
+      "splits": {
+        "development": {
+          "matched_expectation": 3,
+          "mismatch": 0,
+          "unassessed": 0,
+          "total": 3
+        },
+        "holdout": {
+          "matched_expectation": 0,
+          "mismatch": 0,
+          "unassessed": 3,
+          "total": 3
+        }
+      }
+    },
+    "quality_claim": "No representative or successful heldout accuracy benchmark"
+  },
+  "independent_review": {
+    "collaboration": "accepted scoped slice",
+    "operations": "accepted scoped slice",
+    "ocr_fix_final_integration": "accepted scoped local boundary; all 12 reviewer hashes verified by parent"
+  },
+  "source_sha256": {
+    "backend/brandproof/__init__.py": "72637ec3c46fbd754bad1c22e9d56aa7e2d319babc33abb5996e233d9b7bae46",
+    "backend/brandproof/approval.py": "cc21e3f4fe0ad061c1d08421a9486e302479e6d53f92b978b0525ac9230310f1",
+    "backend/brandproof/auth.py": "da913dac9701523e7c577ee3de34a70c80ea653f69260b70a410c420734e9272",
+    "backend/brandproof/candidates.py": "f7420ecb66cc4c423175b22f06870f1748095ac55fd88ec04c89d927972034fa",
+    "backend/brandproof/config.py": "cc5c580086a6e1fc0df6781fc14353646c582154d40d7850418d95be6bb3779c",
+    "backend/brandproof/contextual.py": "beec5ff678b163a38959a367bd1f4b9d2e51391d3ff5824f10b79222ad56678c",
+    "backend/brandproof/db.py": "b5cd371f87dfe7c7688658c8a9b20cc7da795dceaef5aa38929a890b6c266342",
+    "backend/brandproof/errors.py": "cba718caaf2d261697b1d66d326f1327b3d3ec925547a053a36140af5246a458",
+    "backend/brandproof/finding_groups.py": "751b5222401a42602c293eb94085f5a3008f97d6bc70155bd55d8b232a8ef0b1",
+    "backend/brandproof/main.py": "43d94223a29534381a3d62f07bcde89b889bf946855b71114a5b82a06c84f44e",
+    "backend/brandproof/models.py": "48975fc91270a1e4303c9d666877b45ecf26bf19d43376a76cd68579b0c951af",
+    "backend/brandproof/ocr.py": "0e40a5ac10974b37552b3c5d75ae2c02078e50f0ef33882c81e3dfce6f9e45a7",
+    "backend/brandproof/poster_models.py": "dd3883deae977cd69fc4d28677af5d62f37a9555dec24bbef4e0f0ac6891ba47",
+    "backend/brandproof/poster_review.py": "4fa5c5ea6b491c644fae483fed9c6c31b070562131cb83b5e0507abff05340b6",
+    "backend/brandproof/poster_schemas.py": "4e2397707767a52cab55824c728c2f3ff78cc0cb3631bf5f5d1586a8e8df6a59",
+    "backend/brandproof/posters.py": "bdd77f824fedce96a0f557fa56aa5fe687372b8cb7a9428bc439a9dabf215740",
+    "backend/brandproof/quota.py": "51bf692e07220025b3ca7e6b8b5225160a962cb98858441c3c4c48e2fb8e0d7d",
+    "backend/brandproof/recovery.py": "353678cacaa0d159dea928ced18d53885fc97647c1a16574774a421527d64466",
+    "backend/brandproof/review_models.py": "7b85ba67d31b3e812fb199c58f1cd0f9b9c90eac676e3f70b0ed141757f0248a",
+    "backend/brandproof/review_schemas.py": "526fb920004b90806b7f20cf45b0013fa4c85b2379e31699b8587d2f6818de95",
+    "backend/brandproof/reviews.py": "7ff26e1ed84eaadfb30c30614440af6a15020595c983b756438d300a924ef412",
+    "backend/brandproof/routes.py": "91dd1941becd702d144bbf6fedc9f72c735205f1b642be6fbe2ffc257176f39e",
+    "backend/brandproof/rules.py": "87cc5a42478bca6468ab424395598d732772a6d15e6d0f9a0be3ca69a866da11",
+    "backend/brandproof/schemas.py": "8adacb307e812a58fb84b790a2bf345af19c2917616003ae68c0bf369a777a14",
+    "backend/brandproof/serve.py": "083166aaf99b0a35c2aa547079ee1d396c6ae5c3828caabc744c57f81b0ae3da",
+    "backend/brandproof/source_models.py": "32c4cc3637c934844613b77d840c47428335270cef52610a5cba30bd741e9c92",
+    "backend/brandproof/source_schemas.py": "8bb5a6fa8df49c6553f3737c778187acc8b7b2967b0dc1be89d6d2dc9e31b4e6",
+    "backend/brandproof/sources.py": "365465c84fe3b4d373b4e2a92aaf52e9d2161b3ceb77f800b4748a705c02c990",
+    "backend/brandproof/suggestions.py": "697a568bf4a0337bdfb13180a9cb45b21fdbff4eeee0b40ec5f2f7d4bfc8e91a",
+    "backend/brandproof/workflow.py": "1ebb6df78436b4798057b99f049eea4525aa17b7dee1b2295c8fe6a5c867e0cd",
+    "backend/brandproof/workflow_models.py": "d203d76abddb0f9c7d3301d9507a8fa5260e7d62f0bff6e101961a2e9664214b",
+    "backend/brandproof/workflow_schemas.py": "64ba338754da3a20ff0945afd4d43888de898ea5aa311a6811e30af16f86db4e"
+  }
+}

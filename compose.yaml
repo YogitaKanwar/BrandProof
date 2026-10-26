@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - brandproof-data:/app/data
+    environment:
+      BRANDPROOF_DATABASE_URL: sqlite:////app/data/brandproof.db
+      BRANDPROOF_EXTERNAL_AI_ENABLED: "false"
+      BRANDPROOF_AI_PROVIDER: none
+      BRANDPROOF_CORS_ORIGINS: '["http://localhost:5173","http://127.0.0.1:5173"]'
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 1g
+    pids_limit: 128
+volumes:
+  brandproof-data:

@@ -2,8 +2,8 @@
   "type": "actual_local_api_smoke_result",
   "fictional_input": true,
   "flawed_review": {
-    "id": "e5042858-4df3-4fd2-bcdd-7236da56d505",
-    "campaign_id": "54147aff-8111-4bb9-af45-28b4877a5725",
+    "id": "5ea78423-bd47-4ba1-acc0-9776a2c53111",
+    "campaign_id": "f7be55f4-6dcc-4d84-908b-b93c3b8066e5",
     "content_revision": 2,
     "source_revision": 8,
     "caption": "A cheap workshop on 2026-11-13. Book for INR 599.",
@@ -16,50 +16,60 @@
         "reason": null,
         "rules": [
           {
-            "source_id": "251f06cc-5455-4168-9e51-23c5df660d92",
+            "source_id": "10fd0096-f5bf-4a73-9f77-1d4262c66eca",
             "source_version": 2,
             "kind": "price",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "bf713027-d899-40a5-bf58-a5a68b6d6c8c",
+            "source_id": "d7860faa-0d32-4803-9d8d-57f34f31a2fd",
             "source_version": 2,
             "kind": "date",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "20e4764e-4241-489e-98c8-208ff30b0b8c",
+            "source_id": "b41be3fb-950c-403b-9024-fda93abe4faa",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "3b81a3cf-22aa-4819-80c3-74f3bc6b32d6",
+            "source_id": "e0cbe544-ea11-43e9-b2b1-a565091616e7",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
             "reason": null
           }
-        ]
+        ],
+        "details": {}
       },
       "contextual": {
         "status": "unavailable",
-        "reason": "No AI provider is connected in this milestone.",
-        "rules": []
+        "reason": "External contextual review is not enabled or configured.",
+        "rules": [],
+        "details": {
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "contextual-v1",
+          "selected_source_ids": [],
+          "selected_source_count": 0,
+          "provenance_note": "Validated provenance and exact quotes do not establish semantic entailment."
+        }
       },
       "poster": {
         "status": "not_assessed",
-        "reason": "Poster review is not implemented in this milestone.",
-        "rules": []
+        "reason": "No poster attached.",
+        "rules": [],
+        "details": {}
       }
     },
     "sources_used": [
       {
-        "id": "251f06cc-5455-4168-9e51-23c5df660d92",
-        "version_id": "92434e57-8323-4c96-a582-8d394c3430bc",
+        "id": "10fd0096-f5bf-4a73-9f77-1d4262c66eca",
+        "version_id": "e45d67db-5d55-42b4-85f1-10709e002bc1",
         "version": 2,
         "title": "Price",
         "status": "approved",
@@ -72,12 +82,12 @@
         "text": "The approved campaign price is INR 499.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.421677"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.432363"
       },
       {
-        "id": "bf713027-d899-40a5-bf58-a5a68b6d6c8c",
-        "version_id": "10832c99-33b7-47fb-adda-2ad9aa370c70",
+        "id": "d7860faa-0d32-4803-9d8d-57f34f31a2fd",
+        "version_id": "85c5add1-890d-4f84-bbd8-7be65356451b",
         "version": 2,
         "title": "Date",
         "status": "approved",
@@ -89,12 +99,12 @@
         "text": "The approved campaign date is 2026-11-12.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.441341"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.452268"
       },
       {
-        "id": "20e4764e-4241-489e-98c8-208ff30b0b8c",
-        "version_id": "0a9d0b17-3ff3-4d45-bd7d-5617de58aaf6",
+        "id": "b41be3fb-950c-403b-9024-fda93abe4faa",
+        "version_id": "e3530d9d-0df5-4f39-b886-57741192d0c3",
         "version": 2,
         "title": "Terminology",
         "status": "approved",
@@ -106,12 +116,12 @@
         "text": "Use 'affordable' instead of 'cheap'.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.459911"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.472027"
       },
       {
-        "id": "3b81a3cf-22aa-4819-80c3-74f3bc6b32d6",
-        "version_id": "06278f5e-9812-41dc-86a3-2a1be0145b05",
+        "id": "e0cbe544-ea11-43e9-b2b1-a565091616e7",
+        "version_id": "7f2a2cbf-e042-43d3-82b2-4392187ef537",
         "version": 2,
         "title": "Required wording",
         "status": "approved",
@@ -122,14 +132,14 @@
         "text": "Campaign copy must include: Terms apply",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.479806"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.491866"
       }
     ],
     "excluded_sources": [],
     "findings": [
       {
-        "id": "49c6f2a6-d34e-4b01-9f82-20e20be64898",
+        "id": "5a91fdcf-be22-4dea-8c58-09d304b89393",
         "category": "price",
         "severity": "error",
         "evidence_status": "contradicted",
@@ -142,15 +152,15 @@
           "quote": "INR 599"
         },
         "evidence": {
-          "source_id": "251f06cc-5455-4168-9e51-23c5df660d92",
-          "source_version_id": "92434e57-8323-4c96-a582-8d394c3430bc",
+          "source_id": "10fd0096-f5bf-4a73-9f77-1d4262c66eca",
+          "source_version_id": "e45d67db-5d55-42b4-85f1-10709e002bc1",
           "source_version": 2,
           "quote": "The approved campaign price is INR 499."
         },
         "suggested_replacement": "INR 499"
       },
       {
-        "id": "a1c563ac-f214-4154-b902-622e972f7a65",
+        "id": "d23ca710-0336-43e1-bffd-b647dda9ec55",
         "category": "date",
         "severity": "error",
         "evidence_status": "contradicted",
@@ -163,15 +173,15 @@
           "quote": "2026-11-13"
         },
         "evidence": {
-          "source_id": "bf713027-d899-40a5-bf58-a5a68b6d6c8c",
-          "source_version_id": "10832c99-33b7-47fb-adda-2ad9aa370c70",
+          "source_id": "d7860faa-0d32-4803-9d8d-57f34f31a2fd",
+          "source_version_id": "85c5add1-890d-4f84-bbd8-7be65356451b",
           "source_version": 2,
           "quote": "The approved campaign date is 2026-11-12."
         },
         "suggested_replacement": "2026-11-12"
       },
       {
-        "id": "3fe0b5bd-eef2-4e07-9673-80805109fa6e",
+        "id": "534339ac-583c-4f07-84b7-23b29b5b0ad9",
         "category": "terminology",
         "severity": "error",
         "evidence_status": "contradicted",
@@ -184,15 +194,15 @@
           "quote": "cheap"
         },
         "evidence": {
-          "source_id": "20e4764e-4241-489e-98c8-208ff30b0b8c",
-          "source_version_id": "0a9d0b17-3ff3-4d45-bd7d-5617de58aaf6",
+          "source_id": "b41be3fb-950c-403b-9024-fda93abe4faa",
+          "source_version_id": "e3530d9d-0df5-4f39-b886-57741192d0c3",
           "source_version": 2,
           "quote": "Use 'affordable' instead of 'cheap'."
         },
         "suggested_replacement": "affordable"
       },
       {
-        "id": "fc0d0d78-b0d1-4ae6-98c2-70b4b1e9c79e",
+        "id": "b1920add-52c7-419c-bf49-4c57e620d241",
         "category": "required_text",
         "severity": "error",
         "evidence_status": "contradicted",
@@ -205,19 +215,65 @@
           "quote": null
         },
         "evidence": {
-          "source_id": "3b81a3cf-22aa-4819-80c3-74f3bc6b32d6",
-          "source_version_id": "06278f5e-9812-41dc-86a3-2a1be0145b05",
+          "source_id": "e0cbe544-ea11-43e9-b2b1-a565091616e7",
+          "source_version_id": "7f2a2cbf-e042-43d3-82b2-4392187ef537",
           "source_version": 2,
           "quote": "Campaign copy must include: Terms apply"
         },
         "suggested_replacement": "Terms apply"
       }
     ],
-    "created_at": "2026-10-26T10:15:53.503929Z"
+    "finding_groups": [
+      {
+        "category": "price",
+        "source_id": "10fd0096-f5bf-4a73-9f77-1d4262c66eca",
+        "source_version": 2,
+        "finding_ids": [
+          "5a91fdcf-be22-4dea-8c58-09d304b89393"
+        ],
+        "assets": [
+          "caption"
+        ]
+      },
+      {
+        "category": "date",
+        "source_id": "d7860faa-0d32-4803-9d8d-57f34f31a2fd",
+        "source_version": 2,
+        "finding_ids": [
+          "d23ca710-0336-43e1-bffd-b647dda9ec55"
+        ],
+        "assets": [
+          "caption"
+        ]
+      },
+      {
+        "category": "terminology",
+        "source_id": "b41be3fb-950c-403b-9024-fda93abe4faa",
+        "source_version": 2,
+        "finding_ids": [
+          "534339ac-583c-4f07-84b7-23b29b5b0ad9"
+        ],
+        "assets": [
+          "caption"
+        ]
+      },
+      {
+        "category": "required_text",
+        "source_id": "e0cbe544-ea11-43e9-b2b1-a565091616e7",
+        "source_version": 2,
+        "finding_ids": [
+          "b1920add-52c7-419c-bf49-4c57e620d241"
+        ],
+        "assets": [
+          "caption"
+        ]
+      }
+    ],
+    "created_at": "2026-10-26T12:32:38.518778Z"
   },
   "clean_review": {
-    "id": "e92f6c73-5396-4083-9aec-07dbe54eb4a7",
-    "campaign_id": "54147aff-8111-4bb9-af45-28b4877a5725",
+    "id": "25851478-32f8-4ab8-902a-1df2c559ee9e",
+    "campaign_id": "f7be55f4-6dcc-4d84-908b-b93c3b8066e5",
     "content_revision": 3,
     "source_revision": 8,
     "caption": "An affordable workshop on 2026-11-12. Book for INR 499. Terms apply.",
@@ -230,50 +286,60 @@
         "reason": null,
         "rules": [
           {
-            "source_id": "251f06cc-5455-4168-9e51-23c5df660d92",
+            "source_id": "10fd0096-f5bf-4a73-9f77-1d4262c66eca",
             "source_version": 2,
             "kind": "price",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "bf713027-d899-40a5-bf58-a5a68b6d6c8c",
+            "source_id": "d7860faa-0d32-4803-9d8d-57f34f31a2fd",
             "source_version": 2,
             "kind": "date",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "20e4764e-4241-489e-98c8-208ff30b0b8c",
+            "source_id": "b41be3fb-950c-403b-9024-fda93abe4faa",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "3b81a3cf-22aa-4819-80c3-74f3bc6b32d6",
+            "source_id": "e0cbe544-ea11-43e9-b2b1-a565091616e7",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
             "reason": null
           }
-        ]
+        ],
+        "details": {}
       },
       "contextual": {
         "status": "unavailable",
-        "reason": "No AI provider is connected in this milestone.",
-        "rules": []
+        "reason": "External contextual review is not enabled or configured.",
+        "rules": [],
+        "details": {
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "contextual-v1",
+          "selected_source_ids": [],
+          "selected_source_count": 0,
+          "provenance_note": "Validated provenance and exact quotes do not establish semantic entailment."
+        }
       },
       "poster": {
         "status": "not_assessed",
-        "reason": "Poster review is not implemented in this milestone.",
-        "rules": []
+        "reason": "No poster attached.",
+        "rules": [],
+        "details": {}
       }
     },
     "sources_used": [
       {
-        "id": "251f06cc-5455-4168-9e51-23c5df660d92",
-        "version_id": "92434e57-8323-4c96-a582-8d394c3430bc",
+        "id": "10fd0096-f5bf-4a73-9f77-1d4262c66eca",
+        "version_id": "e45d67db-5d55-42b4-85f1-10709e002bc1",
         "version": 2,
         "title": "Price",
         "status": "approved",
@@ -286,12 +352,12 @@
         "text": "The approved campaign price is INR 499.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.421677"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.432363"
       },
       {
-        "id": "bf713027-d899-40a5-bf58-a5a68b6d6c8c",
-        "version_id": "10832c99-33b7-47fb-adda-2ad9aa370c70",
+        "id": "d7860faa-0d32-4803-9d8d-57f34f31a2fd",
+        "version_id": "85c5add1-890d-4f84-bbd8-7be65356451b",
         "version": 2,
         "title": "Date",
         "status": "approved",
@@ -303,12 +369,12 @@
         "text": "The approved campaign date is 2026-11-12.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.441341"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.452268"
       },
       {
-        "id": "20e4764e-4241-489e-98c8-208ff30b0b8c",
-        "version_id": "0a9d0b17-3ff3-4d45-bd7d-5617de58aaf6",
+        "id": "b41be3fb-950c-403b-9024-fda93abe4faa",
+        "version_id": "e3530d9d-0df5-4f39-b886-57741192d0c3",
         "version": 2,
         "title": "Terminology",
         "status": "approved",
@@ -320,12 +386,12 @@
         "text": "Use 'affordable' instead of 'cheap'.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.459911"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.472027"
       },
       {
-        "id": "3b81a3cf-22aa-4819-80c3-74f3bc6b32d6",
-        "version_id": "06278f5e-9812-41dc-86a3-2a1be0145b05",
+        "id": "e0cbe544-ea11-43e9-b2b1-a565091616e7",
+        "version_id": "7f2a2cbf-e042-43d3-82b2-4392187ef537",
         "version": 2,
         "title": "Required wording",
         "status": "approved",
@@ -336,13 +402,14 @@
         "text": "Campaign copy must include: Terms apply",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "1f717f1d-696c-43fb-a763-51288f58c33e",
-        "created_at": "2026-10-26T10:15:53.479806"
+        "confirmed_by": "6aa948a2-a412-4548-b229-26b252cf21d0",
+        "created_at": "2026-10-26T12:32:38.491866"
       }
     ],
     "excluded_sources": [],
     "findings": [],
-    "created_at": "2026-10-26T10:15:53.528792Z"
+    "finding_groups": [],
+    "created_at": "2026-10-26T12:32:38.551527Z"
   },
   "historical_review_is_current_after_edit": false
 }

@@ -530,7 +530,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ReviewCreate"
+                "$ref": "#/components/schemas/ReviewStart"
               }
             }
           }
@@ -664,6 +664,764 @@
         }
       }
     },
+    "/api/v1/campaigns/{campaign_id}/reviews/{review_id}/findings/{finding_id}/decisions": {
+      "post": {
+        "tags": [
+          "collaboration"
+        ],
+        "summary": "Decide Finding",
+        "operationId": "decide_finding_api_v1_campaigns__campaign_id__reviews__review_id__findings__finding_id__decisions_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          },
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Finding Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindingDecisionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindingDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "collaboration"
+        ],
+        "summary": "Finding Decisions",
+        "operationId": "finding_decisions_api_v1_campaigns__campaign_id__reviews__review_id__findings__finding_id__decisions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          },
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Finding Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FindingDecisionOut"
+                  },
+                  "title": "Response Finding Decisions Api V1 Campaigns  Campaign Id  Reviews  Review Id  Findings  Finding Id  Decisions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/reviews/{review_id}/requests": {
+      "post": {
+        "tags": [
+          "collaboration"
+        ],
+        "summary": "Request Review",
+        "operationId": "request_review_api_v1_campaigns__campaign_id__reviews__review_id__requests_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewRequestOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/receipt": {
+      "get": {
+        "tags": [
+          "collaboration"
+        ],
+        "summary": "Receipt",
+        "operationId": "receipt_api_v1_campaigns__campaign_id__receipt_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/comments": {
+      "post": {
+        "tags": [
+          "collaboration"
+        ],
+        "summary": "Create Comment",
+        "operationId": "create_comment_api_v1_campaigns__campaign_id__comments_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "collaboration"
+        ],
+        "summary": "List Comments",
+        "operationId": "list_comments_api_v1_campaigns__campaign_id__comments_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentOut"
+                  },
+                  "title": "Response List Comments Api V1 Campaigns  Campaign Id  Comments Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/reviews/{review_id}/approvals": {
+      "post": {
+        "tags": [
+          "human review"
+        ],
+        "summary": "Approve",
+        "operationId": "approve_api_v1_campaigns__campaign_id__reviews__review_id__approvals_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/reviews/{review_id}/findings/{finding_id}/apply": {
+      "post": {
+        "tags": [
+          "revisions"
+        ],
+        "summary": "Apply Suggestion",
+        "operationId": "apply_suggestion_api_v1_campaigns__campaign_id__reviews__review_id__findings__finding_id__apply_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          },
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Finding Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/revisions": {
+      "get": {
+        "tags": [
+          "revisions"
+        ],
+        "summary": "Revisions",
+        "operationId": "revisions_api_v1_campaigns__campaign_id__revisions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/posters": {
+      "put": {
+        "tags": [
+          "posters"
+        ],
+        "summary": "Upload Poster",
+        "operationId": "upload_poster_api_v1_campaigns__campaign_id__posters_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "expected_revision",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 2147483646,
+              "minimum": 1,
+              "title": "Expected Revision"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PosterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "posters"
+        ],
+        "summary": "Latest Poster",
+        "operationId": "latest_poster_api_v1_campaigns__campaign_id__posters_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PosterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/posters/{poster_id}": {
+      "get": {
+        "tags": [
+          "posters"
+        ],
+        "summary": "Get Poster",
+        "operationId": "get_poster_api_v1_campaigns__campaign_id__posters__poster_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "poster_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Poster Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PosterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/posters/{poster_id}/content": {
+      "get": {
+        "tags": [
+          "posters"
+        ],
+        "summary": "Poster Content",
+        "operationId": "poster_content_api_v1_campaigns__campaign_id__posters__poster_id__content_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "poster_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Poster Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "summary": "Health",
@@ -683,6 +1441,181 @@
   },
   "components": {
     "schemas": {
+      "ApprovalCreate": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 36,
+            "title": "Request Id"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "request_changes"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          },
+          "manual_checks": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 2000,
+              "minLength": 20
+            },
+            "propertyNames": {
+              "enum": [
+                "exact_text",
+                "contextual",
+                "poster"
+              ]
+            },
+            "type": "object",
+            "title": "Manual Checks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision",
+          "request_id",
+          "decision",
+          "reason"
+        ],
+        "title": "ApprovalCreate"
+      },
+      "ApprovalOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "review_id": {
+            "type": "string",
+            "title": "Review Id"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "title": "Reviewer Id"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "coverage_mode": {
+            "type": "string",
+            "title": "Coverage Mode"
+          },
+          "manual_checks": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Manual Checks"
+          },
+          "decision_snapshot": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Decision Snapshot"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "is_current": {
+            "type": "boolean",
+            "title": "Is Current"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "campaign_id",
+          "review_id",
+          "request_id",
+          "reviewer_id",
+          "content_revision",
+          "source_revision",
+          "decision",
+          "reason",
+          "coverage_mode",
+          "manual_checks",
+          "decision_snapshot",
+          "created_at",
+          "is_current"
+        ],
+        "title": "ApprovalOut"
+      },
+      "Box": {
+        "properties": {
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          },
+          "width": {
+            "type": "number",
+            "title": "Width"
+          },
+          "height": {
+            "type": "number",
+            "title": "Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height"
+        ],
+        "title": "Box"
+      },
       "CampaignCreate": {
         "properties": {
           "name": {
@@ -807,6 +1740,11 @@
             },
             "type": "array",
             "title": "Rules"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
           }
         },
         "type": "object",
@@ -814,6 +1752,109 @@
           "status"
         ],
         "title": "CheckStatus"
+      },
+      "CommentCreate": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          },
+          "review_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 36
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Id"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision",
+          "text"
+        ],
+        "title": "CommentCreate"
+      },
+      "CommentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "review_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "actor_role": {
+            "type": "string",
+            "title": "Actor Role"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "campaign_id",
+          "review_id",
+          "actor_id",
+          "actor_role",
+          "content_revision",
+          "source_revision",
+          "text",
+          "created_at"
+        ],
+        "title": "CommentOut"
       },
       "DateRule": {
         "properties": {
@@ -1000,6 +2041,159 @@
         ],
         "title": "Finding"
       },
+      "FindingDecisionCreate": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          },
+          "expected_decision_version": {
+            "type": "integer",
+            "maximum": 2147483646.0,
+            "minimum": 0.0,
+            "title": "Expected Decision Version"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "dismiss",
+              "exception",
+              "reopen"
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision",
+          "expected_decision_version",
+          "decision",
+          "reason"
+        ],
+        "title": "FindingDecisionCreate"
+      },
+      "FindingDecisionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "review_id": {
+            "type": "string",
+            "title": "Review Id"
+          },
+          "finding_id": {
+            "type": "string",
+            "title": "Finding Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "review_id",
+          "finding_id",
+          "version",
+          "actor_id",
+          "decision",
+          "reason",
+          "created_at"
+        ],
+        "title": "FindingDecisionOut"
+      },
+      "FindingGroup": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "finding_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Finding Ids"
+          },
+          "assets": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "caption",
+                "poster"
+              ]
+            },
+            "type": "array",
+            "title": "Assets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "source_id",
+          "source_version",
+          "finding_ids",
+          "assets"
+        ],
+        "title": "FindingGroup"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1017,13 +2211,45 @@
         "properties": {
           "asset": {
             "type": "string",
-            "const": "caption",
+            "enum": [
+              "caption",
+              "poster"
+            ],
             "title": "Asset",
             "default": "caption"
           },
           "content_revision": {
             "type": "integer",
             "title": "Content Revision"
+          },
+          "poster_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Poster Id"
+          },
+          "boxes": {
+            "items": {
+              "$ref": "#/components/schemas/Box"
+            },
+            "type": "array",
+            "title": "Boxes"
+          },
+          "ocr_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ocr Confidence"
           },
           "start": {
             "anyOf": [
@@ -1064,6 +2290,165 @@
           "content_revision"
         ],
         "title": "Location"
+      },
+      "OCRExtraction": {
+        "properties": {
+          "engine": {
+            "type": "string",
+            "const": "tesseract",
+            "title": "Engine"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "words": {
+            "items": {
+              "$ref": "#/components/schemas/OCRWord"
+            },
+            "type": "array",
+            "title": "Words"
+          }
+        },
+        "type": "object",
+        "required": [
+          "engine",
+          "status",
+          "reason",
+          "text",
+          "words"
+        ],
+        "title": "OCRExtraction"
+      },
+      "OCRWord": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "X"
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Y"
+          },
+          "width": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Height"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "start": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Start"
+          },
+          "end": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "End"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "x",
+          "y",
+          "width",
+          "height",
+          "confidence",
+          "start",
+          "end"
+        ],
+        "title": "OCRWord"
+      },
+      "PosterOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "mime": {
+            "type": "string",
+            "const": "image/png",
+            "title": "Mime"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "ocr": {
+            "$ref": "#/components/schemas/OCRExtraction"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "campaign_id",
+          "content_revision",
+          "mime",
+          "sha256",
+          "width",
+          "height",
+          "ocr",
+          "created_at"
+        ],
+        "title": "PosterOut"
       },
       "PriceRule-Input": {
         "properties": {
@@ -1217,6 +2602,7 @@
           "status": {
             "type": "string",
             "enum": [
+              "running",
               "partial",
               "completed",
               "failed"
@@ -1229,7 +2615,13 @@
           },
           "readiness": {
             "type": "string",
-            "const": "not_approved",
+            "enum": [
+              "not_approved",
+              "approved",
+              "approved_with_manual_checks",
+              "changes_requested",
+              "stale"
+            ],
             "title": "Readiness",
             "default": "not_approved"
           },
@@ -1263,6 +2655,13 @@
             "type": "array",
             "title": "Findings"
           },
+          "finding_groups": {
+            "items": {
+              "$ref": "#/components/schemas/FindingGroup"
+            },
+            "type": "array",
+            "title": "Finding Groups"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -1285,6 +2684,68 @@
           "created_at"
         ],
         "title": "ReviewOut"
+      },
+      "ReviewRequestOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "review_id": {
+            "type": "string",
+            "title": "Review Id"
+          },
+          "requested_by": {
+            "type": "string",
+            "title": "Requested By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "campaign_id",
+          "review_id",
+          "requested_by",
+          "created_at"
+        ],
+        "title": "ReviewRequestOut"
+      },
+      "ReviewStart": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          },
+          "external_ai_consent": {
+            "type": "boolean",
+            "title": "External Ai Consent",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision"
+        ],
+        "title": "ReviewStart"
       },
       "RuleCoverage": {
         "properties": {

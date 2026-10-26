@@ -1,0 +1,97 @@
+{
+  "type": "actual_live_groq_api_configuration_probe",
+  "fictional_data": true,
+  "latency_seconds": 1.907,
+  "persisted_readback_verified": true,
+  "review": {
+    "id": "b8609637-cc01-49f5-9c4c-6be9052cfb77",
+    "campaign_id": "8fad8051-de0e-495c-8803-e7a46477b7c6",
+    "content_revision": 2,
+    "source_revision": 2,
+    "caption": "Only an idiot would miss this workshop.",
+    "status": "partial",
+    "is_current": true,
+    "readiness": "not_approved",
+    "checks": {
+      "exact_text": {
+        "status": "not_assessed",
+        "reason": "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
+        "rules": [],
+        "details": {}
+      },
+      "contextual": {
+        "status": "completed",
+        "reason": null,
+        "rules": [],
+        "details": {
+          "provider": "groq",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "contextual-v1",
+          "selected_source_ids": [
+            "4f0b3877-2883-4205-8f7e-fbf115adf1ce"
+          ],
+          "selected_source_count": 1,
+          "provenance_note": "Validated provenance and exact quotes do not establish semantic entailment.",
+          "approved_source_count": 1,
+          "invalid_source_count": 0,
+          "mandatory_source_count": 1,
+          "matched_source_count": 0,
+          "omitted_mandatory_count": 0,
+          "omitted_matched_count": 0,
+          "selected_source_chars": 335,
+          "rejected_finding_count": 0
+        }
+      },
+      "poster": {
+        "status": "not_assessed",
+        "reason": "No poster attached.",
+        "rules": [],
+        "details": {}
+      }
+    },
+    "sources_used": [
+      {
+        "id": "4f0b3877-2883-4205-8f7e-fbf115adf1ce",
+        "version_id": "3080c3ee-5482-44bd-bbf5-aac06a57e6c3",
+        "version": 2,
+        "title": "Fictional respectful-tone rule",
+        "status": "approved",
+        "rule": {
+          "kind": "tone",
+          "guidance": "Use respectful language. Do not insult the reader."
+        },
+        "text": "Use respectful language. Do not insult the reader.",
+        "valid_from": null,
+        "valid_until": null,
+        "confirmed_by": "4f1bd533-9c91-44a1-95e1-77b327714d7a",
+        "created_at": "2026-10-26T12:18:57.522320"
+      }
+    ],
+    "excluded_sources": [],
+    "findings": [
+      {
+        "id": "86c19d92-8884-4de2-b8be-2daeaef818a8",
+        "category": "tone",
+        "severity": "error",
+        "evidence_status": "contradicted",
+        "message": "The draft insults the reader, violating the respectful\u2011tone rule.",
+        "location": {
+          "asset": "caption",
+          "content_revision": 2,
+          "start": 0,
+          "end": 39,
+          "quote": "Only an idiot would miss this workshop."
+        },
+        "evidence": {
+          "source_id": "4f0b3877-2883-4205-8f7e-fbf115adf1ce",
+          "source_version_id": "3080c3ee-5482-44bd-bbf5-aac06a57e6c3",
+          "source_version": 2,
+          "quote": "Do not insult the reader."
+        },
+        "suggested_replacement": null
+      }
+    ],
+    "created_at": "2026-10-26T12:18:57.548756Z"
+  },
+  "limitation": "Single development example, not a model-quality benchmark."
+}

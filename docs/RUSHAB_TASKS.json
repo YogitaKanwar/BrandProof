@@ -1,0 +1,198 @@
+{
+  "scope": "Rushab assigned tasks only. No Yogita-owned task is executed or marked complete.",
+  "verification_state": "Local candidate independently accepted for declared collaboration/operations/OCR-contextual boundaries. Not a deployed/final hosted release.",
+  "tasks": [
+    {
+      "id": "R01",
+      "owner": "Rushab",
+      "task": "Backend skeleton, schema and deployed connection",
+      "original_acceptance": "API health and database round trip work remotely. Define workspace, sources, asset revisions, runs, findings, comments and approvals. Commit setup instructions.",
+      "status": "partial",
+      "evidence_and_remaining": "Local API/database/schema work; remote connection and migration acceptance remain unverified."
+    },
+    {
+      "id": "R02",
+      "owner": "Rushab",
+      "task": "Approved source and campaign API",
+      "original_acceptance": "Create/read/update campaign facts and guidelines with owner confirmation, scope and immutable versions. Pending facts are excluded from authoritative checks. Reload preserves records.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Owner-confirmed versioned source and campaign APIs exercised."
+    },
+    {
+      "id": "R03",
+      "owner": "Rushab",
+      "task": "Exact checks and review-run records",
+      "original_acceptance": "Check applicable terms, required wording and scoped price/date values. Store locations and source references; clean examples do not trigger naive numeric conflicts.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Candidate-first exact checks with persisted source/version/span evidence and clean controls."
+    },
+    {
+      "id": "R04",
+      "owner": "Rushab",
+      "task": "Select and connect one model",
+      "original_acceptance": "Probe Groq candidate and/or available OpenRouter model on development examples. Record quality/errors/latency; keys stay server-side. Use a bounded schema and timeouts.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Groq openai/gpt-oss-120b authenticated and exercised; measured live latency/errors retained. Quality remains limited."
+    },
+    {
+      "id": "R05",
+      "owner": "Rushab",
+      "task": "Retrieval, evidence validation and review API",
+      "original_acceptance": "Filter approved sources, include mandatory rules and validate source IDs, versions, quotes and affected spans. Persist genuine results and explicit partial/failed states.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Bounded approved-source retrieval/citation/span validation and snapshot-safe persisted contextual API."
+    },
+    {
+      "id": "R06",
+      "owner": "Rushab",
+      "task": "Revisions, comments and issue decisions",
+      "original_acceptance": "Text edits and poster replacements create versions. Comments and decisions persist. Applying an outdated suggestion returns a conflict instead of overwriting newer content.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Versioned caption/poster mutations, comments, append-only decisions, replay/stale conflicts."
+    },
+    {
+      "id": "R07",
+      "owner": "Rushab",
+      "task": "Reviewer authority and approval invariants",
+      "original_acceptance": "Enforce permissions on the server. Approval requires current completed checks and resolved/permitted exceptions. Content/source edits stale readiness; history remains. Test concurrent changes.",
+      "status": "local_complete_with_plan_change",
+      "evidence_and_remaining": "Server permissions and stale approval invariants. Incomplete checks may receive explicit human manual supplements; never relabelled automated completion."
+    },
+    {
+      "id": "R08",
+      "owner": "Rushab",
+      "task": "Image upload, private access and OCR",
+      "original_acceptance": "Bound bytes/pixels and reject invalid files. Store safely; OCR returns original dimensions, text, pixel boxes and uncertainty. Unreadable text cannot pass silently.",
+      "status": "local_complete_with_plan_change",
+      "evidence_and_remaining": "Private canonical PNG/OCR with byte/pixel/process caps; coordinates match stored normalised image rather than unrotated upload."
+    },
+    {
+      "id": "R09",
+      "owner": "Rushab",
+      "task": "Caption/poster comparison",
+      "original_acceptance": "Reuse rule/evidence pipeline on extracted text. Group mismatches while preserving both locations and applicable source. Preserve currencies, conditions and time zones.",
+      "status": "local_complete_with_scope_limits",
+      "evidence_and_remaining": "Caption and poster exact checks use same sources; grouped issue links preserve both locations. Arbitrary currencies/conditions/timezones are not solved and unsafe cases abstain."
+    },
+    {
+      "id": "R10",
+      "owner": "Rushab",
+      "task": "Backend tests and honest evaluation",
+      "original_acceptance": "Run page-7 checks, record failures, raw counts and unassessed inputs. Fix blockers. Honour the planned development/held-out split or disclose a reduced evaluation.",
+      "status": "partial",
+      "evidence_and_remaining": "358 automated tests pass and live API scripts pass. Reduced frozen evaluation: 3 assessed development matches, all 3 heldouts unassessed. Not representative accuracy."
+    },
+    {
+      "id": "Q01",
+      "owner": "Rushab",
+      "task": "Price/date/term conflict and clean controls",
+      "original_acceptance": "Correct scoped conflicts point to approved evidence; valid variation stays unflagged. Verify currency, time zone and offer conditions.",
+      "status": "partial",
+      "evidence_and_remaining": "Declared exact grammar/clean controls pass; unrestricted timezone/offer-condition handling is explicitly unsupported."
+    },
+    {
+      "id": "Q02",
+      "owner": "Rushab",
+      "task": "Missing, expired and conflicting sources",
+      "original_acceptance": "Report insufficient support or clarification. Never invent a quote or call an unsupported claim definitively false.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Missing/pending/expired/conflicting authority produces incomplete/clarification states, not fabricated truth."
+    },
+    {
+      "id": "Q03",
+      "owner": "Rushab",
+      "task": "Evidence and correction integrity",
+      "original_acceptance": "Unknown IDs, altered quotes and wrong versions are rejected/marked invalid. Corrections do not silently change unrelated facts or qualifiers.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Strict source ID/version/quote/span checks; contextual replacements withheld and exact edits verify spans."
+    },
+    {
+      "id": "Q05",
+      "owner": "Rushab",
+      "task": "Provider outage / malformed response",
+      "original_acceptance": "Simulate timeout, rate limit, invalid output and restart. Persist failed/partial state; bound retries and avoid stranded \u201crunning\u201d jobs.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Mocked timeout/quota/malformed cases and manual stopped-worker recovery tested. No durable queue."
+    },
+    {
+      "id": "Q06",
+      "owner": "Rushab",
+      "task": "Approval invalidation",
+      "original_acceptance": "Approve, then edit caption, replace poster or change operative facts. Approval history remains but readiness is stale in every case.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Caption/poster/source changes stale approvals; historical records retained."
+    },
+    {
+      "id": "Q07",
+      "owner": "Rushab",
+      "task": "Race conditions and old suggestions",
+      "original_acceptance": "Concurrent edit/approve/readiness checks and a late review run cannot authorise new content. Outdated correction application returns conflict.",
+      "status": "local_complete",
+      "evidence_and_remaining": "Real database concurrency tests, in-flight approval guard and old-suggestion conflict protection."
+    },
+    {
+      "id": "Q08",
+      "owner": "Rushab",
+      "task": "Permissions and workspace isolation",
+      "original_acceptance": "Direct creator approval and cross-workspace read/write/file URLs are denied. Sandbox actor switching cannot reach private data.",
+      "status": "local_complete",
+      "evidence_and_remaining": "API workspace/file isolation and creator/self-approval denials; not production identity."
+    },
+    {
+      "id": "Q09",
+      "owner": "Rushab",
+      "task": "Injection and confidential mode",
+      "original_acceptance": "Instructions inside draft/OCR cannot change authority. Disabling external inference prevents calls and marks affected checks unavailable.",
+      "status": "partial",
+      "evidence_and_remaining": "Consent/no-HTTP gates and prompt/provenance validation pass offline. Live adversarial heldout output rejected; no general prompt-injection resistance claim."
+    },
+    {
+      "id": "D01",
+      "owner": "Rushab",
+      "task": "Prove backend hosting",
+      "original_acceptance": "Verify Python/Tesseract support, database connectivity, persistent files, HTTPS, sleep behaviour and applicable limits. If the host fails, change route before G2.",
+      "status": "deferred_by_user",
+      "evidence_and_remaining": "Backend package prepared; hosting explicitly deferred until account/service selection. No public URL/HTTPS/remote persistence proof."
+    },
+    {
+      "id": "D03",
+      "owner": "Rushab",
+      "task": "Protect model quota and secrets",
+      "original_acceptance": "Use server-side secrets, bounded payloads, explicit review, per-session limits and queued inference. Check actual account limits. No paid fallback without consent; no quota circumvention.",
+      "status": "partial",
+      "evidence_and_remaining": "Persistent hourly/in-flight provider admission and server-only keys implemented. Durable queue reduced to bounded synchronous admission; actual account token limits not established."
+    },
+    {
+      "id": "D04",
+      "owner": "Rushab",
+      "task": "Separate public demo from private data",
+      "original_acceptance": "Use isolated fictional sessions with synthetic-data notice. Enforce real authenticated membership for any private workspace. Restrict file access; omit raw content from routine logs.",
+      "status": "local_complete_with_scope_limits",
+      "evidence_and_remaining": "Isolated synthetic-only demo and private image access. No private-customer workspace support; confidential uploads explicitly prohibited."
+    },
+    {
+      "id": "D06",
+      "owner": "Rushab",
+      "task": "Freeze a recoverable release",
+      "original_acceptance": "Record release commit and configuration; exercise migrations/restart, recover a stalled run and prove persistence. Check deletion covers originals/extractions/caches. Keep hosting available for judging.",
+      "status": "partial",
+      "evidence_and_remaining": "Wheel/restart/recovery local evidence exists; hosted freeze, migrations and verified deletion/retention remain open."
+    },
+    {
+      "id": "S01",
+      "owner": "Rushab",
+      "task": "Technical evidence and setup",
+      "original_acceptance": "Write architecture, setup, deployed components, exact provider/model and configuration, test results and technical limitations. Verify no secrets in repository/history.",
+      "status": "partial",
+      "evidence_and_remaining": "Backend architecture/setup/model/test/limitations/provenance documented. Hosted component evidence depends on deferred D01/D06."
+    },
+    {
+      "id": "S05",
+      "owner": "Rushab",
+      "task": "Final technical smoke test",
+      "original_acceptance": "Run fresh review, clean case, outage state, approval invalidation and restart/persistence against release candidate. Record commit/time and any known limitations.",
+      "status": "partial",
+      "evidence_and_remaining": "Local fresh/clean/outage/approval/restart checks exercised; final remote release-candidate smoke depends on hosting."
+    }
+  ]
+}

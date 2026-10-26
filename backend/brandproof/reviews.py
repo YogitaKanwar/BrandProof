@@ -1,16 +1,21 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db, lock_campaign, require_role, scoped_campaign
+from brandproof.contextual import ContextualConfig, ContextualResult, analyze_context
 from brandproof.errors import fail
+from brandproof.finding_groups import finding_groups
 from brandproof.models import Actor, Campaign
+from brandproof.poster_review import review_poster
+from brandproof.quota import reserve_provider_call
 from brandproof.review_models import ContentVersion, ReviewRun
-from brandproof.review_schemas import CaptionUpdate, ReviewCreate, ReviewOut
+from brandproof.review_schemas import CaptionUpdate, ReviewOut, ReviewStart
 from brandproof.rules import exact_checks
 from brandproof.schemas import CampaignOut
 from brandproof.source_models import Source, SourceVersion
 from brandproof.sources import render_source
+from brandproof.workflow_models import RevisionAuthor
 
 router = APIRouter(prefix="/api/v1/campaigns/{campaign_id}", tags=["reviews"])
 
@@ -53,12 +58,19 @@ def update_caption(
             caption=payload.text,
         )
     )
+    session.add(
+        RevisionAuthor(
+            campaign_id=campaign_id, content_revision=payload.expected_revision + 1, actor_id=who.id
+        )
+    )
     session.commit()
     session.refresh(campaign)
     return campaign
 
 
-def render_run(run: ReviewRun, campaign: Campaign):
+def render_run(run: ReviewRun, campaign: Campaign, session=None):
+    from brandproof.approval import readiness
+
     return {
         "id": run.id,
         "campaign_id": run.campaign_id,
@@ -68,11 +80,12 @@ def render_run(run: ReviewRun, campaign: Campaign):
         "status": run.status,
         "is_current": run.content_revision == campaign.content_revision
         and run.source_revision == campaign.source_revision,
-        "readiness": "not_approved",
+        "readiness": readiness(session, campaign, run.id) if session else "not_approved",
         "checks": run.checks,
         "sources_used": run.sources_used,
         "excluded_sources": run.excluded_sources,
         "findings": run.findings,
+        "finding_groups": finding_groups(run.findings),
         "created_at": run.created_at,
     }
 
@@ -80,7 +93,8 @@ def render_run(run: ReviewRun, campaign: Campaign):
 @router.post("/reviews", status_code=201, response_model=ReviewOut)
 def start_review(
     campaign_id: str,
-    payload: ReviewCreate,
+    payload: ReviewStart,
+    request: Request,
     who: Actor = Depends(actor),
     session: Session = Depends(db),
 ):
@@ -96,8 +110,6 @@ def start_review(
             "version_conflict",
             "Content or sources changed; reload before reviewing",
         )
-    if not campaign.caption.strip():
-        fail(422, "empty_caption", "Save a caption before reviewing")
     rows = session.execute(
         select(Source, SourceVersion)
         .join(
@@ -144,7 +156,17 @@ def start_review(
         }
         for s in active
     ]
-    findings, coverage = exact_checks(campaign.caption, campaign.content_revision, active)
+    # OCR and deterministic checks belong to the same locked content/source snapshot.
+    poster_findings, poster_check = review_poster(session, campaign, active, excluded)
+    has_poster = bool(poster_check.get("details", {}).get("asset_id"))
+    has_caption = bool(campaign.caption.strip())
+    if not has_caption and not has_poster:
+        fail(422, "empty_caption", "Save a caption or attach a poster before reviewing")
+    findings, coverage = (
+        exact_checks(campaign.caption, campaign.content_revision, active)
+        if has_caption
+        else ([], [])
+    )
     if not coverage or all(r["status"] == "not_assessed" for r in coverage):
         exact_status = "not_assessed"
     elif excluded_exact or any(r["status"] != "completed" for r in coverage):
@@ -158,27 +180,26 @@ def start_review(
         content_revision=campaign.content_revision,
         source_revision=campaign.source_revision,
         caption=campaign.caption,
-        status="partial",
+        status="running",
         checks={
             "exact_text": {
                 "status": exact_status,
-                "reason": None
+                "reason": "No caption provided."
+                if not has_caption
+                else None
                 if exact_status == "completed"
                 else "Some rules lack comparable supported expressions, or require source/scope clarification or renewal.",
                 "rules": coverage,
             },
             "contextual": {
-                "status": "unavailable",
-                "reason": "No AI provider is connected in this milestone.",
-            },
-            "poster": {
                 "status": "not_assessed",
-                "reason": "Poster review is not implemented in this milestone.",
+                "reason": "Contextual review is in progress.",
             },
+            "poster": poster_check,
         },
         sources_used=sources,
         excluded_sources=excluded,
-        findings=findings,
+        findings=[*findings, *poster_findings],
     )
     # Recheck immutable snapshot identity rather than presenting a mixed-version run.
     latest = session.execute(
@@ -195,18 +216,87 @@ def start_review(
             "version_conflict",
             "Campaign changed during review; retry on the latest version",
         )
+    caption_snapshot = campaign.caption
+    settings = request.app.state.settings
     session.add(run)
+    configured_external = (
+        settings.external_ai_enabled
+        and payload.external_ai_consent
+        and settings.ai_provider != "none"
+        and settings.ai_model.strip()
+        and settings.ai_api_key.get_secret_value().strip()
+        and has_caption
+    )
+    if configured_external:
+        session.flush()  # Reserve against an existing run ID only for provider admission.
+    quota_reason = (
+        reserve_provider_call(session, campaign.workspace_id, run.id, settings)
+        if configured_external
+        else None
+    )
+    session.commit()
+
+    # Do not read ORM attributes here: with expire_on_commit=True even a read
+    # would reopen a database transaction across the external provider call.
+    settings = request.app.state.settings
+    result = (
+        ContextualResult("unavailable", quota_reason, metadata={"admission": "denied"})
+        if quota_reason
+        else analyze_context(
+            caption_snapshot,
+            payload.expected_content_revision,
+            active,
+            ContextualConfig(
+                provider=settings.ai_provider,
+                model=settings.ai_model,
+                api_key=settings.ai_api_key.get_secret_value(),
+                allow_external=settings.external_ai_enabled and payload.external_ai_consent,
+            ),
+            transport=getattr(request.app.state, "contextual_transport", None),
+        )
+    )
+    excluded_policy_ids = sorted(
+        source["source_id"] for source in excluded if source["kind"] in {"tone", "claim_policy"}
+    )
+    if excluded_policy_ids:
+        result.metadata = {
+            **result.metadata,
+            "excluded_policy_source_ids": excluded_policy_ids,
+        }
+        no_contextual_sources = (
+            result.status == "unavailable"
+            and "approved_source_count" in result.metadata
+            and not result.metadata["selected_source_count"]
+        )
+        if result.status == "completed" or no_contextual_sources:
+            result.status = "partial"
+            result.reason = "Some contextual policies are unapproved or not valid for publication."
+    lock_campaign(session, campaign)
+    run.checks = {
+        **run.checks,
+        "contextual": {
+            "status": result.status,
+            "reason": result.reason,
+            "details": result.metadata,
+        },
+    }
+    run.findings = [*run.findings, *result.findings]
+    run.status = (
+        "completed"
+        if exact_status == "completed" and result.status == "completed" and not has_poster
+        else "partial"
+    )
     session.commit()
     # Observe actual current state, rather than the pre-commit identity-map cache.
     session.refresh(campaign)
-    return render_run(run, campaign)
+    return render_run(run, campaign, session)
 
 
 @router.get("/reviews", response_model=list[ReviewOut])
 def list_reviews(campaign_id: str, who: Actor = Depends(actor), session: Session = Depends(db)):
     campaign = scoped_campaign(session, campaign_id, who)
     return [
-        render_run(run, campaign)
+        render_run(run, campaign, session)
         for run in session.scalars(
             select(ReviewRun)
             .where(ReviewRun.campaign_id == campaign_id)
@@ -228,4 +318,4 @@ def get_review(
     )
     if not run:
         fail(404, "not_found", "Review not found")
-    return render_run(run, campaign)
+    return render_run(run, campaign, session)
