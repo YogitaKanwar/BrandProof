@@ -4,6 +4,7 @@ import type {BackendClient,CampaignOut} from './api/backend'
 import type {ReviewOut} from './api/reviewRuns'
 import type {Comment,Revision,FindingDecision} from './api/workflow'
 import {ApiError,describeError} from './api/client'
+import {useUnsavedChanges} from './unsavedChanges'
 
 export default function Collaboration({api,campaign,run,stale,onChanged}:{api:BackendClient;campaign:CampaignOut;run:ReviewOut;stale:boolean;onChanged:()=>Promise<void>}){
   const [comments,setComments]=useState<Comment[]>([]),[revisions,setRevisions]=useState<Revision[]>([])
@@ -11,6 +12,7 @@ export default function Collaboration({api,campaign,run,stale,onChanged}:{api:Ba
   const [decision,setDecision]=useState<FindingDecision['decision']>('exception'),[history,setHistory]=useState<FindingDecision[]|null>(null)
   const [error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false)
   const lock=useRef(false)
+  useUnsavedChanges(busy || !!text || !!reason)
   const [decisionConflict,setDecisionConflict]=useState(false)
   useEffect(()=>{let active=true;Promise.all([api.comments(campaign.id),api.revisions(campaign.id)]).then(([comments,revisions])=>{if(active){setComments(comments);setRevisions(revisions);setError('')}}).catch(error=>{if(active)setError(describeError(error))});return()=>{active=false}},[api,campaign.id,campaign.content_revision,campaign.source_revision,run.id])
   useEffect(()=>{let active=true;if(findingId)api.decisions(campaign.id,run.id,findingId).then(records=>{if(active)setHistory(records)}).catch(error=>{if(active)setError(describeError(error))});return()=>{active=false}},[api,campaign.id,run.id,findingId])

@@ -6,8 +6,9 @@ import { ApiError, describeError } from './api/client'
 import { sourceValidity } from './api/sources'
 import type { SourceCreate, SourceOut, SourceRule } from './api/sources'
 import { readSource, saveSource } from './sourceDraft'
+import { useUnsavedChanges } from './unsavedChanges'
 
-const labels = { price: 'Price', date: 'Date', terminology: 'Words to avoid', required_text: 'Required wording', tone: 'Tone guidance (not checked)', claim_policy: 'Claim policy (not checked)' }
+const labels = { price: 'Price', date: 'Date', terminology: 'Words to avoid', required_text: 'Required wording', tone: 'Tone guidance (optional AI)', claim_policy: 'Claim policy (optional AI)' }
 type Editor = { kind: SourceRule['kind']; title: string; value: string; preferred: string; currency: 'INR' | 'USD' | 'EUR' | 'GBP'; from: string; until: string }
 const emptyEditor: Editor = { kind: 'price', title: '', value: '', preferred: '', currency: 'INR', from: '', until: '' }
 function editorFor(source: SourceOut): Editor {
@@ -50,8 +51,10 @@ export default function LiveSources({ api, campaignId, publicationDate, onCampai
     catch { return { value: '', error: 'Could not read saved context. Existing data has been preserved.' } }
   })
   const [context, setContext] = useState(initialContext.value)
+  const [savedContext, setSavedContext] = useState(initialContext.value)
   const [contextStatus, setContextStatus] = useState('')
   const editorKind = editor?.kind
+  useUnsavedChanges(context !== savedContext || busy || (!!editor && JSON.stringify(editor) !== JSON.stringify(editing ? editorFor(editing) : { ...emptyEditor, kind: editor.kind })))
   useEffect(() => { if (editorKind) document.getElementById('fact-value')?.focus() }, [editorKind, editing?.id])
   useEffect(()=>{if(!busy&&newSourceId){const button=document.querySelector<HTMLButtonElement>(`[data-source-id="${newSourceId}"] .confirm-source`);button?.scrollIntoView({block:'center'});button?.focus()}},[busy,newSourceId])
   useEffect(() => {
@@ -108,6 +111,7 @@ export default function LiveSources({ api, campaignId, publicationDate, onCampai
     try {
       const current = readSource(campaignId)
       saveSource(campaignId, { ...current.input, guidelines: context })
+      setSavedContext(context)
       setContextStatus('Context saved in this browser.')
     } catch (error) { setContextStatus(describeError(error)) }
   }
@@ -124,7 +128,8 @@ export default function LiveSources({ api, campaignId, publicationDate, onCampai
       <div className="section-heading"><h3 id="brand-context-heading">Brand context</h3><span className="badge">Context only</span></div>
       <label htmlFor="brand-context-input">Background or guidelines</label>
       <textarea id="brand-context-input" rows={3} maxLength={10000} value={context} onChange={event => { setContext(event.target.value); setContextStatus('') }} placeholder="Add helpful background about the brand or campaign." aria-describedby="brand-context-help" />
-      <div className="context-actions"><small id="brand-context-help">Saved in this browser; not used in automated checks.</small><button type="button" disabled={!!initialContext.error} onClick={saveContext}>Save context</button></div>
+      <div className="context-actions"><small id="brand-context-help">Notes for people, saved in this browser. To verify prices, dates or wording, add and confirm individual facts below.</small><button type="button" disabled={!!initialContext.error || context === savedContext} onClick={saveContext}>Save context</button></div>
+      <p className="context-limit form-help">Pasted guidelines are not automatically extracted or checked.</p>
       {initialContext.error && <p className="error" role="alert">{initialContext.error}</p>}
       <p className="form-help" role="status">{contextStatus}</p>
     </section>
@@ -133,12 +138,12 @@ export default function LiveSources({ api, campaignId, publicationDate, onCampai
     {editor && <form className="fact-editor" onSubmit={save} aria-label="Source fact editor">
       <div className="panel-heading"><div><h3>{editing ? 'Edit this fact' : 'Add a fact'}</h3><small>Enter the correct information as provided by the brand.</small></div></div>
       <fieldset disabled={busy}>
-        <label htmlFor="fact-kind">What kind of fact?</label><select id="fact-kind" value={editor.kind} disabled={!!editing} onChange={event => selectKind(event.target.value as SourceRule['kind'])}><optgroup label="Can be checked">{(['price', 'date', 'terminology', 'required_text'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup><optgroup label="Saved for reference only">{(['tone', 'claim_policy'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup></select>
+        <label htmlFor="fact-kind">What kind of fact?</label><select id="fact-kind" value={editor.kind} disabled={!!editing} onChange={event => selectKind(event.target.value as SourceRule['kind'])}><optgroup label="Facts check">{(['price', 'date', 'terminology', 'required_text'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup><optgroup label="Requires optional AI check">{(['tone', 'claim_policy'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup></select>
         <label htmlFor="fact-value">{editor.kind === 'price' ? 'What is the correct price?' : editor.kind === 'date' ? 'What is the correct date?' : editor.kind === 'terminology' ? 'Which word should be avoided?' : editor.kind === 'required_text' ? 'What exact words are required?' : labels[editor.kind]}</label>
         {editor.kind === 'required_text' || editor.kind === 'tone' || editor.kind === 'claim_policy' ? <textarea id="fact-value" rows={3} required maxLength={editor.kind === 'required_text' ? 500 : 5000} value={editor.value} onChange={event => setEditor({ ...editor, value: event.target.value })} /> : <input id="fact-value" type={editor.kind === 'date' ? 'date' : 'text'} inputMode={editor.kind === 'price' ? 'decimal' : undefined} required maxLength={editor.kind === 'terminology' ? 100 : 32} value={editor.value} onChange={event => setEditor({ ...editor, value: event.target.value })} />}
         {editor.kind === 'price' && <><label htmlFor="fact-currency">Currency</label><select id="fact-currency" value={editor.currency} onChange={event => setEditor({ ...editor, currency: event.target.value as Editor['currency'] })}>{['INR', 'USD', 'EUR', 'GBP'].map(currency => <option key={currency}>{currency}</option>)}</select></>}
         {editor.kind === 'terminology' && <><label htmlFor="fact-preferred">What word should be used instead?</label><input id="fact-preferred" required maxLength={100} value={editor.preferred} onChange={event => setEditor({ ...editor, preferred: event.target.value })} /></>}
-        {(editor.kind === 'tone' || editor.kind === 'claim_policy') && <p className="form-help">This will be saved for reference, but automatic checks for this type are not available yet.</p>}
+        {(editor.kind === 'tone' || editor.kind === 'claim_policy') && <p className="form-help">Requires an available contextual AI check and your consent for that review. Exact-text checks do not evaluate this guidance.</p>}
         <details className="source-metadata" open={!!(editing?.valid_from || editing?.valid_until) || undefined}><summary>Does this fact have a date limit? (optional)</summary><label htmlFor="fact-title">Short name (optional)</label><input id="fact-title" maxLength={160} value={editor.title} onChange={event => setEditor({ ...editor, title: event.target.value })} placeholder={labels[editor.kind]} /><div className="source-fields"><div><label htmlFor="fact-from">Use from</label><input id="fact-from" type="date" value={editor.from} onChange={event => setEditor({ ...editor, from: event.target.value })} /></div><div><label htmlFor="fact-until">Use until</label><input id="fact-until" type="date" value={editor.until} onChange={event => setEditor({ ...editor, until: event.target.value })} /></div></div></details>
       </fieldset>
       {conflict && <p className="error" role="alert">This edit is stale. Your entries are preserved. Reload sources, then cancel and reopen the latest version to reconcile; it will not be overwritten.</p>}
@@ -149,7 +154,7 @@ export default function LiveSources({ api, campaignId, publicationDate, onCampai
     {loading ? <p role="status">Loading facts…</p> : !hasLoaded ? <p className="form-help">Couldn’t load facts. Use Reload to try again.</p> : sources.length === 0 ? <p className="form-help">No facts added yet. Add one if there’s a confirmed detail to check.</p> : <div className="server-sources">{sources.map(source => <article className="server-source" key={source.id} data-source-id={source.id}>
       <div className="section-heading"><h3>{source.title}</h3><span className={`badge fact-status ${source.status}`}>{source.status === 'approved' ? 'Confirmed' : 'Needs your confirmation'}</span></div><p className="source-text">{source.text}</p>
       {source.status === 'pending' && <div className="fact-confirm"><p>This fact won’t be used until you confirm it.</p><button type="button" className="confirm-source" disabled={busy || conflict || !!editor} onClick={() => void perform(() => api.confirmSource(campaignId, source.id, source.version), 'Fact confirmed and ready to check.')}>Confirm this fact</button></div>}
-      {(source.rule.kind === 'tone' || source.rule.kind === 'claim_policy') && <p className="form-help">Saved for reference; automatic checks for this guidance are not available yet.</p>}
+      {(source.rule.kind === 'tone' || source.rule.kind === 'claim_policy') && <p className="form-help">Used only with an available, consented contextual AI check. See the review’s actual coverage.</p>}
       <details className="source-more"><summary>More details and actions</summary><p className="form-help">{sourceValidity(source, publicationDate)}{source.valid_from || source.valid_until ? ` · ${source.valid_from || 'Any start date'} to ${source.valid_until || 'No end date'}` : ''} · Version {source.version}</p>
       {source.confirmed_by && <p className="form-help">Confirmed in this demo workspace.</p>}
       <div className="source-actions"><button type="button" disabled={busy || !!editor} onClick={() => edit(source)}>Edit</button><button type="button" disabled={busy} onClick={() => void viewHistory(source.id)}>See changes</button></div></details>

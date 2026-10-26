@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { emptySource, readSource, saveSource } from './sourceDraft'
 import type { SourceInput } from './sourceDraft'
+import { useUnsavedChanges } from './unsavedChanges'
 
 export default function SourcePreparation({ reviewId }: { reviewId: string }) {
   const [initial] = useState(() => {
@@ -14,6 +15,7 @@ export default function SourcePreparation({ reviewId }: { reviewId: string }) {
   const [notice, setNotice] = useState('')
   const [facts, setFacts] = useState(() => ({ price: !!initial.input.price, date: !!initial.input.offerDates, wording: !!initial.input.mandatoryTerms, terminology: !!initial.input.term }))
   const dirty = JSON.stringify(input) !== JSON.stringify(saved)
+  useUnsavedChanges(dirty)
   function change(field: keyof SourceInput, value: string) {
     setInput(previous => ({ ...previous, [field]: value }))
     setNotice('')

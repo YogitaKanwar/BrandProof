@@ -5,7 +5,9 @@ import type { ReviewResult } from './api/reviews'
 import ContentWorkspace from './ContentWorkspace'
 import { createBackendClient } from './api/backend'
 import type { BackendClient } from './api/backend'
-import { describeError } from './api/client'
+import { ApiError, describeError } from './api/client'
+import { UnsavedChangesContext, useDraftGuard } from './unsavedChanges'
+import CampaignStatus from './CampaignStatus'
 
 type Page = 'home' | 'new' | 'draft'
 function currentRoute(): { page: Page; id: string; local?: boolean } {
@@ -24,6 +26,7 @@ export default function ReviewWorkspace() {
   const [saving, setSaving] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [saveError, setSaveError] = useState('')
+  const [dateError, setDateError] = useState('')
   const [title, setTitle] = useState('')
   const [brand, setBrand] = useState('')
   const [brief, setBrief] = useState('')
@@ -37,12 +40,29 @@ export default function ReviewWorkspace() {
   const connectionInFlight = useRef(false)
   const heading = useRef<HTMLHeadingElement>(null)
   const savingRef = useRef(false)
+  const { register, confirmLeave } = useDraftGuard()
+  const acceptedUrl = useRef(window.location.href)
+  const allowedHash = useRef('')
+  function goTo(destination: string) {
+    const hash = `#${destination}`
+    if (window.location.hash === hash) return
+    allowedHash.current = hash
+    window.location.hash = destination
+  }
 
   useEffect(() => {
-    const update = () => setRoute(currentRoute())
+    const update = () => {
+      if (window.location.hash !== allowedHash.current && !confirmLeave()) {
+        window.history.replaceState(null, '', acceptedUrl.current)
+        return
+      }
+      allowedHash.current = ''
+      acceptedUrl.current = window.location.href
+      setRoute(currentRoute())
+    }
     window.addEventListener('hashchange', update)
     return () => window.removeEventListener('hashchange', update)
-  }, [])
+  }, [confirmLeave])
   useEffect(() => { heading.current?.focus() }, [route.page, route.id])
   useEffect(() => {
     const client = service.current
@@ -66,7 +86,7 @@ export default function ReviewWorkspace() {
     finally { setLoading(false) }
   }
   async function connectDemo(destination='/') {
-    if (connectionInFlight.current) return
+    if (connectionInFlight.current || !confirmLeave()) return
     connectionInFlight.current = true
     setConnecting(true); setNotice('')
     // Explicit action always means a new isolated demo, never silent session renewal.
@@ -75,29 +95,39 @@ export default function ReviewWorkspace() {
       const data = await client.connect()
       service.current = client
       setSourceClient(client)
-      setResult(data); setLoadError(''); window.location.hash = destination
+      setResult(data); setLoadError(''); goTo(destination)
     } catch (error) { setNotice(describeError(error)) }
     finally { connectionInFlight.current = false; setConnecting(false) }
   }
   async function startReview(){if(result?.mode==='backend'){window.location.hash='/new';return}await connectDemo('/new')}
   async function openLocalDrafts() {
+    if (!confirmLeave()) return
     service.current = reviewClient
     setSourceClient(null)
-    await retry(); window.location.hash = '/'
+    await retry(); goTo('/')
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (savingRef.current) return
     setSaveError(''); setNotice('')
+    setDateError('')
+    const dateInput = event.currentTarget.querySelector<HTMLInputElement>('#publication-date')
+    if (dateInput && (!dateInput.value || !dateInput.validity.valid)) {
+      setDateError('Choose a valid publication date.')
+      dateInput.focus()
+      return
+    }
     savingRef.current = true; setSaving(true)
     try {
       const saved = await service.current.create({ title, brand, brief, publicationDate })
       setResult(saved)
       setNotice('')
       setTitle(''); setBrand(''); setBrief('')
-      window.location.hash = `/review/${saved.data.reviews[0].id}`
+      goTo(`/review/${saved.data.reviews[0].id}`)
     } catch (error) {
-      setSaveError(`${describeError(error)} Your form entries are preserved.`)
+      if (error instanceof ApiError && error.status === 422 && error.details.some(detail => detail.location.includes('publication_date'))) {
+        setDateError('Choose a valid publication date.'); dateInput?.focus()
+      } else setSaveError(`${describeError(error)} Your form entries are preserved.`)
     } finally { savingRef.current = false; setSaving(false) }
   }
   async function removeDraft(id: string) {
@@ -113,42 +143,45 @@ export default function ReviewWorkspace() {
   const draft = result?.data.reviews.find(review => review.id === route.id)
   const campaign = result?.data.campaigns.find(item => item.id === draft?.campaignId)
   const pageName = route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
-  return <div className="app-shell">
+  return <UnsavedChangesContext.Provider value={register}><div className="app-shell">
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main')?.focus() }}>Skip to content</a>
     <aside className="sidebar">
       <a className="wordmark" href="#/"><span aria-hidden="true">B</span> BrandProof</a>
       <p className="sidebar-label">WORKSPACE</p>
       <nav aria-label="Main navigation" className="main-nav">
         <a href="#/" aria-current={route.page === 'home' ? 'page' : undefined}>Overview</a>
-        <a href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-current={route.page !== 'home' ? 'page' : undefined}>Review workspace</a>
+        <a href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-current={route.page === 'new' ? 'page' : undefined}>New review</a>
       </nav>
       <p className="sidebar-note">Brand governance</p>
     </aside>
     <div className="workspace">
-      <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Backend connected · demo workspace' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? result.notice : 'Drafts are stored in this browser. Live verification is not connected.'}</p><p className="form-help">This workspace is connected to the backend API, but uses isolated synthetic demo roles and fictional data—not production accounts. Demo tokens stay in memory. Refresh ends access; a new demo creates a new workspace. Typed sources, content, comments and human decisions use the real API. Guidelines are local context. AI requires consent and server configuration; OCR coverage is reported by the server.</p><button type="button" disabled={connecting || saving} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Connect to backend demo'}</button>{result?.mode === 'backend' && <><button type="button" disabled={saving} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving} onClick={() => void openLocalDrafts()}>Open local drafts</button></>}</div></details></header>
+      <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Refresh ends access; a new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. Tokens stay in memory; session recovery and server deletion are unavailable. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={connecting || saving} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new">Create a local-only draft instead</a></p>}</div></details></header>
       <main id="main" tabIndex={-1}>
-        {result?.mode==='local' && <div className="connection-entry" role="note"><span>Local preview. Connect the backend to create and confirm real source facts.</span><button type="button" disabled={connecting||saving} onClick={()=>void connectDemo()}>{connecting?'Connecting…':'Connect to backend demo'}</button></div>}
-        {result?.mode === 'backend' && <p className="form-help">Backend API connected · Fictional-data workspace · Creator role · Refresh ends access.</p>}
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>
         <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page === 'home' ? 'Every claim, accounted for.' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page === 'home' ? 'Review marketing content against approved brand information.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}</a>}</div>
         {route.page === 'home' && <ol aria-label="Review workflow" className="workflow">{steps.map((name, index) => <li key={name}>{index > 0 && <span aria-hidden="true" className="step-divider">→</span>}{name}</li>)}</ol>}
         {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page === 'home' ? <section aria-labelledby="drafts-heading">
-          {result?.mode==='local' && <p className="form-help"><a className="local-draft-link" href="#/local-new">Create a local-only draft instead</a></p>}<div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span></div>
-          {!result?.data.reviews.length ? <p className="reviews-empty">No reviews yet</p> : <div className="review-list">{result.data.reviews.map(review => <article className="campaign-card review-row" key={review.id}><h2><a href={`#/review/${review.id}`}>{review.title}</a></h2><span className="badge">{result.mode === 'backend' ? 'Campaign' : 'Draft · Not checked'}</span><small><time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time></small><div className="review-delete">{result.mode === 'backend' ? <><button type="button" disabled aria-describedby={`server-delete-${review.id}`}>Delete</button><small id={`server-delete-${review.id}`}>Backend deletion unavailable</small></> : deletingId === review.id ? <div role="group" aria-label={`Delete ${review.title}?`}><span>Delete this local draft?</span><button type="button" disabled={deleting} onClick={() => void removeDraft(review.id)}>Confirm delete</button><button type="button" disabled={deleting} onClick={() => setDeletingId('')}>Cancel</button></div> : <button type="button" disabled={deleting} aria-label={`Delete ${review.title}`} onClick={() => setDeletingId(review.id)}>Delete</button>}</div></article>)}</div>}
+          <div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span></div>
+          {!result?.data.reviews.length ? <p className="reviews-empty">No reviews yet</p> : <div className="review-list">{result.data.reviews.map(review => <article className="campaign-card review-row" key={review.id}>
+            <h2><a href={`#/review/${review.id}`}>{review.title}</a></h2>
+            {result.mode === 'backend' && sourceClient ? <CampaignStatus api={sourceClient} campaignId={review.id}/> : <span className="badge">Draft · Not checked</span>}
+            <small><time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time></small>
+            {result.mode === 'local' && <div className="review-delete">{deletingId === review.id ? <div role="group" aria-label={`Delete ${review.title}?`}><span>Delete this local draft?</span><button type="button" disabled={deleting} onClick={() => void removeDraft(review.id)}>Confirm delete</button><button type="button" disabled={deleting} onClick={() => setDeletingId('')}>Cancel</button></div> : <button type="button" disabled={deleting} aria-label={`Delete ${review.title}`} onClick={() => setDeletingId(review.id)}>Delete</button>}</div>}
+          </article>)}</div>}
         </section> : route.page==='new' && result?.mode!=='backend' && !route.local ? <section className="campaign-form connected-entry"><h2>Start a connected review</h2><p className="form-help">Create a real demo workspace to save sources and confirm them as owner. Refreshing ends demo access; no local draft is uploaded automatically.</p><button type="button" className="primary" disabled={connecting} onClick={()=>void connectDemo('/new')}>{connecting?'Connecting…':'Start connected review'}</button><p className="form-help"><a href="#/local-new">Create a local-only draft instead</a></p></section> : route.page === 'new' ? <form className="campaign-form" onSubmit={submit} noValidate aria-busy={saving}>
           <h2>Review details</h2>
           <fieldset disabled={saving}>
             <label htmlFor="review-title">Review title <span className="optional">optional</span></label><input id="review-title" maxLength={120} value={title} onChange={event => setTitle(event.target.value)} placeholder="Untitled review" aria-describedby="title-help" />
             <small id="title-help">Leave blank to use “Untitled review”.</small>
-            {result?.mode === 'backend' && <><label className="publication-label" htmlFor="publication-date">Publication date</label><input id="publication-date" type="date" required value={publicationDate} onChange={event => setPublicationDate(event.target.value)} /><small>Used to assess source validity.</small></>}
+            {result?.mode === 'backend' && <><label className="publication-label" htmlFor="publication-date">Publication date <span className="required-label">required</span></label><input id="publication-date" type="date" required value={publicationDate} aria-invalid={!!dateError} aria-describedby={`publication-help${dateError ? ' publication-error' : ''}`} onChange={event => { setPublicationDate(event.target.value); setDateError('') }} /><small id="publication-help">When this content will be published. Used to check whether facts are valid.</small>{dateError && <p id="publication-error" className="field-error error" role="alert">{dateError}</p>}</>}
             {result?.mode !== 'backend' && <details className="review-optional-details"><summary>Campaign details</summary>
             <label htmlFor="review-brand">Brand <span className="optional">optional</span></label><input id="review-brand" maxLength={120} value={brand} onChange={event => setBrand(event.target.value)} placeholder="Brand or organisation" />
             <label htmlFor="review-brief">Brief <span className="optional">optional</span></label><textarea id="review-brief" maxLength={2000} rows={4} value={brief} onChange={event => setBrief(event.target.value)} placeholder="Campaign context" aria-describedby="brief-help" /><small id="brief-help">Context only · not an approved source</small></details>}
           </fieldset>
           {saveError && <p className="error" role="alert">{saveError}</p>}
           <div className="form-actions"><button type="button" disabled={saving} onClick={() => { window.location.hash = '/' }}>Cancel</button><button className="primary" disabled={saving} type="submit">{saving && <span className="spinner" aria-hidden="true" />}{saving ? 'Saving…' : 'Continue'}</button></div>
-        </form> : draft ? <ContentWorkspace key={draft.id} review={draft} campaign={campaign} sourceClient={result?.mode === 'backend' ? sourceClient || undefined : undefined} onCampaignChange={setResult} /> : <section className="empty"><h2>Draft not found</h2><p>This draft is not available in this browser.</p><a className="button" href="#/">Back to overview</a></section>}
+        </form> : draft ? <ContentWorkspace key={draft.id} review={draft} campaign={campaign} sourceClient={result?.mode === 'backend' ? sourceClient || undefined : undefined} onCampaignChange={setResult} /> : <section className="empty session-ended"><h2>Review access unavailable</h2><p>If you refreshed a connected review, your demo access ended. Refreshing does not delete saved server data, but this demo cannot restore access yet.</p><p>A new demo starts a separate workspace. Local drafts are available only in the browser where they were saved.</p><button type="button" disabled={connecting} onClick={()=>void connectDemo('/new')}>{connecting ? 'Connecting…' : 'Start a separate demo'}</button><a className="button" href="#/">Back to overview</a></section>}
       </main>
     </div>
-  </div>
+  </div></UnsavedChangesContext.Provider>
 }
