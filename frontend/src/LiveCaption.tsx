@@ -9,7 +9,7 @@ import Collaboration from './Collaboration'
 import HumanReview from './HumanReview'
 import { useUnsavedChanges } from './unsavedChanges'
 
-export default function LiveCaption({ api, campaign, onCampaignChange, onResultsAvailable,posterAttached,posterPending,onCaptionSaved,children }: { api: BackendClient; campaign: CampaignOut; onCampaignChange: (result: ReviewResult) => void; onResultsAvailable: (available: boolean) => void;posterAttached:boolean;posterPending:boolean;onCaptionSaved:(previous:number,current:number)=>void;children?:ReactNode }) {
+export default function LiveCaption({ api, campaign, onCampaignChange, onResultsAvailable,posterAttached,posterPending,preparePoster,onCaptionSaved,children }: { api: BackendClient; campaign: CampaignOut; onCampaignChange: (result: ReviewResult) => void; onResultsAvailable: (available: boolean) => void;posterAttached:boolean;posterPending:boolean;preparePoster:()=>Promise<CampaignOut>;onCaptionSaved:(previous:number,current:number)=>void;children?:ReactNode }) {
   const [text, setText] = useState(campaign.caption)
   const [saved, setSaved] = useState(campaign.caption)
   const [revision, setRevision] = useState(campaign.content_revision)
@@ -84,14 +84,15 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
     setStatus(useServer ? 'Loaded server caption.' : 'Your text is preserved against the latest revision. Save it explicitly to update the server.')
   }
   async function run() {
-    if (lock.current || dirty || conflict || posterPending || (!saved.trim()&&!posterAttached)) return
+    if (lock.current || dirty || conflict || (!saved.trim()&&!posterAttached&&!posterPending)) return
     lock.current = true; setBusy(true); setAction('review'); setError(''); setStatus('Running review…')
     try {
+      const expectedRevision=posterPending ? (await preparePoster()).content_revision : effectiveRevision
       const result = await api.get(campaign.id)
       const latest = result.data.reviews.find(record => record.campaignId === campaign.id)?.backendCampaign
       if (!latest) throw new Error('Campaign is unavailable.')
       onCampaignChange(result)
-      if (latest.content_revision !== effectiveRevision || latest.caption !== saved) { setConflict(true); setServer(latest); throw new Error('Caption changed on the server. Reconcile before running a review.') }
+      if (latest.content_revision !== expectedRevision || latest.caption !== saved) { setConflict(true); setServer(latest); throw new Error('Caption changed on the server. Reconcile before running a review.') }
       const review = await api.runReview(campaign.id, latest.content_revision, latest.source_revision,externalConsent)
       historyRequest.current++
       onResultsAvailable(true)
@@ -104,12 +105,12 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
   async function applyCorrection(){if(lock.current||!current||!correction||dirty||stale)return;lock.current=true;setBusy(true);setError('');try{const result=await api.applySuggestion(campaign.id,current.id,correction.id,{expected_content_revision:current.content_revision,expected_source_revision:current.source_revision});const updated=result.data.reviews.find(row=>row.id===campaign.id)?.backendCampaign;if(!updated)throw new Error('Campaign missing from response.');setText(updated.caption);setSaved(updated.caption);setRevision(updated.content_revision);setCorrectionId('');onCampaignChange(result);setStatus('Explicit correction saved as a new revision. Run a new review.')}catch(error){setError(describeError(error))}finally{lock.current=false;setBusy(false)}}
   return <div className="live-caption">
     <label htmlFor="marketing-caption">What should we review?</label><textarea id="marketing-caption" rows={6} maxLength={20000} value={text} disabled={busy} onChange={event => { setText(event.target.value); setStatus('') }} aria-describedby="live-caption-state" placeholder="Paste your marketing caption here." />
-    <div className="caption-footer"><small>{text.length.toLocaleString()} characters</small><button type="button" disabled={busy || conflict || !dirty || !text.trim()} onClick={() => void save()}>{busy && action === 'save' ? 'Saving…' : 'Save caption'}</button></div>
-    <p id="live-caption-state" className="form-help">{dirty ? 'Save your changes before running the review.' : saved.trim() ? 'Caption saved.' : 'No caption saved yet.'}</p>
+    <div className="caption-footer"><small>{text.length.toLocaleString()} characters</small><button type="button" aria-describedby="live-caption-state" disabled={busy || conflict || !dirty || !text.trim()} onClick={() => void save()}>{busy && action === 'save' ? 'Saving…' : !dirty && saved.trim() ? 'Caption saved' : 'Save caption'}</button></div>
+    <p id="live-caption-state" className="form-help">{busy ? 'Please wait for the current request to finish.' : conflict ? 'Saving is paused because the server version changed. Open “Having trouble saving?” below, compare versions, then choose which text to keep.' : !text.trim() ? 'Enter a caption to enable Save caption.' : dirty ? 'Unsaved changes. Save your caption to enable Run review.' : 'Caption saved. Edit the text to save changes, or select Run review below.'}</p>
     <details className="caption-reconcile" open={conflict || undefined}><summary>Having trouble saving?</summary><button type="button" disabled={busy} onClick={() => void loadServerCaption()}>Compare with saved version</button>{conflict && <p className="form-help">Your edits are safe. Compare versions before choosing which to keep.</p>}{server && <div><h3>Saved version {server.content_revision}</h3><pre className="caption-snapshot">{server.caption || '(empty caption)'}</pre><button type="button" onClick={() => reconcile(true)}>Use saved version</button><button type="button" onClick={() => reconcile(false)}>Keep my text</button></div>}</details>
     {children}
     <details className="ai-options"><summary>Optional AI check</summary><label className="ai-consent"><input type="checkbox" checked={externalConsent} disabled={busy} onChange={event=>setExternalConsent(event.target.checked)}/><span>Allow this review to send the caption and selected approved facts to the server-configured AI provider. Off unless you opt in; availability depends on server setup.</span></label></details>
-    <div className="run-caption"><button type="button" className="primary" aria-busy={busy && action === 'review'} aria-describedby="run-review-help" disabled={busy || dirty || conflict || posterPending || (!saved.trim()&&!posterAttached)} onClick={() => void run()}>{busy && action === 'review' ? <><span className="spinner" aria-hidden="true"/>Reviewing…</> : 'Run review'}</button><small id="run-review-help">{posterPending ? 'Upload or remove the selected image first.' : dirty ? 'Save your caption first.' : conflict ? 'Resolve the saved-version conflict first.' : !saved.trim()&&!posterAttached ? 'Add a caption or upload a poster to start.' : 'Checks use saved content and confirmed facts.'}</small></div>
+    <div className="run-caption"><button type="button" className="primary" aria-busy={busy && action === 'review'} aria-describedby="run-review-help" disabled={busy || dirty || conflict || (!saved.trim()&&!posterAttached&&!posterPending)} onClick={() => void run()}>{busy && action === 'review' ? <><span className="spinner" aria-hidden="true"/>Reviewing…</> : posterPending ? 'Upload poster and run review' : 'Run review'}</button><small id="run-review-help">{dirty ? 'Save your caption first.' : posterPending ? 'This uploads your selected image privately, then reviews the saved content.' : conflict ? 'Resolve the saved-version conflict first.' : !saved.trim()&&!posterAttached ? 'Add a caption or upload a poster to start.' : 'Checks use saved content and confirmed facts.'}</small></div>
     <p role="status" className="live-review-status form-help">{status}</p>
     {error && <p id="caption-workflow-error" className="error" role="alert" tabIndex={-1}>{error}</p>}
     {historyError && <p className="error" role="alert">Could not load review history. {historyError}</p>}

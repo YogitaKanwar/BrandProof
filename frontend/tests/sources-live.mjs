@@ -1,7 +1,9 @@
+import { apiBase, verifyBackend } from './live-config.mjs'
+await verifyBackend()
 import assert from 'node:assert/strict'
 import { createBackendClient } from '../src/api/backend.ts'
 import { requestJson } from '../src/api/client.ts'
-const base='http://127.0.0.1:8000/api/v1'
+const base=apiBase
 const client=createBackendClient(base)
 await client.connect()
 const result=await client.create({title:'Y02 source integration',publicationDate:'2026-11-12',brand:'',brief:''})

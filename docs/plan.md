@@ -35,3 +35,8 @@ Use React + TypeScript + Vite, primarily in `frontend/`, and existing dependenci
 ## Y01 implementation boundary
 
 Build the shell, navigation, campaign form, API client, loading and error states. Preserve existing code. If backend is unavailable, use clearly labelled development fixtures and record real integration as blocked. Run the frontend build. Verify deployment only against an actual hosting target; do not claim a local build is deployed.
+
+
+## User-requested extension: reference logo (2026-10-27)
+
+Add owner-confirmed private logo reference, revision/history protection and conservative local poster comparison. Flag possible mismatch when a close match cannot be established; preserve uncertainty and manual visual review. Fine-detail/semantic logo verification is outside this initial template-comparison scope. See LOGO_COMPARISON_REVIEW.md and current QA reports for actual capabilities and evidence.

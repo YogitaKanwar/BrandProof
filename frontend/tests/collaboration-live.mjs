@@ -1,6 +1,8 @@
+import { apiBase, verifyBackend } from './live-config.mjs'
+await verifyBackend()
 import assert from 'node:assert/strict'
 import {createBackendClient} from '../src/api/backend.ts'
-const api=createBackendClient('http://127.0.0.1:8000/api/v1');await api.connect()
+const api=createBackendClient(apiBase);await api.connect()
 const initial=await api.create({title:'Y06 collaboration',publicationDate:'2026-11-12',brand:'',brief:''});const id=initial.data.reviews[0].id
 const source=await api.createSource(id,{title:'Price',rule:{kind:'price',amount:'499',currency:'INR'}});await api.confirmSource(id,source.id,1)
 await api.saveCaption(id,'Book for INR 599.',1)

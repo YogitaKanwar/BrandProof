@@ -4,7 +4,8 @@ import type { Review } from './api/reviews'
 import { MAX_CAPTION_LENGTH, readCaption, saveCaption, validatePoster } from './contentDraft'
 import SourcePreparation from './SourcePreparation'
 import LiveSources from './LiveSources'
-import type { BackendClient } from './api/backend'
+import BrandLogo from './BrandLogo'
+import type { BackendClient, CampaignOut } from './api/backend'
 import type { ReviewResult } from './api/reviews'
 import LiveCaption from './LiveCaption'
 import LivePoster from './LivePoster'
@@ -27,6 +28,7 @@ export default function ContentWorkspace({ review, campaign, sourceClient, onCam
   const [hasResults, setHasResults] = useState(false)
   const [posterAttached,setPosterAttached]=useState(false)
   const [posterPending,setPosterPending]=useState(false)
+  const posterUpload = useRef<{upload:()=>Promise<CampaignOut>} | null>(null)
   const [captionSaves,setCaptionSaves]=useState<{previous:number;current:number}[]>([])
   useUnsavedChanges(!sourceClient && (caption !== savedCaption || !!poster || checkingImage))
   const input = useRef<HTMLInputElement>(null)
@@ -73,11 +75,11 @@ export default function ContentWorkspace({ review, campaign, sourceClient, onCam
     </section>
     <ol className="workspace-stages" aria-label="Review stages"><li><a href="#brand-information" onClick={event => { event.preventDefault(); document.getElementById('sources-heading')?.focus(); document.getElementById('brand-information')?.scrollIntoView() }}>1. References</a></li><li><a href="#marketing-content" onClick={event => { event.preventDefault(); document.getElementById('content-heading')?.focus(); document.getElementById('marketing-content')?.scrollIntoView() }}>2. Content</a></li><li>{hasResults ? <a href="#review-results" onClick={event => { event.preventDefault(); document.getElementById('results-heading')?.focus(); document.getElementById('review-results')?.scrollIntoView() }}>3. Results</a> : <span aria-disabled="true">3. Results</span>}</li></ol>
     {review.backendCampaign && <details className="campaign-revisions"><summary>Review details</summary><p className="form-help">Campaign saved on server · Publication {review.backendCampaign.publication_date} · Content revision {review.backendCampaign.content_revision} · Source revision {review.backendCampaign.source_revision}.</p></details>}
-    <div id="brand-information">{sourceClient && review.backendCampaign && onCampaignChange ? <LiveSources api={sourceClient} campaignId={review.campaignId} publicationDate={review.backendCampaign.publication_date} onCampaignChange={onCampaignChange} /> : <SourcePreparation reviewId={review.id} />}</div>
+    <div id="brand-information">{sourceClient && review.backendCampaign && onCampaignChange ? <><LiveSources api={sourceClient} campaignId={review.campaignId} publicationDate={review.backendCampaign.publication_date} onCampaignChange={onCampaignChange} /><BrandLogo api={sourceClient} campaignId={review.campaignId} onCampaignChange={onCampaignChange}/></> : <SourcePreparation reviewId={review.id} />}</div>
     <div className="content-columns">
       <section id="marketing-content" className="content-panel" aria-labelledby="content-heading">
         <div className="panel-heading"><h2 id="content-heading" tabIndex={-1}>Marketing Content</h2><small>{sourceClient ? 'Caption and poster review' : 'Caption, poster or both'}</small></div>
-        {sourceClient && review.backendCampaign && onCampaignChange ? <LiveCaption api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onResultsAvailable={setHasResults} posterAttached={posterAttached} posterPending={posterPending} onCaptionSaved={(previous,current)=>setCaptionSaves(records=>[...records,{previous,current}])}><LivePoster api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onAttached={setPosterAttached} onPendingChange={setPosterPending} captionSaves={captionSaves}/></LiveCaption> : <><label htmlFor="marketing-caption">Marketing caption</label>
+        {sourceClient && review.backendCampaign && onCampaignChange ? <LiveCaption api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onResultsAvailable={setHasResults} posterAttached={posterAttached} posterPending={posterPending} preparePoster={async()=>{if(!posterUpload.current)throw new Error("Poster upload is not ready. Try again.");return posterUpload.current.upload()}} onCaptionSaved={(previous,current)=>setCaptionSaves(records=>[...records,{previous,current}])}><LivePoster api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onAttached={setPosterAttached} onPendingChange={setPosterPending} captionSaves={captionSaves} uploadRef={posterUpload}/></LiveCaption> : <><label htmlFor="marketing-caption">Marketing caption</label>
         <textarea id="marketing-caption" rows={7} maxLength={MAX_CAPTION_LENGTH} value={caption} onChange={event => { setCaption(event.target.value); setCaptionNotice('') }} placeholder="Paste the marketing caption you want to review…" aria-describedby="caption-help caption-state" />
         <div className="caption-footer"><small id="caption-help">{caption.length.toLocaleString()}/10,000 characters</small><button type="button" disabled={!!initial.error} onClick={save}>Save caption</button></div>
         <p id="caption-state" className="form-help">{caption !== savedCaption ? 'Unsaved changes' : ''}</p>

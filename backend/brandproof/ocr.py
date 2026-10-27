@@ -2,9 +2,9 @@
 
 import csv
 import io
-import selectors
 import subprocess
 import time
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 
 OCR_TIMEOUT_SECONDS = 15
 MAX_OCR_OUTPUT_BYTES = 1024 * 1024
@@ -20,50 +20,51 @@ def _run_tesseract(png: bytes) -> bytes:
         stderr=subprocess.PIPE,
         shell=False,
     ) as process:
-        try:
-            output = bytearray()
-            errors = 0
-            offset = 0
-            deadline = time.monotonic() + OCR_TIMEOUT_SECONDS
-            with selectors.DefaultSelector() as selector:
-                selector.register(process.stdin, selectors.EVENT_WRITE, "input")
-                selector.register(process.stdout, selectors.EVENT_READ, "output")
-                selector.register(process.stderr, selectors.EVENT_READ, "error")
-                while selector.get_map():
-                    remaining = deadline - time.monotonic()
-                    if remaining <= 0:
-                        raise subprocess.TimeoutExpired("tesseract", OCR_TIMEOUT_SECONDS)
-                    for key, _ in selector.select(min(remaining, 0.1)):
-                        if key.data == "input":
-                            if offset < len(png):
-                                offset += key.fileobj.write(png[offset : offset + 4096])
-                                key.fileobj.flush()
-                            else:
-                                selector.unregister(key.fileobj)
-                                key.fileobj.close()
-                        else:
-                            chunk = key.fileobj.read1(65536)
-                            if not chunk:
-                                selector.unregister(key.fileobj)
-                                continue
-                            if key.data == "output":
-                                output.extend(chunk)
-                                if len(output) > MAX_OCR_OUTPUT_BYTES:
-                                    raise ValueError("OCR output limit")
-                            else:
-                                errors += len(chunk)
-                                if errors > MAX_OCR_ERROR_BYTES:
-                                    raise ValueError("OCR diagnostic limit")
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise subprocess.TimeoutExpired("tesseract", OCR_TIMEOUT_SECONDS)
-            if process.wait(timeout=remaining) != 0:
-                raise ValueError("OCR process failed")
-            return bytes(output)
-        except BaseException:
-            process.kill()
-            process.wait()
-            raise
+        deadline = time.monotonic() + OCR_TIMEOUT_SECONDS
+
+        def read_bounded(pipe, limit):
+            data = bytearray()
+            while chunk := pipe.read1(65536):
+                if len(data) + len(chunk) > limit:
+                    raise ValueError("OCR output limit")
+                data.extend(chunk)
+            return bytes(data)
+
+        def write_input():
+            try:
+                process.stdin.write(png)
+                process.stdin.flush()
+            finally:
+                process.stdin.close()
+
+        # Windows selectors cannot monitor subprocess pipes. Concurrent bounded
+        # readers also prevent either pipe from blocking the input writer.
+        with ThreadPoolExecutor(max_workers=3) as workers:
+            output = workers.submit(read_bounded, process.stdout, MAX_OCR_OUTPUT_BYTES)
+            errors = workers.submit(read_bounded, process.stderr, MAX_OCR_ERROR_BYTES)
+            writer = workers.submit(write_input)
+            futures = {output, errors, writer}
+            try:
+                done, pending = wait(
+                    futures,
+                    timeout=max(0, deadline - time.monotonic()),
+                    return_when=FIRST_EXCEPTION,
+                )
+                for future in done:
+                    future.result()
+                remaining = deadline - time.monotonic()
+                if pending or remaining <= 0:
+                    raise subprocess.TimeoutExpired("tesseract", OCR_TIMEOUT_SECONDS)
+                if process.wait(timeout=remaining) != 0:
+                    raise ValueError("OCR process failed")
+                return output.result()
+            except BaseException:
+                if process.poll() is None:
+                    process.kill()
+                process.wait()
+                # Killing the child unblocks all three pipe workers before the
+                # executor and Popen close their resources. No images hit disk.
+                raise
 
 
 def extract_text(png: bytes, width: int, height: int) -> dict:
