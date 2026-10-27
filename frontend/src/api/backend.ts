@@ -134,6 +134,10 @@ export function createBackendClient(base = '/api/v1') {
     async uploadPoster(campaignId: string, file: File, revision: number) {
       return requestJson<PosterOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/posters?expected_revision=${revision}`, {method:'PUT',headers:{...auth(),'Content-Type':file.type},body:file,signal:AbortSignal.timeout(45000)})
     },
+    async logo(campaignId:string){return requestJson<BrandLogoOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/brand-logo`,{headers:auth()})},
+    async logoContent(campaignId:string,logoId:string){return (await requestResponse(`${base}/campaigns/${encodeURIComponent(campaignId)}/brand-logo/${encodeURIComponent(logoId)}/content`,{headers:auth(),cache:'no-store'})).blob()},
+    async uploadLogo(campaignId:string,file:File,revision:number){return requestJson<BrandLogoOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/brand-logo?expected_source_revision=${revision}`,{method:'PUT',headers:{...auth('owner'),'Content-Type':file.type},body:file,signal:AbortSignal.timeout(45000)})},
+    async confirmLogo(campaignId:string,logo:BrandLogoOut,revision:number){return requestJson<BrandLogoOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/brand-logo/${encodeURIComponent(logo.id)}/confirm`,{method:'POST',headers:{...auth('owner'),'Content-Type':'application/json'},body:JSON.stringify({expected_version:logo.version,expected_source_revision:revision})})},
     async revisions(campaignId:string){return requestJson<Revision[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/revisions`,{headers:auth()})},
     async comments(campaignId:string){return requestJson<Comment[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/comments`,{headers:auth()})},
     async comment(campaignId:string,snapshot:Snapshot,text:string,reviewId:string|null,role:DemoRole='creator'){
@@ -155,3 +159,5 @@ export function createBackendClient(base = '/api/v1') {
   }
 }
 export type BackendClient = ReturnType<typeof createBackendClient>
+
+export interface BrandLogoOut {id:string;campaign_id:string;version:number;status:"pending"|"approved";sha256:string;width:number;height:number;confirmed_by:string|null;created_at:string}

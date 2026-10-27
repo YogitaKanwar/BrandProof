@@ -12,3 +12,10 @@ data/
 node_modules/
 dist/
 .coverage
+
+.venv-check/
+
+.cache/
+
+# Local review exports; review committed source changes on GitHub.
+docs/rushab-*-review.patch

@@ -1,9 +1,11 @@
+import { apiBase, verifyBackend } from './live-config.mjs'
+await verifyBackend()
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
 import {createBackendClient} from '../src/api/backend.ts'
 import {requestResponse} from '../src/api/client.ts'
 const file=new File([readFileSync(new URL('./fixtures/poster.png',import.meta.url))],'poster.png',{type:'image/png'})
-const api=createBackendClient('http://127.0.0.1:8000/api/v1');await api.connect()
+const api=createBackendClient(apiBase);await api.connect()
 const initial=await api.create({title:'Real private poster test',publicationDate:'2026-11-12',brand:'',brief:''});const id=initial.data.reviews[0].id
 await assert.rejects(api.poster(id),e=>e.status===404)
 await api.saveCaption(id,'Caption retained',1)
@@ -12,7 +14,7 @@ assert.equal(first.width,600);assert.equal(first.height,200);assert.equal(first.
 assert.equal((await api.get(id)).data.reviews[0].backendCampaign.caption,'Caption retained')
 assert.ok(['completed','partial','unavailable'].includes(first.ocr.status))
 assert.equal((await api.posterContent(id,first.id)).type,'image/png')
-await assert.rejects(requestResponse(`http://127.0.0.1:8000/api/v1/campaigns/${id}/posters/${first.id}/content`),e=>e.status===401)
+await assert.rejects(requestResponse(`${apiBase}/campaigns/${id}/posters/${first.id}/content`),e=>e.status===401)
 await assert.rejects(api.uploadPoster(id,file,2),e=>e.status===409)
 const second=await api.uploadPoster(id,file,3);assert.notEqual(first.id,second.id)
 assert.equal((await api.poster(id)).id,second.id);assert.equal((await api.poster(id,first.id)).id,first.id)

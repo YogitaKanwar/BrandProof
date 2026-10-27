@@ -3,12 +3,33 @@
 import argparse
 import hashlib
 import json
+import os
 from io import BytesIO
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from PIL import Image, ImageDraw, ImageFont
+
+
+def fixture_font(size):
+    configured = os.environ.get("BRANDPROOF_TEST_FONT")
+    candidates = (
+        [configured]
+        if configured
+        else [
+            "/usr/share/fonts/noto/NotoSans-Regular.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "C:/Windows/Fonts/arial.ttf",
+            "/System/Library/Fonts/Supplemental/Arial.ttf",
+        ]
+    )
+    for candidate in candidates:
+        try:
+            return ImageFont.truetype(candidate, size)
+        except OSError:
+            continue
+    raise OSError("Install a TrueType fixture font or set BRANDPROOF_TEST_FONT to its path")
 
 
 def main():
@@ -58,7 +79,7 @@ def main():
             (25, 55),
             text,
             fill="black",
-            font=ImageFont.truetype("/usr/share/fonts/noto/NotoSans-Regular.ttf", 48),
+            font=fixture_font(48),
         )
         buffer = BytesIO()
         image.save(buffer, format="PNG")
