@@ -199,6 +199,8 @@ def approve(
                 "Resolve or explicitly except blocking findings before approval",
             )
         required = {"exact_text", "contextual"}
+        if "claim_risk" in run.checks:
+            required.add("claim_risk")
         if run.checks.get("poster", {}).get("details", {}).get("asset_id"):
             required.add("poster")
         incomplete = {

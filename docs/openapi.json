@@ -1843,7 +1843,8 @@
               "enum": [
                 "exact_text",
                 "contextual",
-                "poster"
+                "poster",
+                "claim_risk"
               ]
             },
             "type": "object",

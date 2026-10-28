@@ -2,6 +2,7 @@
 
 from sqlalchemy import select
 
+from brandproof.claim_screening import screen_claims
 from brandproof.poster_models import PosterAsset
 from brandproof.rules import exact_checks
 
@@ -19,6 +20,10 @@ def review_poster(session, campaign, active, excluded):
     if not asset:
         return [], {"status": "not_assessed", "reason": "No poster attached.", "details": {}}
     extraction = asset.ocr
+    risk_findings, risk_check = screen_claims(extraction["text"], campaign.content_revision)
+    if extraction["status"] != "completed":
+        risk_check["status"] = "partial"
+        risk_check["reason"] += " Poster OCR is incomplete; inspect the image for unread claims."
     details = {
         "asset_id": asset.id,
         "asset_revision": asset.content_revision,
@@ -31,6 +36,7 @@ def review_poster(session, campaign, active, excluded):
         "visual_branding": "not_assessed",
         "accessibility": "not_assessed",
         "contextual_claims": "not_assessed",
+        "claim_risk": risk_check,
     }
     if not extraction["text"]:
         details["exact_text_status"] = extraction["status"]
@@ -40,6 +46,7 @@ def review_poster(session, campaign, active, excluded):
             "details": details,
         }
     findings, rules = exact_checks(extraction["text"], campaign.content_revision, active)
+    findings.extend(risk_findings)
     for finding in findings:
         location = finding["location"]
         words = []
@@ -103,7 +110,7 @@ def review_poster(session, campaign, active, excluded):
     )
     return findings, {
         "status": "partial",  # OCR is not visual brand, accessibility or contextual review.
-        "reason": "Only OCR-based exact text checks were attempted. Visual branding, accessibility and contextual poster claims require manual review.",
+        "reason": "OCR-based exact rules and local claim-risk patterns were checked. Visual branding, accessibility and contextual poster claims require manual review.",
         "rules": rules,
         "details": details,
     }

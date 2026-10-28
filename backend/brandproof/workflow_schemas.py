@@ -12,7 +12,7 @@ class ApprovalCreate(ReviewCreate):
     decision: Literal["approve", "request_changes"]
     reason: str = Field(min_length=10, max_length=2000)
     manual_checks: dict[
-        Literal["exact_text", "contextual", "poster"],
+        Literal["exact_text", "contextual", "poster", "claim_risk"],
         Annotated[str, Field(min_length=20, max_length=2000)],
     ] = Field(default_factory=dict)
 

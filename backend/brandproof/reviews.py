@@ -3,6 +3,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db, lock_campaign, require_role, scoped_campaign
+from brandproof.claim_screening import combined_coverage, screen_claims
 from brandproof.contextual import ContextualConfig, ContextualResult, analyze_context
 from brandproof.errors import fail
 from brandproof.finding_groups import finding_groups
@@ -217,6 +218,10 @@ def start_review(
         exact_status = "completed"
     if has_exact and any(f["evidence_status"] == "needs_clarification" for f in findings):
         exact_status = "partial"
+    risk_findings, caption_risk_check = screen_claims(campaign.caption, campaign.content_revision)
+    risk_check = combined_coverage(
+        caption_risk_check, poster_check.get("details", {}).get("claim_risk")
+    )
     run = ReviewRun(
         campaign_id=campaign_id,
         content_revision=campaign.content_revision,
@@ -238,10 +243,11 @@ def start_review(
                 "reason": "Contextual review is in progress.",
             },
             "poster": poster_check,
+            "claim_risk": risk_check,
         },
         sources_used=sources,
         excluded_sources=excluded,
-        findings=[*findings, *poster_findings],
+        findings=[*findings, *risk_findings, *poster_findings],
     )
     # Recheck immutable snapshot identity rather than presenting a mixed-version run.
     latest = session.execute(
@@ -325,7 +331,10 @@ def start_review(
     run.findings = [*run.findings, *result.findings]
     run.status = (
         "completed"
-        if exact_status == "completed" and result.status == "completed" and not has_poster
+        if exact_status == "completed"
+        and result.status == "completed"
+        and risk_check["status"] == "completed"
+        and not has_poster
         else "partial"
     )
     session.commit()
