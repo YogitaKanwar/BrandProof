@@ -1,5 +1,14 @@
 # Final tests requiring a fully configured backend
 
+## Feature-branch local acceptance - 28 October 2026
+
+This is local feature acceptance, not a deployment of the improvements. Existing production remains `36cb8ae`.
+
+- Branch `feat/brandproof-improvements-20261028`: all authorized implementation slices complete. Backend 514 passed, frontend 50 passed; lint/format/build/dependencies, wheel build/installed-wheel startup, OpenAPI parity, seven actual HTTP suites, 26 existing browser groups and new PDF/draft/description/governance/readiness browser journey passed.
+- Production resource probe used only fictional records, with no settings/code migration: 5,155,064-byte PNG HTTP 200 in 10.32s; logo review 201 in 3.994s with not-assessed/manual time-limit result. Initial health 502, subsequent 200 after direct warmup. Database available, expiry 27 November; provider unavailable and quotas unchanged. These are single samples, not a controlled sleep/load test.
+- New PostgreSQL legacy-upgrade/idempotence and production-container CI are configured; do not infer their result from SQLite or the prior production release. Backup/restore, reviewed migration/app deployment, public new-feature/redeploy acceptance and live consented provider acceptance remain explicit release gates.
+- Complete evidence/limits: [improvements final report](improvements-final-report.md). Local evidence `.cache/improvements-20261028/backend-final.xml`, `production-resources.json`, isolated local/wheel databases, and browser screenshots under `frontend/node_modules/.cache/improvements/`. Scripted fictional decisions are not independent human evaluation.
+
 ## Fresh pre-push release acceptance - 28 October 2026
 
 - Backend: 445 passed in 145.14 seconds, zero failures/skips; .cache/release-20261028.xml. Ruff lint and format pass (70 files).

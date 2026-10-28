@@ -178,7 +178,15 @@ def test_review_response_refreshes_campaign_after_commit(client, owner, campaign
     edited = []
 
     def commit_then_edit(session):
-        is_review = any(isinstance(row, ReviewRun) for row in session.new)
+        # Lease creation flushes the run before commit; observe both pending
+        # and flushed running records while preserving the post-commit race.
+        is_review = (
+            any(
+                isinstance(row, ReviewRun) and row.status == "running"
+                for row in [*session.new, *session.identity_map.values()]
+            )
+            and not edited
+        )
         original_commit(session)
         if is_review:
             changed = client.put(

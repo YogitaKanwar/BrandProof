@@ -1,6 +1,15 @@
 # BrandProof task status
 
-Updated: 2026-10-28. Current branch: `integration/round2-backend-pr1`.
+Updated: 2026-10-28. Current branch: `feat/brandproof-improvements-20261028`.
+
+## Authorized improvements completed locally - 28 October
+
+- Feature branch `feat/brandproof-improvements-20261028` from production `36cb8ae`; understandable stage commits, original documentation backups/edits retained. No unreviewed production deployment or main/integration merge.
+- Implemented expanded fictional demo/readiness, contextual caption + high-confidence OCR provenance, unverified draft candidates, bounded PDF pending/page evidence, scoped palette/contrast and poster-specific alt text, governance/sample guards, additive migrations and leased/fenced automatic recovery.
+- Final local checks: 514 backend tests, 50 frontend tests, lint/format/build, seven HTTP suites, 26 existing browser groups and the full new-feature HTTP/browser journey passed. Backend wheel built and independently started with packaged migrations; running/saved OpenAPI equal.
+- Production H probe on unchanged `36cb8ae`: 5,155,064-byte PNG 200/10.32s; logo review 201/3.994s but truthful time-limit/manual result. First proxied health 502 then 200 after warming. Render PostgreSQL remains Free/available, expires 27 November; quotas/provider enablement untouched.
+- Gates: fresh Docker/PostgreSQL CI, reviewed backup/migration/release approval, optional private provider configuration/consented acceptance, cold-start/retention and representative real-user/image evaluation. No larger quota, paid plan or provider switch assumed.
+- Full mapping/tests/release instructions: [final report](improvements-final-report.md), [implementation](improvements-implementation.md), [PR text](improvements-pr.md). User chose manual PR opening; branch/PR text are prepared.
 
 ## Strict-zero-budget deployment execution - 28 October
 
