@@ -113,3 +113,7 @@ See [LOGO_COMPARISON_REVIEW.md](LOGO_COMPARISON_REVIEW.md) for actual new routes
 ## Local claim-risk screening — 28 October
 
 New runs add `checks.claim_risk`; caption and OCR-based poster findings use category `claim_risk`, warning severity and `needs_clarification`, with no invented source evidence or replacement. This works with no approved facts and AI disabled. Partial claim coverage requires dedicated reviewer notes in addition to explicit finding disposition. Existing runs without this check remain unchanged. See [CLAIM_RISK_SCREENING.md](CLAIM_RISK_SCREENING.md) for supported patterns, limits and the judge demonstration. Saved OpenAPI includes the new manual-check key.
+
+## Connected Recent Reviews deletion
+
+The dashboard now offers owner deletion with explicit confirmation and in-page Undo. DELETE /api/v1/campaigns/{id} accepts expected_content_revision and expected_source_revision; response includes campaign_id, deletion_id, deleted=true and retained_history=true. POST /api/v1/campaigns/{id}/restore requires both revisions plus expected_deletion_id and returns the restored CampaignOut. A running review or stale revision returns 409; cross-workspace/removed resources return 404; creator/reviewer mutation returns 403. Normal list/read/write routes exclude removed campaigns. Sources, images, review runs and approval history are retained. Undo handle is memory-only and is lost on full reload/workspace switch. See openapi.json and REVIEW_DELETION_RELEASE.md.

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from brandproof.auth import actor, db, require_role, scoped_campaign
 from brandproof.demo_sessions import create_browser_session, resume_browser_session
 from brandproof.models import Actor, Campaign
+from brandproof.removal_models import active_campaigns
 from brandproof.schemas import CampaignCreate, CampaignOut, DemoSessionOut
 
 router = APIRouter(prefix="/api/v1")
@@ -35,7 +36,7 @@ def create_campaign(
 def list_campaigns(who: Actor = Depends(actor), session: Session = Depends(db)):
     return session.scalars(
         select(Campaign)
-        .where(Campaign.workspace_id == who.workspace_id)
+        .where(Campaign.workspace_id == who.workspace_id, active_campaigns())
         .order_by(Campaign.created_at)
     ).all()
 

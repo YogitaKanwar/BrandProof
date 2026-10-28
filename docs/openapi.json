@@ -166,6 +166,61 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "review removal"
+        ],
+        "summary": "Remove Review",
+        "operationId": "remove_review_api_v1_campaigns__campaign_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemovalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/campaigns/{campaign_id}/sources": {
@@ -1780,6 +1835,63 @@
         }
       }
     },
+    "/api/v1/campaigns/{campaign_id}/restore": {
+      "post": {
+        "tags": [
+          "review removal"
+        ],
+        "summary": "Restore Review",
+        "operationId": "restore_review_api_v1_campaigns__campaign_id__restore_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "summary": "Health",
@@ -2991,6 +3103,34 @@
         ],
         "title": "PriceRule"
       },
+      "RemovalOut": {
+        "properties": {
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "deletion_id": {
+            "type": "string",
+            "title": "Deletion Id"
+          },
+          "deleted": {
+            "type": "boolean",
+            "title": "Deleted"
+          },
+          "retained_history": {
+            "type": "boolean",
+            "title": "Retained History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campaign_id",
+          "deletion_id",
+          "deleted",
+          "retained_history"
+        ],
+        "title": "RemovalOut"
+      },
       "RequiredRule": {
         "properties": {
           "kind": {
@@ -3012,6 +3152,36 @@
           "text"
         ],
         "title": "RequiredRule"
+      },
+      "RestoreCreate": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          },
+          "expected_deletion_id": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 36,
+            "title": "Expected Deletion Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision",
+          "expected_deletion_id"
+        ],
+        "title": "RestoreCreate"
       },
       "ReviewCreate": {
         "properties": {

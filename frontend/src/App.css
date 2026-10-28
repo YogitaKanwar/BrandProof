@@ -329,3 +329,5 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 }
 
 .live-sources .fact-status.inactive { background: #fbf5ed; border-color: #ead8c2; color: #79572d; }
+
+.review-undo { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:14px; margin-block:16px; border:1px solid var(--border); background:#f5faf9; }
