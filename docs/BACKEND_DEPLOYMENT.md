@@ -1,10 +1,10 @@
 # Backend deployment package — Rushab
 
-This package is backend-only. It does not implement or deploy Yogita's frontend, PDF or submission tasks. Hosting is deliberately deferred until Rushab chooses an account/service. No cloud resources have been created and there is no public backend URL.
+Current update, 28 October 2026: the Docker package now includes the compiled React frontend and serves it with the API under one origin. [FREE_HOSTING.md](FREE_HOSTING.md) is the current Render Free + Neon Free setup guide. No cloud resources have been created and there is no public project URL. The operational boundaries below still apply.
 
 ## What is prepared and what is exercised
 
-Dockerfile: Python 3.12, locked Python dependencies via uv, Pillow, Tesseract English OCR, Noto fonts, non-root UID 10001, one Uvicorn worker and a database-backed health probe. The entry point reads PORT (1–65535) and disables access logs. compose.yaml keeps the port on loopback, persists /app/data in a named volume and applies basic container restrictions. .dockerignore excludes local data, credentials, research and frontend work.
+Dockerfile: Node 24 builds React using the frontend lockfile; Python 3.12 runs locked Python dependencies via uv, Pillow, Tesseract English OCR, Noto fonts, non-root UID 10001, one Uvicorn worker and a database-backed health probe. The entry point reads PORT (1–65535) and disables access logs. compose.yaml keeps the port on loopback, persists /app/data in a named volume and applies basic container restrictions. .dockerignore allows only required source/build manifests and excludes local data and credentials.
 
 The Python wheel/source package builds with `uv build`. The entry-point contract and local API/OCR are tested. `docker compose config --quiet` validates the Compose configuration. Docker image build/start is NOT verified: this machine denies access to the Docker daemon. Installing a Dockerfile is not a deployment success.
 

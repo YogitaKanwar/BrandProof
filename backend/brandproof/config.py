@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator
@@ -7,6 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="BRANDPROOF_", env_file=".env", extra="ignore")
     database_url: str = "sqlite:///./data/brandproof.db"
+    frontend_dist: Path | None = None
     ai_provider: Literal["none", "groq", "openrouter"] = "none"
     ai_model: str = ""
     ai_api_key: SecretStr = SecretStr("")

@@ -16,6 +16,10 @@ Local additions verified 27 October: session-cookie resume preserves the existin
 
 This checklist does not authorise a paid service, public deployment or system-level OCR installation.
 
+## Hosting preparation - 28 October
+
+Latest combined suite: 434 backend tests passed, 47 frontend tests passed, build/lint/format passed, and all seven actual HTTP integration scripts passed. FastAPI serves the built UI and real API together on port 8001. External AI is off for this run. Free hosting setup is prepared in FREE_HOSTING.md and render.yaml; no public service or account was created. Docker daemon access remains denied locally. PostgreSQL/container CI and actual remote HTTPS/redeploy acceptance must be recorded from real results before checking those items complete.
+
 ## Historical teammate runtime notes (before this integration)
 
 No paid service, public deployment, system-level OCR install or backend modification is authorised by this checklist.

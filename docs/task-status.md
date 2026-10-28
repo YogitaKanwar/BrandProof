@@ -1,6 +1,16 @@
-﻿# BrandProof task status
+# BrandProof task status
 
-Updated: 2026-10-27. Current branch: `fix/demo-session-resume`.
+Updated: 2026-10-28. Current branch: `fix/demo-session-resume`.
+
+## Combined app and free hosting preparation - 28 October
+
+- Preserved the local session work as f7491d4 and merged origin/main 833c6ff (including Yogita's OCR, combined upload/review and owner-confirmed logo work) into this feature branch as 27dffb8. Main was not changed.
+- Added optional serving of the built React app from FastAPI, a multi-stage complete-app Dockerfile, automatic psycopg 3 selection for ordinary hosted PostgreSQL URLs, and a Render Free Blueprint with external Neon storage, secure same-origin cookies and external AI disabled. No cloud resources or public project URL exist.
+- Fresh combined backend suite: **434 passed, 0 failed/skipped, 40.13s**. Ruff lint/format passed. Frontend build/lint and **47 unit tests** passed; all seven real HTTP scripts passed against an isolated local database. The first aggregate verify attempt reached HTTP tests before the server started; those seven scripts were then explicitly rerun successfully against port 8001.
+- Added GitHub Actions container/PostgreSQL acceptance. Local Docker runtime is unavailable (daemon access denied); the workflow file is not evidence of a passing CI run. PostgreSQL and public HTTPS/redeploy acceptance remain pending until actual results exist.
+- User says the connected Vercel account is not theirs; it must not be used. User requested preparation of free hosting. See FREE_HOSTING.md. Repository is private; organiser-required public source access still needs a team-owner action.
+- Historical records below describe earlier checkpoints and runtimes; they are not current release claims.
+
 
 ## Current local acceptance - 27 October
 

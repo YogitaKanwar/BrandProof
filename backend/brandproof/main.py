@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from brandproof.approval import router as approval_router
@@ -65,5 +66,12 @@ def create_app(*, database_url: str | None = None):
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
         return {"status": "ok", "database": "ok", "version": "0.1.0"}
+
+    # The hash-routed UI and API share one origin, including the recovery cookie.
+    # API routes are registered first; only the built public assets are exposed.
+    if settings.frontend_dist is not None:
+        if not (settings.frontend_dist / "index.html").is_file():
+            raise RuntimeError("BRANDPROOF_FRONTEND_DIST must contain a built index.html")
+        app.mount("/", StaticFiles(directory=settings.frontend_dist, html=True), name="frontend")
 
     return app

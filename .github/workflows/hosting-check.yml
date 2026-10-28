@@ -1,0 +1,61 @@
+name: Hosting package
+on:
+  push:
+    branches: [fix/demo-session-resume]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hosting-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  container-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: brandproof_test
+          POSTGRES_PASSWORD: ephemeral_ci_only
+          POSTGRES_DB: brandproof_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U brandproof_test -d brandproof_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the complete app
+        run: docker build --tag brandproof:ci .
+      - name: Start app with external PostgreSQL storage
+        run: >-
+          docker run -d --name brandproof --network host
+          -e PORT=8001
+          -e BRANDPROOF_DATABASE_URL=postgresql://brandproof_test:ephemeral_ci_only@127.0.0.1:5432/brandproof_test
+          -e BRANDPROOF_EXTERNAL_AI_ENABLED=false
+          -e OMP_NUM_THREADS=1
+          brandproof:ci
+      - name: Wait for database-backed health
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8001/api/v1/health; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Check UI and real review, OCR and approval workflows
+        run: |
+          curl --fail --silent http://127.0.0.1:8001/ | grep 'id="root"'
+          docker cp scripts/smoke.py brandproof:/tmp/smoke.py
+          docker cp scripts/parser_smoke.py brandproof:/tmp/parser_smoke.py
+          docker cp scripts/workflow_smoke.py brandproof:/tmp/workflow_smoke.py
+          docker exec brandproof python /tmp/smoke.py --base-url http://127.0.0.1:8001 --output /tmp/review.json
+          docker exec brandproof python /tmp/parser_smoke.py --base-url http://127.0.0.1:8001 --output /tmp/parser.json
+          docker exec -e BRANDPROOF_TEST_FONT=/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf brandproof python /tmp/workflow_smoke.py --base-url http://127.0.0.1:8001 --output /tmp/workflow.json
+      - name: Stop test app
+        if: always()
+        run: docker rm --force brandproof || true
