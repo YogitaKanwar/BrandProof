@@ -7,10 +7,12 @@ from sqlalchemy import text
 
 from brandproof.approval import router as approval_router
 from brandproof.config import Settings
-from brandproof.db import Base, make_engine, session_factory
+from brandproof.db import make_engine, session_factory
 from brandproof.errors import install_errors
 from brandproof.logos import router as logos_router
+from brandproof.migrations import migrate
 from brandproof.posters import router as posters_router
+from brandproof.review_leases import recover_expired
 from brandproof.reviews import router as reviews_router
 from brandproof.routes import router
 from brandproof.sources import router as sources_router
@@ -25,7 +27,9 @@ def create_app(*, database_url: str | None = None):
 
     @asynccontextmanager
     async def lifespan(_app):
-        Base.metadata.create_all(engine)
+        migrate(engine)
+        with sessions.begin() as recovery_session:
+            recover_expired(recovery_session)
         yield
         engine.dispose()
 

@@ -12,6 +12,7 @@ from brandproof.models import Actor, Campaign
 from brandproof.poster_models import PosterAsset
 from brandproof.poster_review import review_poster
 from brandproof.quota import reserve_provider_call
+from brandproof.review_leases import acquire, fence, heartbeat, recover_expired
 from brandproof.review_models import ContentVersion, ReviewRun
 from brandproof.review_schemas import CaptionRevision, CaptionUpdate, ReviewOut, ReviewStart
 from brandproof.rules import exact_checks
@@ -282,27 +283,30 @@ def start_review(
         if configured_external
         else None
     )
+    owner = acquire(session, run)
+    run_id = run.id
     session.commit()
 
     # Do not read ORM attributes here: with expire_on_commit=True even a read
     # would reopen a database transaction across the external provider call.
     settings = request.app.state.settings
-    result = (
-        ContextualResult("unavailable", quota_reason, metadata={"admission": "denied"})
-        if quota_reason
-        else analyze_context(
-            caption_snapshot,
-            payload.expected_content_revision,
-            active,
-            ContextualConfig(
-                provider=settings.ai_provider,
-                model=settings.ai_model,
-                api_key=settings.ai_api_key.get_secret_value(),
-                allow_external=settings.external_ai_enabled and payload.external_ai_consent,
-            ),
-            transport=getattr(request.app.state, "contextual_transport", None),
+    with heartbeat(request.app.state.sessions, run_id, owner):
+        result = (
+            ContextualResult("unavailable", quota_reason, metadata={"admission": "denied"})
+            if quota_reason
+            else analyze_context(
+                caption_snapshot,
+                payload.expected_content_revision,
+                active,
+                ContextualConfig(
+                    provider=settings.ai_provider,
+                    model=settings.ai_model,
+                    api_key=settings.ai_api_key.get_secret_value(),
+                    allow_external=settings.external_ai_enabled and payload.external_ai_consent,
+                ),
+                transport=getattr(request.app.state, "contextual_transport", None),
+            )
         )
-    )
     excluded_policy_ids = sorted(
         source["source_id"] for source in excluded if source["kind"] in {"tone", "claim_policy"}
     )
@@ -320,6 +324,11 @@ def start_review(
             result.status = "partial"
             result.reason = "Some contextual policies are unapproved or not valid for publication."
     lock_campaign(session, campaign)
+    if not fence(session, run_id, owner):
+        session.rollback()
+        session.refresh(run)
+        session.refresh(campaign)
+        return render_run(run, campaign, session)
     run.checks = {
         **run.checks,
         "contextual": {
@@ -346,6 +355,8 @@ def start_review(
 @router.get("/reviews", response_model=list[ReviewOut])
 def list_reviews(campaign_id: str, who: Actor = Depends(actor), session: Session = Depends(db)):
     campaign = scoped_campaign(session, campaign_id, who)
+    if recover_expired(session, campaign_id):
+        session.commit()
     return [
         render_run(run, campaign, session)
         for run in session.scalars(
@@ -364,6 +375,8 @@ def get_review(
     session: Session = Depends(db),
 ):
     campaign = scoped_campaign(session, campaign_id, who)
+    if recover_expired(session, campaign_id):
+        session.commit()
     run = session.scalar(
         select(ReviewRun).where(ReviewRun.id == review_id, ReviewRun.campaign_id == campaign_id)
     )
