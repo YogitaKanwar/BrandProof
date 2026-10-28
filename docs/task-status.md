@@ -2,6 +2,21 @@
 
 Updated: 2026-10-28. Current branch: `integration/round2-backend-pr1`.
 
+## Strict-zero-budget deployment execution - 28 October
+
+- After user completed repository access, Render Free Docker service creation succeeded: srv-dbgtr7nb9u1s73981s70, assigned https://brandproof-api-slz9.onrender.com, initial deployment dep-dbgtr7vb9u1s73981st0. Explicit free compute, one instance, Singapore, automatic deploys off. Database is now available on its Free plan. No public health acceptance yet; private database URL and dashboard health-check path remain required. Database URL is explicitly empty pending private setup, preventing SQLite fallback.
+- Vercel create_project retry still returned 403; asked user for dashboard project creation in the verified Hobby team. Added frontend/vercel.json with the actual Render hostname and relative API proxy; UI unchanged. Asked user to configure Render database URL and health path privately. No database credentials requested in chat.
+
+- User confirmed Render workspace Hobby/free, no attached payment method and no card required. Created PostgreSQL 16 brandproof-db on explicit free plan in Singapore: dpg-dbgtpn5g1s2s73c9tg60-a, expires 2026-11-27T11:30:36.905505Z, disk autoscaling off. Internal connection URL is not exposed by MCP and must be configured privately in Render after a web service exists.
+- Free Docker web creation attempted with explicit integration branch, autoDeploy no, secure cookies and external AI disabled. Render returned HTTP 400: repository URL invalid or unfetchable. No service created; private GitHub repository authorization is required before retry. No temporary SQLite deployment was accepted.
+- Vercel team authorization still requires browser action; supplied a new 10-minute consent link. Public URLs/live acceptance remain pending. No paid resources or upgrades selected.
+
+- User authorized normal integration-branch push and only strictly free public resources. Fresh scan covered all 10 unpublished trees / 327 unique blobs: no detected credential matches or sensitive tracked paths. Pushed and independently verified GitHub SHA 5a8aeb1705382c9b4d892b90d04d04c5d017216d. Main unchanged; release tests remain those recorded below.
+- Paid hosting proposal is superseded by the user's strict USD 0 budget. Target: Render Free web + Free PostgreSQL 16 (1 GB, 30-day expiry), Vercel Hobby, Groq free usage only after private configuration. No card, paid trial, workspace upgrade or usage overage authorized.
+- Render billing is a required manual gate: MCP exposes no billing/payment-method/spend-limit reader. Official Free documentation says bandwidth/build overages can bill when a payment method exists; without one, services/builds are suspended instead. Asked user to verify Hobby/free workspace, no attached payment method and no card requirement before creation. No Render resource created.
+- Vercel active account reports Hobby, no trial, excess data-cache billing false. create_project in the verified team returned HTTP 403 / no permission to create project; list_projects still empty. CLI executable and authentication files absent. Team authorization path checked; no frontend deployed or public URL claimed.
+- Public application/OCR/Groq/persistence checks have not run because cloud deployment is blocked by billing verification and Vercel creation authorization. Local application/UI/backend source unchanged.
+
 ## Release preparation and verified hosting connections - 28 October
 
 - Read-only MCP verified Render BrandProof and Vercel yogitakanwar's projects, both identifying yogi2kanwar@gmail.com. No existing services/databases/projects returned. No resources created or deployment performed.
