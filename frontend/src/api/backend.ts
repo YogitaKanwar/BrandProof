@@ -1,4 +1,6 @@
 import { ApiError, requestJson, requestResponse } from './client.ts'
+import { createReadinessCheck } from './readiness.ts'
+import type { ReadinessOptions } from './readiness.ts'
 import type { PosterOut } from './posters.ts'
 import type {Snapshot,Revision,Comment,FindingDecision,DemoRole,ReviewRequest,Approval,Receipt} from './workflow.ts'
 import type { ReviewInput, ReviewResult } from './reviews.ts'
@@ -16,7 +18,8 @@ interface DemoSessionOut {
   actors: Record<'owner' | 'creator' | 'reviewer', { role: string; access_token: string }>
 }
 export interface ReviewRemoval {campaign_id:string;deletion_id:string;deleted:boolean;retained_history:boolean}
-export function createBackendClient(base = '/api/v1') {
+export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptions) {
+  const ensureReady = readiness ? createReadinessCheck(base, readiness) : async () => {}
   let session: DemoSessionOut | null = null
   let connecting: Promise<DemoSessionOut> | null = null
   const campaigns = new Map<string, CampaignOut>()
@@ -51,6 +54,7 @@ export function createBackendClient(base = '/api/v1') {
   const checkedReview = (value: ReviewOut) => { if (!isReview(value)) throw invalid(); return value }
   return {
     async connect() {
+      await ensureReady()
       if (!session) {
         connecting ??= requestJson<DemoSessionOut>(`${base}/demo-sessions`, { method: 'POST', credentials: 'include', cache: 'no-store' })
         try {
@@ -60,6 +64,7 @@ export function createBackendClient(base = '/api/v1') {
       return this.list()
     },
     async resume(): Promise<ReviewResult | null> {
+      await ensureReady()
       let restored: DemoSessionOut
       try {
         restored = validateSession(await requestJson<DemoSessionOut>(`${base}/demo-sessions/resume`, {
@@ -103,6 +108,7 @@ export function createBackendClient(base = '/api/v1') {
       return result()
     },
     async create(input: ReviewInput) {
+      await ensureReady()
       const record = validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns`, {
         method: 'POST', headers: { ...auth(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: input.title.trim() || 'Untitled review', publication_date: input.publicationDate || '' }),

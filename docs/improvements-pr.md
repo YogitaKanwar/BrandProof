@@ -19,7 +19,7 @@ Validation:
 - Backend wheel built; independently imported/started from its installed wheel with packaged migrations. Frozen lock is accepted by the Docker-pinned uv 0.12.21.
 - Added feature-branch/PR CI for the production Docker image, PostgreSQL legacy upgrade/idempotence and new HTTP smoke, backend regression and frontend checks. Fresh CI completion is a release gate, not inferred from local SQLite tests.
 
-Production remains on `36cb8ae` at the existing Vercel + Render URLs. A read-only-configuration resource probe used only fictional records: 5,155,064-byte PNG upload returned 200 in 10.32s; logo review returned partial/not-assessed with a time-limit reason; initial cold health 502 was followed by 200 after warming. These are single observations, not latency percentiles or a controlled sleep test. Provider remains unavailable; quotas were not raised. Render Free PostgreSQL expires 27 November 2026.
+Production frontend now runs the isolated New Review startup hotfix `298c776`; backend remains `36cb8ae` at the existing Vercel + Render URLs. This branch carries the same frontend fix. Public creation, restoration, simulated health-failure recovery and 23 connected browser groups passed; see `docs/new-review-startup-hotfix-2026-10-28.md`. Round 3 features remain undeployed. An earlier read-only-configuration resource probe used only fictional records: 5,155,064-byte PNG upload returned 200 in 10.32s; logo review returned partial/not-assessed with a time-limit reason. These are single observations, not latency percentiles or a controlled sleep test. Provider remains unavailable; quotas were not raised. Render Free PostgreSQL expires 27 November 2026.
 
 Before production release:
 
