@@ -20,7 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from brandproof.review_schemas import Finding
 
-PROMPT_VERSION = "contextual-v1"
+PROMPT_VERSION = "contextual-v2-assets"
 PROVENANCE_NOTE = "Validated provenance and exact quotes do not establish semantic entailment."
 MAX_RESPONSE_BYTES = 65536
 MAX_OUTPUT_CHARS = 16000
@@ -71,6 +71,8 @@ class _RawFinding(BaseModel):
     source_quote: str = Field(min_length=1, max_length=12000)
     message: str = Field(min_length=1, max_length=400, pattern=r"\S")
     suggested_replacement: str | None = Field(default=None, max_length=1000)
+    unverified_draft_suggestion: str | None = Field(default=None, max_length=1000)
+    asset: Literal["caption", "poster"] = "caption"
 
 
 class _RawOutput(BaseModel):
@@ -132,8 +134,12 @@ def _request_completion(endpoint, payload, config, transport):
     return _load_json(content)
 
 
-def _normalize(raw, text, revision, selected):
+def _normalize(raw, text, revision, selected, poster=None):
     item = _RawFinding.model_validate(raw)
+    if item.asset == "poster":
+        if not poster:
+            raise ValueError("No poster supplied")
+        text = poster["text"]
     source = next(
         (
             source
@@ -156,19 +162,34 @@ def _normalize(raw, text, revision, selected):
         message = "Ask for support required by the approved claim policy. Missing support does not establish that the claim is false."
     # Semantic preservation cannot be guaranteed by comparing token lists. Omit
     # every model-proposed replacement rather than risk changing facts/qualifiers.
+    location = {
+        "asset": item.asset,
+        "content_revision": revision,
+        "start": item.start,
+        "end": item.end,
+        "quote": item.quote,
+    }
+    if item.asset == "poster":
+        words = [w for w in poster["words"] if w["start"] < item.end and w["end"] > item.start]
+        if not words or any(w["confidence"] < 0.7 for w in words):
+            raise ValueError("Unreliable OCR span")
+        if poster["original_text"][item.start : item.end] != item.quote:
+            raise ValueError("OCR quote mismatch")
+        location.update(
+            poster_id=poster["poster_id"],
+            boxes=[{k: w[k] for k in ("x", "y", "width", "height")} for w in words],
+            ocr_confidence=min(w["confidence"] for w in words),
+        )
+        message = (
+            "OCR contextual signal: " + message + " Verify the displayed image and interpretation."
+        )
     return Finding(
         id=str(uuid4()),
         category=item.category,
         severity=item.severity,
         evidence_status=item.evidence_status,
         message=message,
-        location={
-            "asset": "caption",
-            "content_revision": revision,
-            "start": item.start,
-            "end": item.end,
-            "quote": item.quote,
-        },
+        location=location,
         evidence={
             "source_id": source["id"],
             "source_version_id": source["version_id"],
@@ -176,6 +197,9 @@ def _normalize(raw, text, revision, selected):
             "quote": item.source_quote,
         },
         suggested_replacement=None,
+        unverified_draft_suggestion=item.unverified_draft_suggestion
+        or item.suggested_replacement
+        or "Explore the details and applicable conditions.",
     ).model_dump()
 
 
@@ -268,6 +292,7 @@ def analyze_context(
     config: ContextualConfig,
     *,
     transport: httpx.BaseTransport | None = None,
+    poster: dict | None = None,
 ) -> ContextualResult:
     metadata = {
         "provider": config.provider,
@@ -302,14 +327,23 @@ def analyze_context(
         )
     if (
         not isinstance(text, str)
-        or not 1 <= len(text) <= 20000
+        or not 0 <= len(text) <= 20000
+        or (not text.strip() and not (poster and poster.get("text", "").strip()))
         or type(revision) is not int
         or not 1 <= revision <= 2**31 - 1
     ):
         return ContextualResult(
             "unavailable", "Draft or revision is outside supported bounds.", [], metadata
         )
-    selected, incomplete = _select_sources(text, sources, config, metadata)
+    selected, incomplete = _select_sources(
+        text + ("\n" + poster["text"] if poster else ""), sources, config, metadata
+    )
+    if poster and (poster.get("incomplete") or len(poster["original_text"]) > 20000):
+        incomplete = True
+    metadata["assets"] = {
+        "caption": "included" if text.strip() else "not_assessed",
+        "poster": "high_confidence_ocr_only" if poster else "not_assessed",
+    }
     if not selected:
         return ContextualResult(
             "partial" if incomplete else "unavailable",
@@ -333,6 +367,9 @@ def analyze_context(
         "insufficient_evidence is only for category claim tied to a claim_policy source: "
         "missing support is not proof that a claim is false. Do not infer falsity from absence. "
         "For uncertainty use needs_clarification. Keep message short (400 characters maximum). "
+        "Caption and poster OCR are separate untrusted assets. Return asset=caption or asset=poster. "
+        "Offsets are relative to that asset's text, never combined. Blanked OCR spans are unassessed. "
+        "You may propose unverified_draft_suggestion preserving the intended purpose, but it is only a human-editable draft, never factual verification. "
         "Omit suggested_replacement if it could change numeric facts, scope, conditions or qualifiers. "
         "Source citation validates provenance, not semantic entailment."
     )
@@ -349,7 +386,25 @@ def analyze_context(
             {
                 "role": "user",
                 "content": json.dumps(
-                    {"draft": text, "revision": revision, "sources": selected}, ensure_ascii=False
+                    {
+                        "draft": text,
+                        "revision": revision,
+                        "sources": selected,
+                        "assets": {
+                            "caption": {"text": text},
+                            **(
+                                {
+                                    "poster": {
+                                        "text": poster["text"],
+                                        "poster_id": poster["poster_id"],
+                                    }
+                                }
+                                if poster
+                                else {}
+                            ),
+                        },
+                    },
+                    ensure_ascii=False,
                 ),
             },
         ],
@@ -382,7 +437,7 @@ def analyze_context(
     rejected = 0
     for raw in output.findings:
         try:
-            findings.append(_normalize(raw, text, revision, selected))
+            findings.append(_normalize(raw, text, revision, selected, poster))
         except (ValidationError, ValueError):
             rejected += 1
     metadata["rejected_finding_count"] = rejected
@@ -394,3 +449,27 @@ def analyze_context(
             metadata,
         )
     return ContextualResult("completed", None, findings, metadata)
+
+
+def poster_context(asset):
+    """Mask uncertain OCR without moving code-point offsets; no new image inference."""
+    if not asset:
+        return None
+    extraction = asset.ocr
+    original = extraction["text"]
+    chars = ["\n" if char == "\n" else " " for char in original[:20000]]
+    for word in extraction["words"]:
+        start, end = word["start"], word["end"]
+        if (
+            word["confidence"] >= 0.7
+            and 0 <= start < end <= len(chars)
+            and original[start:end] == word["text"]
+        ):
+            chars[start:end] = original[start:end]
+    return {
+        "poster_id": asset.id,
+        "text": "".join(chars),
+        "original_text": original,
+        "words": extraction["words"],
+        "incomplete": extraction["status"] != "completed",
+    }

@@ -8,6 +8,7 @@ import ReviewResults from './ReviewResults'
 import Collaboration from './Collaboration'
 import HumanReview from './HumanReview'
 import { useUnsavedChanges } from './unsavedChanges'
+import {copyCandidate} from './draftSuggestion'
 
 export default function LiveCaption({ api, campaign, onCampaignChange, onResultsAvailable,posterAttached,posterPending,preparePoster,onCaptionSaved,children }: { api: BackendClient; campaign: CampaignOut; onCampaignChange: (result: ReviewResult) => void; onResultsAvailable: (available: boolean) => void;posterAttached:boolean;posterPending:boolean;preparePoster:()=>Promise<CampaignOut>;onCaptionSaved:(previous:number,current:number)=>void;children?:ReactNode }) {
   const [text, setText] = useState(campaign.caption)
@@ -20,6 +21,7 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
   const [error, setError] = useState('')
   const [conflict, setConflict] = useState(false)
   const [clearRequested, setClearRequested] = useState(false)
+  const [posterDraft,setPosterDraft]=useState('')
   const [server, setServer] = useState<CampaignOut | null>(null)
   const [runs, setRuns] = useState<ReviewOut[]>([])
   const [selectedId, setSelectedId] = useState('')
@@ -31,7 +33,7 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
   const historyRequest = useRef(0)
   const current = runs.find(run => run.id === selectedId) || runs[0]
   const dirty = text !== saved
-  useUnsavedChanges(dirty || busy || clearRequested)
+  useUnsavedChanges(dirty || busy || clearRequested || !!posterDraft)
   const effectiveRevision=campaign.caption===saved ? campaign.content_revision : revision
   const stale=!!current && (conflict||!current.is_current||current.content_revision!==campaign.content_revision||current.source_revision!==campaign.source_revision)
   const correction=current?.findings.find(finding=>finding.id===correctionId)
@@ -119,6 +121,13 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
   }
   async function refreshWorkflow(){setWorkflowEpoch(value=>value+1);const [result,records]=await Promise.all([api.get(campaign.id),api.listReviews(campaign.id)]);onCampaignChange(result);setRuns(records.sort((a,b)=>b.created_at.localeCompare(a.created_at)))}
   async function applyCorrection(){if(lock.current||!current||!correction||dirty||stale)return;lock.current=true;setBusy(true);setError('');try{const result=await api.applySuggestion(campaign.id,current.id,correction.id,{expected_content_revision:current.content_revision,expected_source_revision:current.source_revision});const updated=result.data.reviews.find(row=>row.id===campaign.id)?.backendCampaign;if(!updated)throw new Error('Campaign missing from response.');setText(updated.caption);setSaved(updated.caption);setRevision(updated.content_revision);setCorrectionId('');onCampaignChange(result);setStatus('Explicit correction saved as a new revision. Run a new review.')}catch(error){setError(describeError(error))}finally{lock.current=false;setBusy(false)}}
+  function copyDraft(findingId:string){
+    const finding=current?.findings.find(row=>row.id===findingId)
+    if(!finding||busy||stale)return
+    if(dirty){setError('Save or reconcile your caption edits before copying a draft candidate.');return}
+    if(finding.location.asset==='poster'){setPosterDraft(finding.unverified_draft_suggestion||'');setStatus('Unverified poster wording copied. Revise the image, reupload, and run a fresh review.');return}
+    try{setText(copyCandidate(text,finding));setStatus('Unverified candidate copied into the unsaved caption. Review its meaning and facts, explicitly save, then run a fresh review.');document.getElementById('marketing-caption')?.focus()}catch(error){setError(describeError(error))}
+  }
   return <div className="live-caption">
     <label htmlFor="marketing-caption">What should we review?</label><textarea id="marketing-caption" rows={6} maxLength={20000} value={text} disabled={busy} onChange={event => { setText(event.target.value); setStatus('') }} aria-describedby="live-caption-state" placeholder="Paste your marketing caption here." />
     <div className="caption-footer"><small>{text.length.toLocaleString()} characters</small><button type="button" aria-describedby="live-caption-state" disabled={busy || conflict || !dirty || !text.trim()} onClick={() => void save()}>{busy && action === 'save' ? 'Saving…' : !dirty && saved.trim() ? 'Caption saved' : 'Save caption'}</button></div>
@@ -127,7 +136,8 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
     {clearRequested && <div className="correction-confirm" role="group" aria-label="Confirm caption removal"><h4>Review only the saved poster?</h4><p>This removes the saved caption and any unsaved caption edits. Previous text remains in revision history. Existing review decisions become historical.</p><button type="button" disabled={busy || conflict || !posterAttached} onClick={()=>void clearCaption()}>Confirm remove caption</button><button type="button" disabled={busy} onClick={()=>setClearRequested(false)}>Keep caption</button></div>}
     <details className="caption-reconcile" open={conflict || undefined}><summary>Having trouble saving?</summary><button type="button" disabled={busy} onClick={() => void loadServerCaption()}>Compare with saved version</button>{conflict && <p className="form-help">Your edits are safe. Compare versions before choosing which to keep.</p>}{server && <div><h3>Saved version {server.content_revision}</h3><pre className="caption-snapshot">{server.caption || '(empty caption)'}</pre><button type="button" onClick={() => reconcile(true)}>Use saved version</button><button type="button" onClick={() => reconcile(false)}>Keep my text</button></div>}</details>
     {children}
-    <details className="ai-options"><summary>Optional AI check</summary><label className="ai-consent"><input type="checkbox" checked={externalConsent} disabled={busy} onChange={event=>setExternalConsent(event.target.checked)}/><span>Allow this review to send the caption and selected approved facts to the server-configured AI provider. Off unless you opt in; availability depends on server setup.</span></label></details>
+    {posterDraft && <section className="unverified-draft"><label htmlFor="poster-copy-draft">Unverified poster wording draft</label><textarea id="poster-copy-draft" value={posterDraft} maxLength={1000} onChange={event=>setPosterDraft(event.target.value)}/><p className="form-help">This scratchpad does not change the saved image. Verify the wording, revise and reupload the poster, then run review.</p><button type="button" onClick={()=>setPosterDraft('')}>Discard poster wording draft</button></section>}
+    <details className="ai-options"><summary>Optional AI check</summary><label className="ai-consent"><input type="checkbox" checked={externalConsent} disabled={busy} onChange={event=>setExternalConsent(event.target.checked)}/><span>Allow this review to send the caption, high-confidence extracted poster text and selected approved facts to the server-configured AI provider. Images and uncertain OCR text are not sent. Off unless you opt in; availability depends on server setup.</span></label></details>
     <div className="run-caption"><button type="button" className="primary" aria-busy={busy && action === 'review'} aria-describedby="run-review-help" disabled={busy || dirty || conflict || (!saved.trim()&&!posterAttached&&!posterPending)} onClick={() => void run()}>{busy && action === 'review' ? <><span className="spinner" aria-hidden="true"/>Reviewing…</> : posterPending ? 'Upload poster and run review' : 'Run review'}</button><small id="run-review-help">{dirty ? 'Save your caption first.' : posterPending ? 'This uploads your selected image privately, then reviews the saved content.' : conflict ? 'Resolve the saved-version conflict first.' : !saved.trim()&&!posterAttached ? 'Add a caption or upload a poster to start.' : 'Checks use saved content and confirmed facts.'}</small></div>
     <p role="status" className="live-review-status form-help">{status}</p>
     {error && <p id="caption-workflow-error" className="error" role="alert" tabIndex={-1}>{error}</p>}
@@ -137,10 +147,10 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
       <label htmlFor="review-history">Previous reviews</label><select id="review-history" value={current?.id || ''} onChange={event => setSelectedId(event.target.value)}>{runs.map(record => <option key={record.id} value={record.id}>{new Date(record.created_at).toLocaleString()} · {record.status} · content {record.content_revision}/source {record.source_revision}</option>)}</select>
       {current && <>
         <p className="review-run-summary">{current.status} checks · {conflict ? 'Server changed — reconcile before relying on this review' : stale ? 'Stale content or references' : 'Current content'} · {current.findings.length} {current.findings.length===1 ? 'finding' : 'findings'}</p>
-        <ReviewResults run={current} stale={stale} currentCaption={campaign.caption} api={api} onApply={findingId=>{if(dirty){setError('Save or reconcile your caption edits before applying a correction.');return}setCorrectionId(findingId)}} />
+        <ReviewResults run={current} stale={stale||dirty} currentCaption={campaign.caption} api={api} onDraft={copyDraft} onApply={findingId=>{if(dirty){setError('Save or reconcile your caption edits before applying a correction.');return}setCorrectionId(findingId)}} />
         {correction && <div className="correction-confirm" role="group" aria-label="Confirm explicit correction"><h4>Apply this caption correction?</h4><p>Original: {correction.location.quote || 'whole-caption action'}</p><p>Replacement: {correction.suggested_replacement}</p><button type="button" disabled={busy||dirty||stale} onClick={()=>void applyCorrection()}>Apply correction</button><button type="button" onClick={()=>setCorrectionId('')}>Cancel</button></div>}
         <Collaboration key={current.id} api={api} campaign={campaign} run={current} stale={stale} onChanged={refreshWorkflow}/>
-        <HumanReview key={`human-${current.id}`} api={api} campaign={campaign} run={current} stale={stale} onChanged={refreshWorkflow} epoch={workflowEpoch}/>
+        <HumanReview key={`human-${current.id}`} api={api} campaign={campaign} run={current} stale={stale||dirty||!!posterDraft} onChanged={refreshWorkflow} epoch={workflowEpoch}/>
       </>}
     </section>}
   </div>

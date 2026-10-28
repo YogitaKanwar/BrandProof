@@ -4,6 +4,7 @@ export interface Finding {
   location: { asset: 'caption' | 'poster'; poster_id?: string | null; boxes?: {x:number;y:number;width:number;height:number}[]; ocr_confidence?: number | null; content_revision: number; start: number | null; end: number | null; quote: string | null }
   evidence: { source_id: string; source_version_id: string; source_version: number; quote: string } | null
   suggested_replacement?: string | null
+  unverified_draft_suggestion?: string | null
 }
 export interface CheckStatus { status: 'completed' | 'partial' | 'unavailable' | 'not_assessed'; reason?: string | null; details?: Record<string, unknown>; rules: {source_id: string; source_version: number; kind: string; status: string; reason?: string | null}[] }
 export interface ReviewOut {

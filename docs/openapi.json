@@ -2402,6 +2402,17 @@
               }
             ],
             "title": "Suggested Replacement"
+          },
+          "unverified_draft_suggestion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unverified Draft Suggestion"
           }
         },
         "type": "object",

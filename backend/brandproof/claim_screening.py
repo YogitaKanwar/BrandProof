@@ -93,6 +93,7 @@ def screen_claims(text: str, revision: int):
             },
             "evidence": None,
             "suggested_replacement": None,
+            "unverified_draft_suggestion": "Explore the details and supporting evidence; outcomes are not promised.",
         }
         for start, end, labels in groups[:MAX_FINDINGS]
     ]

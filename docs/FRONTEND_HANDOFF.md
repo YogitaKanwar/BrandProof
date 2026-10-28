@@ -1,5 +1,7 @@
 # Yogita's frontend integration handoff
 
+Feature-branch update (28 October): see `improvements-implementation.md`. Additive findings may include `unverified_draft_suggestion`; never send it to the verified apply endpoint. Copy only through explicit draft acceptance, save as a new revision, and re-review. Contextual consent now discloses high-confidence extracted poster text as well as caption/selected sources. Poster contextual findings retain their own poster IDs, code-point offsets and real OCR boxes. These feature-branch changes are not deployed to production yet.
+
 ## Manual-audit fixes — 28 October 2026
 
 `POST /api/v1/campaigns/{campaign_id}/caption/clear` accepts `{ "expected_revision": n }` and returns CampaignOut. It requires an owner/creator, an existing saved poster and the current content revision. It records an empty-caption revision, retains the poster/history and invalidates previous review/approval currency. Ordinary PUT /caption still rejects empty text. The UI asks for explicit confirmation through Remove saved caption. See the regenerated OpenAPI contract.

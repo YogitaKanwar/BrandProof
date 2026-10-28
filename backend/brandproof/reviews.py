@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db, lock_campaign, require_role, scoped_campaign
 from brandproof.claim_screening import combined_coverage, screen_claims
-from brandproof.contextual import ContextualConfig, ContextualResult, analyze_context
+from brandproof.contextual import (
+    ContextualConfig,
+    ContextualResult,
+    analyze_context,
+    poster_context,
+)
 from brandproof.errors import fail
 from brandproof.finding_groups import finding_groups
 from brandproof.logos import review_logo
@@ -266,6 +271,11 @@ def start_review(
             "Campaign changed during review; retry on the latest version",
         )
     caption_snapshot = campaign.caption
+    contextual_poster = (
+        poster_context(session.get(PosterAsset, poster_check["details"]["asset_id"]))
+        if has_poster
+        else None
+    )
     settings = request.app.state.settings
     session.add(run)
     configured_external = (
@@ -274,7 +284,7 @@ def start_review(
         and settings.ai_provider != "none"
         and settings.ai_model.strip()
         and settings.ai_api_key.get_secret_value().strip()
-        and has_caption
+        and (has_caption or bool(contextual_poster and contextual_poster["text"].strip()))
     )
     if configured_external:
         session.flush()  # Reserve against an existing run ID only for provider admission.
@@ -305,6 +315,7 @@ def start_review(
                     allow_external=settings.external_ai_enabled and payload.external_ai_consent,
                 ),
                 transport=getattr(request.app.state, "contextual_transport", None),
+                poster=contextual_poster,
             )
         )
     excluded_policy_ids = sorted(
@@ -337,6 +348,23 @@ def start_review(
             "details": result.metadata,
         },
     }
+    if has_poster:
+        run.checks = {
+            **run.checks,
+            "poster": {
+                **run.checks["poster"],
+                "details": {
+                    **run.checks["poster"].get("details", {}),
+                    "contextual_claims": {
+                        "status": result.status
+                        if contextual_poster and contextual_poster["text"].strip()
+                        else "not_assessed",
+                        "reason": result.reason,
+                        "scope": "high_confidence_ocr_only",
+                    },
+                },
+            },
+        }
     run.findings = [*run.findings, *result.findings]
     run.status = (
         "completed"

@@ -67,6 +67,7 @@ class Finding(BaseModel):
     location: Location
     evidence: Evidence | None
     suggested_replacement: str | None = None
+    unverified_draft_suggestion: str | None = None
 
 
 class RuleCoverage(BaseModel):
