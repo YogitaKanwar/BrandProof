@@ -17,5 +17,18 @@ export async function prepareExampleCampaign(api: BackendClient, campaign: Campa
     const saved = await api.createSource(campaign.id, source)
     await api.confirmSource(campaign.id, saved.id, saved.version)
   }
-  return api.saveCaption(campaign.id, 'A cheap workshop on 2026-11-13. Book for INR 599.', campaign.content_revision)
+  await api.createSource(campaign.id,{title:'Example claim policy — inspect and confirm',rule:{kind:'claim_policy',guidance:'Outcome promises require documented evidence and explicit conditions. This fictional example is not evidence.'}})
+  let result=await api.saveCaption(campaign.id, 'A cheap workshop on 2026-11-13. Book for INR 599. Guaranteed results in 30 days.', campaign.content_revision)
+  const canvas=document.createElement('canvas');canvas.width=1400;canvas.height=440
+  const context=canvas.getContext('2d')
+  if(!context)throw new Error('Sample poster could not be prepared. The example sources and caption are saved.')
+  context.fillStyle='white';context.fillRect(0,0,canvas.width,canvas.height);context.fillStyle='#142C44'
+  context.font='bold 64px Arial';context.fillText('Fictional workshop launch',40,90)
+  context.font='56px Arial';context.fillText('Book for INR 599.',40,175);context.fillText('Guaranteed results in 30 days.',40,260)
+  context.font='32px Arial';context.fillText('Synthetic demonstration — inspect and edit before review',40,360)
+  const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,'image/png'))
+  if(!blob)throw new Error('Sample poster could not be encoded. Saved example content is preserved.')
+  await api.uploadPoster(campaign.id,new File([blob],'fictional-workshop.png',{type:'image/png'}),result.data.reviews.find(row=>row.id===campaign.id)!.backendCampaign!.content_revision)
+  result=await api.get(campaign.id)
+  return result
 }

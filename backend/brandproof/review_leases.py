@@ -126,3 +126,25 @@ def recover_expired(session, campaign_id=None):
             count += 1
     session.flush()
     return count
+
+
+@contextmanager
+def recovery_loop(sessions):
+    stopped = threading.Event()
+
+    def recover():
+        while not stopped.wait(30):
+            try:
+                with sessions.begin() as session:
+                    recover_expired(session)
+            except Exception:
+                # Never log connection strings, SQL/content or credentials.
+                continue
+
+    worker = threading.Thread(target=recover, daemon=True)
+    worker.start()
+    try:
+        yield
+    finally:
+        stopped.set()
+        worker.join(timeout=2)

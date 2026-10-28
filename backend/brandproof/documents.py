@@ -65,6 +65,12 @@ def candidates(extraction):
                 rule = {"kind": "price", "currency": item[1].upper(), "amount": item[2]}
             elif item := re.fullmatch(r"(?:Campaign )?date:\s*(\d{4}-\d{2}-\d{2})\.?", line, re.I):
                 rule = {"kind": "date", "date": item[1]}
+            elif item := re.fullmatch(r"Background colou?r:\s*(#[0-9a-f]{6})", line, re.I):
+                rule = {"kind": "brand_color", "hex": item[1]}
+            elif item := re.fullmatch(r"Minimum contrast:\s*(\d+(?:\.\d+)?)", line, re.I):
+                rule = {"kind": "contrast", "minimum_ratio": float(item[1])}
+            elif re.fullmatch(r"Alt text:\s*required", line, re.I):
+                rule = {"kind": "alt_text"}
             elif item := re.fullmatch(
                 r'Use "([^"\n]{1,100})" instead of "([^"\n]{1,100})"\.?', line, re.I
             ):

@@ -329,3 +329,15 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 }
 
 .live-sources .fact-status.inactive { background: #fbf5ed; border-color: #ead8c2; color: #79572d; }
+
+.workflow-readiness { border:1px solid var(--border); border-left:3px solid var(--teal); background:#f5faf9; padding:16px; margin-bottom:20px; }
+.workflow-readiness h3 { margin:0; }
+.workflow-readiness li { margin-block:10px; font-size:13px; overflow-wrap:anywhere; }
+.workflow-readiness select { width:auto; }
+.document-import,.alt-text-editor,.measured-checks { border-block:1px solid var(--border); padding:16px 0; margin:16px 0; }
+.unverified-draft { border-left:3px solid #ad7b35; padding:12px; background:#fcf8f0; }
+
+.insight-table { overflow-x:auto; }
+.insight-table table { border-collapse:collapse; width:100%; font-size:13px; text-align:left; }
+.insight-table th,.insight-table td { border-bottom:1px solid var(--border); padding:12px; }
+.insight-card { border:1px solid var(--border); padding:18px; margin-block:16px; overflow-wrap:anywhere; }

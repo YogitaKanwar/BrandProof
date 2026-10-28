@@ -8,15 +8,17 @@ import type { BackendClient } from './api/backend'
 import { ApiError, describeError } from './api/client'
 import { UnsavedChangesContext, useDraftGuard } from './unsavedChanges'
 import CampaignStatus from './CampaignStatus'
+import GovernanceInsights from './GovernanceInsights'
 import { loadInitialWorkspace } from './workspaceStartup'
 import { exampleDetails, prepareExampleCampaign } from './exampleCampaign'
 
-type Page = 'home' | 'new' | 'draft'
+type Page = 'home' | 'new' | 'draft' | 'insights'
 function currentRoute(): { page: Page; id: string; local?: boolean } {
   const hash = window.location.hash
+  if(hash==='#/insights')return {page:'insights',id:''}
   if (hash === '#/new') return { page: 'new', id: '' }
   if (hash === '#/local-new') return {page:'new',id:'',local:true}
-  if (hash.startsWith('#/review/')) return { page: 'draft', id: hash.slice(9) }
+  if (hash.startsWith('#/review/')) return { page: 'draft', id: decodeURIComponent(hash.slice(9).split('?')[0]) }
   return { page: 'home', id: '' }
 }
 const steps = ['Sources', 'Content', 'Review']
@@ -146,7 +148,7 @@ export default function ReviewWorkspace() {
       const prepared = await prepareExampleCampaign(client, campaign)
       setResult(prepared)
       goTo(`/review/${campaign.id}`)
-      setNotice('Fictional example ready: confirmed sample rules and editable content are saved. Run review to generate findings, then choose a correction or human decision.')
+      setNotice('Fictional example ready: four confirmed sample rules, one pending policy, a deliberately flawed caption and a sample poster are saved. Run review to generate findings, then choose a correction or human decision.')
     } catch (error) {
       if (created) {
         try { setResult(await client.get(created.data.reviews[0].id)) } catch { /* Preserve the last acknowledged result. */ }
@@ -199,7 +201,7 @@ export default function ReviewWorkspace() {
   }
   const draft = result?.data.reviews.find(review => review.id === route.id)
   const campaign = result?.data.campaigns.find(item => item.id === draft?.campaignId)
-  const pageName = route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
+  const pageName = route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
   return <UnsavedChangesContext.Provider value={register}><div className="app-shell">
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main')?.focus() }}>Skip to content</a>
     <aside className="sidebar">
@@ -208,6 +210,7 @@ export default function ReviewWorkspace() {
       <nav aria-label="Main navigation" className="main-nav">
         <a href="#/" aria-current={route.page === 'home' ? 'page' : undefined}>Overview</a>
         <a href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-current={route.page === 'new' ? 'page' : undefined}>New review</a>
+        <a href="#/insights" aria-current={route.page==='insights'?'page':undefined}>Governance Insights</a>
       </nav>
       <p className="sidebar-note">Brand governance</p>
     </aside>
@@ -215,11 +218,11 @@ export default function ReviewWorkspace() {
       <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Saved work can be restored in this browser for up to 24 hours. A new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. A protected browser cookie restores the demo; role tokens stay in memory. Server deletion is unavailable. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={loading || connecting || saving} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p>}</div></details></header>
       <main id="main" tabIndex={-1}>
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>
-        <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page === 'home' ? 'Every claim, accounted for.' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page === 'home' ? 'Review marketing content against approved brand information.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}</a>}</div>
+        <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Every claim, accounted for.' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page === 'home' ? 'Review marketing content against approved brand information.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}</a>}</div>
         {route.page === 'home' && <ol aria-label="Review workflow" className="workflow">{steps.map((name, index) => <li key={name}>{index > 0 && <span aria-hidden="true" className="step-divider">→</span>}{name}</li>)}</ol>}
-        {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page === 'home' ? <section aria-labelledby="drafts-heading">
+        {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page==='insights'?<GovernanceInsights api={sourceClient}/>: route.page === 'home' ? <section aria-labelledby="drafts-heading">
           <div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span></div>
-          <p className="form-help">Want to explore first? <button type="button" disabled={loading || connecting || creatingExample} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button> Creates a fictional workshop campaign. Review findings and approval still require your actions.</p>
+          <p className="form-help">Want to explore first? <button type="button" disabled={loading || connecting || creatingExample} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button> Creates a separate fictional campaign; existing campaigns are unchanged. <button type="button" disabled={loading||connecting||creatingExample} onClick={()=>void startReview()}>New blank campaign</button> Findings and human approval still require your actions.</p>
           {!result?.data.reviews.length ? <p className="reviews-empty">No reviews yet</p> : <div className="review-list">{result.data.reviews.map(review => <article className="campaign-card review-row" key={review.id}>
             <h2><a href={`#/review/${review.id}`}>{review.title}</a></h2>
             {result.mode === 'backend' && sourceClient ? <CampaignStatus api={sourceClient} campaignId={review.id}/> : <span className="badge">Draft · Not checked</span>}

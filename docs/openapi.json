@@ -1989,6 +1989,79 @@
         }
       }
     },
+    "/api/v1/campaigns/{campaign_id}/readiness": {
+      "get": {
+        "tags": [
+          "workflow guidance"
+        ],
+        "summary": "Get Readiness",
+        "operationId": "get_readiness_api_v1_campaigns__campaign_id__readiness_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/governance-insights": {
+      "get": {
+        "tags": [
+          "governance"
+        ],
+        "summary": "Governance Insights",
+        "operationId": "governance_insights_api_v1_governance_insights_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsightsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "summary": "Health",
@@ -2401,6 +2474,29 @@
           "text"
         ],
         "title": "CaptionUpdate"
+      },
+      "CategoryInsight": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "observations": {
+            "type": "integer",
+            "title": "Observations"
+          },
+          "campaigns": {
+            "type": "integer",
+            "title": "Campaigns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "observations",
+          "campaigns"
+        ],
+        "title": "CategoryInsight"
       },
       "CheckStatus": {
         "properties": {
@@ -3053,6 +3149,115 @@
         ],
         "title": "FindingGroup"
       },
+      "GuidelineInsight": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version Id"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "observations": {
+            "type": "integer",
+            "title": "Observations"
+          },
+          "reviewed": {
+            "type": "integer",
+            "title": "Reviewed"
+          },
+          "dismissed": {
+            "type": "integer",
+            "title": "Dismissed"
+          },
+          "exceptions": {
+            "type": "integer",
+            "title": "Exceptions"
+          },
+          "reopened": {
+            "type": "integer",
+            "title": "Reopened"
+          },
+          "decision_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Rate"
+          },
+          "potentially_ambiguous": {
+            "type": "boolean",
+            "title": "Potentially Ambiguous"
+          },
+          "sample_status": {
+            "type": "string",
+            "title": "Sample Status"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/InsightEvidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "evidence_truncated": {
+            "type": "boolean",
+            "title": "Evidence Truncated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "source_id",
+          "source_version_id",
+          "source_version",
+          "observations",
+          "reviewed",
+          "dismissed",
+          "exceptions",
+          "reopened",
+          "decision_rate",
+          "potentially_ambiguous",
+          "sample_status",
+          "evidence",
+          "evidence_truncated"
+        ],
+        "title": "GuidelineInsight"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -3090,6 +3295,170 @@
           "notice"
         ],
         "title": "ImportOut"
+      },
+      "InsightEvidence": {
+        "properties": {
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "campaign_name": {
+            "type": "string",
+            "title": "Campaign Name"
+          },
+          "review_id": {
+            "type": "string",
+            "title": "Review Id"
+          },
+          "finding_id": {
+            "type": "string",
+            "title": "Finding Id"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version Id"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "evidence_status": {
+            "type": "string",
+            "title": "Evidence Status"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campaign_id",
+          "campaign_name",
+          "review_id",
+          "finding_id",
+          "content_revision",
+          "source_version_id",
+          "source_id",
+          "source_version",
+          "quote",
+          "message",
+          "evidence_status",
+          "decision",
+          "reason"
+        ],
+        "title": "InsightEvidence"
+      },
+      "InsightsOut": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryInsight"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "guidelines": {
+            "items": {
+              "$ref": "#/components/schemas/GuidelineInsight"
+            },
+            "type": "array",
+            "title": "Guidelines"
+          },
+          "runs_considered": {
+            "type": "integer",
+            "title": "Runs Considered"
+          },
+          "snapshots_considered": {
+            "type": "integer",
+            "title": "Snapshots Considered"
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated"
+          },
+          "minimum_reviewed_sample": {
+            "type": "integer",
+            "title": "Minimum Reviewed Sample"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "categories",
+          "guidelines",
+          "runs_considered",
+          "snapshots_considered",
+          "truncated",
+          "minimum_reviewed_sample",
+          "notice"
+        ],
+        "title": "InsightsOut"
       },
       "Location": {
         "properties": {
@@ -3499,6 +3868,94 @@
           "currency"
         ],
         "title": "PriceRule"
+      },
+      "ReadinessOut": {
+        "properties": {
+          "readiness": {
+            "type": "string",
+            "title": "Readiness"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "actor_role": {
+            "type": "string",
+            "title": "Actor Role"
+          },
+          "blockers": {
+            "items": {
+              "$ref": "#/components/schemas/RequiredAction"
+            },
+            "type": "array",
+            "title": "Blockers"
+          },
+          "manual_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Manual Checks"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "readiness",
+          "content_revision",
+          "source_revision",
+          "actor_role",
+          "blockers",
+          "manual_checks",
+          "notice"
+        ],
+        "title": "ReadinessOut"
+      },
+      "RequiredAction": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "finding_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finding Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "role",
+          "target"
+        ],
+        "title": "RequiredAction"
       },
       "RequiredRule": {
         "properties": {

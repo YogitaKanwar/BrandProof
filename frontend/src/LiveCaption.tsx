@@ -10,7 +10,7 @@ import HumanReview from './HumanReview'
 import { useUnsavedChanges } from './unsavedChanges'
 import {copyCandidate} from './draftSuggestion'
 
-export default function LiveCaption({ api, campaign, onCampaignChange, onResultsAvailable,posterAttached,posterPending,preparePoster,onCaptionSaved,children }: { api: BackendClient; campaign: CampaignOut; onCampaignChange: (result: ReviewResult) => void; onResultsAvailable: (available: boolean) => void;posterAttached:boolean;posterPending:boolean;preparePoster:()=>Promise<CampaignOut>;onCaptionSaved:(previous:number,current:number)=>void;children?:ReactNode }) {
+export default function LiveCaption({ api, campaign, onCampaignChange, onResultsAvailable,posterAttached,posterPending,preparePoster,onCaptionSaved,onDraftDirty,onStateChange,children }: { api: BackendClient; campaign: CampaignOut; onCampaignChange: (result: ReviewResult) => void; onResultsAvailable: (available: boolean) => void;posterAttached:boolean;posterPending:boolean;preparePoster:()=>Promise<CampaignOut>;onCaptionSaved:(previous:number,current:number)=>void;children?:ReactNode;onDraftDirty?:(dirty:boolean)=>void;onStateChange?:()=>void }) {
   const [text, setText] = useState(campaign.caption)
   const [saved, setSaved] = useState(campaign.caption)
   const [revision, setRevision] = useState(campaign.content_revision)
@@ -24,7 +24,7 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
   const [posterDraft,setPosterDraft]=useState('')
   const [server, setServer] = useState<CampaignOut | null>(null)
   const [runs, setRuns] = useState<ReviewOut[]>([])
-  const [selectedId, setSelectedId] = useState('')
+  const [selectedId, setSelectedId] = useState(()=>new URLSearchParams(window.location.hash.split('?')[1]||'').get('run')||'')
   const [returnedRunId, setReturnedRunId] = useState('')
   const [historyError, setHistoryError] = useState('')
   const [correctionId,setCorrectionId]=useState('')
@@ -32,11 +32,14 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
   const [workflowEpoch,setWorkflowEpoch]=useState(0)
   const historyRequest = useRef(0)
   const current = runs.find(run => run.id === selectedId) || runs[0]
+  useEffect(()=>{const params=new URLSearchParams(window.location.hash.split('?')[1]||'');const finding=params.get('finding'),version=params.get('source_version');const timer=setTimeout(()=>{if(version){const node=document.getElementById(`snapshot-${version}`);const disclosure=node?.closest('details');if(disclosure)disclosure.open=true}if(finding){const node=document.getElementById(`finding-${finding}`);node?.scrollIntoView({block:'center'});node?.focus()}},50);return()=>clearTimeout(timer)},[runs,selectedId])
   const dirty = text !== saved
   useUnsavedChanges(dirty || busy || clearRequested || !!posterDraft)
   const effectiveRevision=campaign.caption===saved ? campaign.content_revision : revision
   const stale=!!current && (conflict||!current.is_current||current.content_revision!==campaign.content_revision||current.source_revision!==campaign.source_revision)
   const correction=current?.findings.find(finding=>finding.id===correctionId)
+  useEffect(()=>{onDraftDirty?.(dirty||!!posterDraft)},[dirty,posterDraft,onDraftDirty])
+  useEffect(()=>{onStateChange?.()},[workflowEpoch,runs.length,onStateChange])
   useEffect(() => {
     if (!returnedRunId) return
     const heading = document.getElementById('results-heading')
@@ -129,6 +132,7 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
     try{setText(copyCandidate(text,finding));setStatus('Unverified candidate copied into the unsaved caption. Review its meaning and facts, explicitly save, then run a fresh review.');document.getElementById('marketing-caption')?.focus()}catch(error){setError(describeError(error))}
   }
   return <div className="live-caption">
+
     <label htmlFor="marketing-caption">What should we review?</label><textarea id="marketing-caption" rows={6} maxLength={20000} value={text} disabled={busy} onChange={event => { setText(event.target.value); setStatus('') }} aria-describedby="live-caption-state" placeholder="Paste your marketing caption here." />
     <div className="caption-footer"><small>{text.length.toLocaleString()} characters</small><button type="button" aria-describedby="live-caption-state" disabled={busy || conflict || !dirty || !text.trim()} onClick={() => void save()}>{busy && action === 'save' ? 'Saving…' : !dirty && saved.trim() ? 'Caption saved' : 'Save caption'}</button></div>
     <p id="live-caption-state" className="form-help">{busy ? 'Please wait for the current request to finish.' : conflict ? 'Saving is paused because the server version changed. Open “Having trouble saving?” below, compare versions, then choose which text to keep.' : !text.trim() ? 'Enter a caption to enable Save caption.' : dirty ? 'Unsaved changes. Save your caption to enable Run review.' : 'Caption saved. Edit the text to save changes, or select Run review below.'}</p>
