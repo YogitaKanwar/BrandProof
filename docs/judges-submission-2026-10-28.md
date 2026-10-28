@@ -1,9 +1,9 @@
 # Copy-ready judging answers
 
 Public link: https://brand-proof-tau.vercel.app/
-Verified public frontend/backend commit: `36cb8ae95adf42a252808e08f8dcdf972627c360`.
+Verified public frontend/backend commit: `639fe5fb8a4b43d9a46f1bec503e2b8031273f78`.
 
-These answers distinguish the public Round 2 release from the Round 3 feature branch. PDF import, measured accessibility, governance insights, contextual OCR/draft extensions and connected-review deletion are implemented on the review branch but are not deployed at this link. The three commitments below are the exact proposed public Round 3 deliverables; do not also promise real SSO, font recognition or universal visual/claim accuracy.
+These answers distinguish the public release from the Round 3 feature branch. Connected-review deletion and Undo are now live. PDF import, measured accessibility, governance insights and contextual OCR/draft extensions remain on the review branch and are not deployed at this link. The three commitments below are the exact proposed public Round 3 deliverables; do not also promise real SSO, font recognition or universal visual/claim accuracy.
 
 ## Your three improvements for Round 3
 
@@ -22,6 +22,7 @@ We will summarize recurring finding categories across campaigns and identify sou
 ## The list of features you completed
 
 - Isolated fictional demo workspaces with saved campaigns and Recent Reviews.
+- Dashboard review deletion with confirmation, Cancel, and in-page Undo while retaining audit history.
 - Owner-confirmed price, date, terminology, required-text, tone and claim-policy references.
 - Immutable reference versions and publication-date validity checks.
 - Caption saving, revision history and explicit removal for poster-only reviews.
@@ -60,13 +61,13 @@ We added immutable revision history, explicit corrections, stale approval receip
 
 - Live external contextual AI is not yet accepted as working in the public deployment; unavailable checks remain incomplete and require human review.
 - Logo upload/confirmation works, but automatic logo comparison can time out on Render Free compute. Fine-detail logo verification remains manual.
-- PDF import, measured colour/contrast and alt-text checks, Governance Insights and connected Recent Reviews deletion are on the review branch, not the judges' public release.
+- PDF import, measured colour/contrast and alt-text checks, and Governance Insights are on the review branch, not the judges' public release.
 - OCR can miss or misread text. Complex layouts, low-confidence extraction and unsupported claim/price/date formats require manual inspection. Local claim screening is bounded English pattern matching, not general truth or legal-compliance verification.
 - Demo roles are synthetic and do not represent real authenticated team members or independent humans.
-- Free backend cold starts can cause an initial API failure; wait and retry. Current Free PostgreSQL expires 27 November 2026, so long-term retention is not promised.
+- Free backend cold starts can take up to 90 seconds; the page now waits with a starting-service message before submitting. Longer outages still report an error. Current Free PostgreSQL expires 27 November 2026, so long-term retention is not promised.
 
-## Delete option implementation note — not part of the live feature list
+## Delete option implementation note — verified live
 
-Connected Recent Reviews now has explicit Delete/Cancel/Confirm and Undo on the feature branch. Owner-authorized, revision-checked removal hides the campaign from lists/insights and rejects normal reads/writes, retaining original audit/image/source data. Running reviews cannot be deleted. Undo is bound to the exact deletion ID so an old Undo cannot restore a later deletion. The migration adds only `campaign_removals`; it does not drop existing data. This is reversible workspace removal, not permanent data erasure. The original local-draft deletion remains supported.
+Connected Recent Reviews now has explicit Delete/Cancel/Confirm and Undo on the public dashboard. Owner-authorized, revision-checked removal hides the campaign from the list and rejects normal reads/writes, retaining original audit/image/source data. Running reviews cannot be deleted. Undo is bound to the exact deletion ID so an old Undo cannot restore a later deletion; its handle is lost on full reload. Startup adds only `campaign_removals`; it does not drop existing data. This is reversible workspace removal, not permanent data erasure. The original local-draft deletion remains supported.
 
-Fresh local verification: 516 backend tests, 51 frontend tests, lint/build and focused browser delete/cancel/Undo/reload passed. The feature remains subject to the prior review, migration/CI and production deployment gates.
+The isolated public release passed 501 backend tests, 53 frontend tests, lint/build, eight live HTTP suites and public browser Delete/Cancel/Undo/mobile/reload checks. A pre-deployment fictional persistence probe confirmed unchanged session, source, review and image bytes across the backend release. See REVIEW_DELETION_RELEASE.md.

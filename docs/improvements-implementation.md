@@ -52,3 +52,8 @@ Original local documentation additions and assessment are preserved and remain u
 - Additive migration `0005_review_removal` creates only `campaign_removals`. No existing campaign/image/audit record is erased. Old workers must remain stopped for a reviewed rollout, as with the previous migration release gate.
 - Fresh full backend 516 passed, frontend 51 passed, production frontend build/lint and the genuine browser cancel/delete/Undo/reload flow passed. New API routes and CORS DELETE are documented in OpenAPI. Existing local edits remain preserved.
 - Public provider metadata/HTTP contract still show `36cb8ae`, no connected deletion/PDF endpoint. [Copy-ready judging answers](judges-submission-2026-10-28.md) list only finished public features and name exactly three bounded Round 3 deliverables. Connected deletion is not represented as deployed.
+
+
+## Public deletion release update
+
+The earlier non-deployment note is superseded for deletion only: production frontend/backend 639fe5f now include the narrow Delete/Cancel/Confirm/Undo backport and startup fix. Existing records and image/session persistence were verified across the Render release. Broader PDF/visual/governance/provider changes remain undeployed and require the existing review and migration gates. See REVIEW_DELETION_RELEASE.md and updated judging answers.
