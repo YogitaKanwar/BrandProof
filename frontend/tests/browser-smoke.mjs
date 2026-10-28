@@ -1,3 +1,5 @@
+import { apiBase, verifyBackend } from './live-config.mjs'
+await verifyBackend()
 // Run against Vite preview :4173 and a dedicated headless Chrome CDP session :9223.
 import assert from 'node:assert/strict'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
@@ -240,7 +242,7 @@ try {
     const campaignId = await evaluate(`location.hash.slice(9)`)
     await evaluate(`Array.from(document.querySelectorAll('.source-actions button')).find(button=>button.textContent==='Edit').click()`)
     await evaluate(`(() => {const input=document.querySelector('#fact-value');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,'777');input.dispatchEvent(new Event('input',{bubbles:true}));})()`)
-    const concurrent = await fetch(`http://127.0.0.1:8000/api/v1/campaigns/${campaignId}/sources/${sourceId}`, { method:'PUT',headers:{Authorization:`Bearer ${demoSession.actors.owner.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({expected_version:3,title:'Concurrent price',rule:{kind:'price',amount:'699',currency:'INR'},valid_from:null,valid_until:null}) })
+    const concurrent = await fetch(`${apiBase}/campaigns/${campaignId}/sources/${sourceId}`, { method:'PUT',headers:{Authorization:`Bearer ${demoSession.actors.owner.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({expected_version:3,title:'Concurrent price',rule:{kind:'price',amount:'699',currency:'INR'},valid_from:null,valid_until:null}) })
     assert.equal(concurrent.status,200)
     await evaluate(`document.querySelector('.fact-editor button[type=submit]').click()`)
     await waitFor(`document.querySelector('.fact-editor .error')?.textContent.includes('stale')`)
@@ -313,7 +315,7 @@ try {
     await evaluate(`document.querySelector('.finding-evidence a').click()`)
     assert.equal(await evaluate(`location.hash.startsWith('#/review/')`),true)
     assert.equal(await evaluate(`document.querySelector('.review-snapshots').open`),true)
-    const concurrentCaption=await fetch(`http://127.0.0.1:8000/api/v1/campaigns/${campaignId}/caption`,{method:'PUT',headers:{Authorization:`Bearer ${demoSession.actors.creator.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({expected_revision:2,text:'Book for INR 699.'})})
+    const concurrentCaption=await fetch(`${apiBase}/campaigns/${campaignId}/caption`,{method:'PUT',headers:{Authorization:`Bearer ${demoSession.actors.creator.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({expected_revision:2,text:'Book for INR 699.'})})
     assert.equal(concurrentCaption.status,200)
     await evaluate(`(() => {const input=document.querySelector('#marketing-caption');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(input,'Book for INR 899.');input.dispatchEvent(new Event('input',{bubbles:true}));})()`)
     await evaluate(`document.querySelector('.caption-footer button').click()`)
@@ -398,26 +400,25 @@ try {
     checks.push('Y06/Y07 real comments, explicit correction, reviewer decision, empty manual notes, persisted approval and stale receipt after edit')
     await evaluate(`(()=>{const canvas=document.createElement('canvas');canvas.width=600;canvas.height=200;const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,600,200);ctx.fillStyle='black';ctx.font='40px sans-serif';ctx.fillText('Workshop INR 799',20,90);const data=Uint8Array.from(atob(canvas.toDataURL('image/png').split(',')[1]),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([data],'live-poster.png',{type:'image/png'}));const input=document.querySelector('.live-poster input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));})()`)
     await waitFor(`!!document.querySelector('.poster-filename')`)
-    await waitFor(`document.querySelector('.run-caption button').disabled`)
-    assert.match(await evaluate(`document.querySelector('#run-review-help').textContent`),/Upload or remove/)
+    await waitFor(`!document.querySelector('.run-caption button').disabled`)
+    assert.match(await evaluate(`document.querySelector('.run-caption button').textContent`),/Upload poster and run review/)
     const countBeforePending=await evaluate(`document.querySelectorAll('#review-history option').length`)
-    await evaluate(`document.querySelector('.run-caption button').click()`)
-    assert.equal(await evaluate(`document.querySelectorAll('#review-history option').length`),countBeforePending)
     await evaluate(`(()=>{const input=document.querySelector('#marketing-caption');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(input,'Book now for INR 699. New artwork.');input.dispatchEvent(new Event('input',{bubbles:true}));})()`)
     await pointerClick('.caption-footer button')
-    await waitFor(`document.querySelector('#live-caption-state').textContent === 'Caption saved.'`)
-    assert.equal(await evaluate(`document.querySelector('.run-caption button').disabled`),true)
-    const latestForPoster=await(await fetch(`http://127.0.0.1:8000/api/v1/campaigns/${campaignId}`,{headers:{Authorization:`Bearer ${demoSession.actors.creator.access_token}`}})).json()
-    const concurrentPoster=await fetch(`http://127.0.0.1:8000/api/v1/campaigns/${campaignId}/posters?expected_revision=${latestForPoster.content_revision}`,{method:'PUT',headers:{Authorization:`Bearer ${demoSession.actors.creator.access_token}`,'Content-Type':'image/png'},body:await readFile('tests/fixtures/poster.png')})
+    await waitFor(`document.querySelector('#live-caption-state').textContent.startsWith('Caption saved.') && document.querySelector('.live-caption .caption-footer button').disabled`)
+    assert.equal(await evaluate(`document.querySelector('.run-caption button').disabled`),false)
+    const latestForPoster=await(await fetch(`${apiBase}/campaigns/${campaignId}`,{headers:{Authorization:`Bearer ${demoSession.actors.creator.access_token}`}})).json()
+    const concurrentPoster=await fetch(`${apiBase}/campaigns/${campaignId}/posters?expected_revision=${latestForPoster.content_revision}`,{method:'PUT',headers:{Authorization:`Bearer ${demoSession.actors.creator.access_token}`,'Content-Type':'image/png'},body:await readFile('tests/fixtures/poster.png')})
     assert.equal(concurrentPoster.status,200)
-    await pointerClick('.poster-actions button:last-child')
+    await pointerClick('.run-caption button')
     await waitFor(`document.querySelector('.live-poster .error')?.textContent.includes('State changed')`)
     assert.match(await evaluate(`document.querySelector('.poster-filename').textContent`),/not uploaded yet/)
-    assert.equal(await evaluate(`document.querySelector('.run-caption button').disabled`),true)
+    assert.equal(await evaluate(`document.querySelectorAll('#review-history option').length`),countBeforePending)
     await pointerClick('.live-poster > button')
     await waitFor(`document.querySelector('.poster-upload-status').textContent.includes('Latest revision loaded')`)
-    await evaluate(`Array.from(document.querySelectorAll('.live-poster button')).find(button=>button.textContent==='Upload poster').click()`)
+    await pointerClick('.run-caption button')
     await waitFor(`document.querySelector('.poster-upload-status').textContent.includes('Poster saved privately')`)
+    await waitFor(`document.querySelectorAll('#review-history option').length === ${countBeforePending+1}`)
     await waitFor(`document.querySelector('.private-poster img')?.naturalWidth === 600`)
     await waitFor(`!document.querySelector('.run-caption button').disabled`)
     for(const width of [1440,390,320]) {
@@ -425,8 +426,31 @@ try {
       assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`),true)
     }
     await capture('private-poster-upload')
+    if (process.env.BRANDPROOF_TEST_OCR) {
+      await pointerClick('.run-caption button')
+      await waitFor(`!!document.querySelector('.findings-list .ocr-box') && !document.querySelector('.run-caption button').disabled`)
+      const reviewId=await evaluate(`document.querySelector('#review-history').value`)
+      const result=await(await fetch(`${apiBase}/campaigns/${campaignId}/reviews/${reviewId}`,{headers:{Authorization:`Bearer ${demoSession.actors.creator.access_token}`}})).json()
+      const posterFinding=result.findings.find(finding=>finding.location.asset==='poster'&&finding.location.boxes?.length)
+      assert.ok(posterFinding,'Genuine OCR finding and boxes required')
+      assert.equal(posterFinding.evidence_status,'contradicted')
+      for(const width of [1440,390,320]) {
+        await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<760})
+        const geometry=await evaluate(`(()=>{const canvas=document.querySelector('.findings-list .poster-canvas');const img=canvas.querySelector('img');const r=img.getBoundingClientRect();return {width:r.width,height:r.height,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,boxes:Array.from(canvas.querySelectorAll('.ocr-box')).map(node=>{const b=node.getBoundingClientRect();return {x:b.left-r.left,y:b.top-r.top,width:b.width,height:b.height}})}})()`)
+        assert.equal(geometry.boxes.length,posterFinding.location.boxes.length)
+        assert.ok(geometry.naturalWidth>0)
+        for(const [index,box] of posterFinding.location.boxes.entries()) {
+          const actual=geometry.boxes[index]
+          for(const [key,scale] of [['x',geometry.width/geometry.naturalWidth],['width',geometry.width/geometry.naturalWidth],['y',geometry.height/geometry.naturalHeight],['height',geometry.height/geometry.naturalHeight]])
+            assert.ok(Math.abs(actual[key]-box[key]*scale)<1.5,`Actual OCR ${key} aligns at ${width}px`)
+        }
+        await evaluate(`document.querySelector('.findings-list .poster-canvas').scrollIntoView({block:'center'})`)
+        await capture(`real-ocr-overlay-${width}`)
+      }
+      checks.push('genuine poster contradiction and OCR boxes align with rendered image at desktop/390px/320px')
+    }
     assert.equal(await evaluate(`document.querySelector('.ai-consent input').checked`),false)
-    checks.push('Y04 selected image blocks review until uploaded; real private retrieval, honest OCR status and AI consent default off')
+    checks.push('Y04 selected image offers combined upload/review; failed upload creates no run; real saved-poster results and AI consent default off')
     checks.push('poster selected before our caption save uses its acknowledged revision; genuine concurrent upload remains a 409 until explicit reconciliation')
     checks.push('Y03 server caption save/run, partial status, history and explicit caption conflict reconciliation')
     await evaluate(`location.hash = '/'`)
@@ -465,6 +489,35 @@ try {
     await pointerClick('.confirm-source')
     await waitFor(`document.querySelector('.server-source .badge')?.textContent === 'Confirmed'`)
     checks.push('exact /#/new fresh-load path uses visible mouse clicks through real owner confirmation v2')
+    if(process.env.BRANDPROOF_TEST_LOGO) {
+      await evaluate(`(()=>{const canvas=document.createElement('canvas');canvas.width=80;canvas.height=40;const ctx=canvas.getContext('2d');ctx.fillStyle='navy';ctx.fillRect(0,0,80,40);ctx.fillStyle='teal';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(40,40);ctx.lineTo(80,0);ctx.fill();const data=Uint8Array.from(atob(canvas.toDataURL('image/png').split(',')[1]),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([data],'reference.png',{type:'image/png'}));const input=document.querySelector('.brand-logo input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));})()`)
+      await pointerClick('.brand-logo button')
+      await waitFor(`document.querySelector('.brand-logo').textContent.includes('Pending owner confirmation') && document.querySelectorAll('.brand-logo button').length===2`)
+      await pointerClick('.brand-logo button:last-of-type')
+      await waitFor(`document.querySelector('.brand-logo').textContent.includes('Owner confirmed')`)
+      checks.push('private reference logo upload, explicit owner confirmation and immutable reference version displayed')
+    }
+    if(process.env.BRANDPROOF_TEST_OCR) {
+      for(const mime of ['image/png','image/jpeg']) {
+        const count=await evaluate(`document.querySelectorAll('#review-history option').length`)
+        await evaluate(`(()=>{const canvas=document.createElement('canvas');canvas.width=1100;canvas.height=240;const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,1100,240);ctx.fillStyle='black';ctx.font='64px Arial';ctx.fillText('Workshop INR 599',35,120);const data=Uint8Array.from(atob(canvas.toDataURL(${JSON.stringify(mime)}).split(',')[1]),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([data],'poster-test', {type:${JSON.stringify(mime)}}));const input=document.querySelector('.live-poster input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));})()`)
+        await waitFor(`!!document.querySelector('.poster-filename') && !document.querySelector('.run-caption button').disabled`)
+        assert.equal(await evaluate(`document.querySelector('#marketing-caption').value`),'')
+        assert.match(await evaluate(`document.querySelector('.run-caption button').textContent`),/Upload poster and run review/)
+        await pointerClick('.run-caption button')
+        await waitFor(`document.querySelectorAll('#review-history option').length === ${count+1} && !document.querySelector('.run-caption button').disabled`)
+        await waitFor(`!!document.querySelector('.findings-list .ocr-box')`)
+        assert.match(await evaluate(`document.querySelector('.findings-list').textContent`),/Supported contradiction/)
+        assert.match(await evaluate(`document.querySelector('.finding-evidence').textContent`),/INR 499/)
+        assert.equal(await evaluate(`document.querySelector('.poster-filename')`),null)
+        if(process.env.BRANDPROOF_TEST_LOGO) {
+          assert.match(await evaluate(`document.querySelector('.logo-comparison').textContent`),/Possible logo mismatch/)
+          await waitFor(`!!Array.from(document.querySelectorAll('.finding img')).find(image=>image.alt==='Historical owner-confirmed reference logo'&&image.naturalWidth===80)`)
+          assert.match(await evaluate(`Array.from(document.querySelectorAll('.finding')).find(node=>node.querySelector('h4')?.textContent==='logo').textContent`),/Needs clarification/)
+        }
+      }
+      checks.push('poster-only PNG and JPEG: choose image then one upload/review action returns real INR 599 vs 499 findings without a caption')
+    }
     checks.push('real backend browser connection, campaign create/list/get, field validation and receipt-based dashboard status')
     await send('Network.clearBrowserCookies')
     await send('Page.navigate',{url:`${frontendUrl.split('#')[0]}#/new`})

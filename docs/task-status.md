@@ -68,3 +68,132 @@ Six task flows are implemented and verified against the local API; four tasks re
 2. Add a price fact, save it, then explicitly confirm as owner. Enter a conflicting caption and save it.
 3. Run review: check visible progress, actual results/evidence and unavailable coverage. For poster-only review, upload the file to the server first.
 4. Exercise explicit corrections/comments and creator/reviewer controls. Source confirmation is not content approval. Refresh and verify the saved campaign, source versions, findings and receipts return; unsaved edits must still warn before leaving.
+
+## Historical teammate runtime notes (before this integration)
+
+4. Exercise explicit corrections/comments and creator/reviewer controls. Source confirmation is not content approval; refreshing still loses demo access.
+
+## Fresh audit — 2026-10-27
+
+- Fetched all remote refs; integration HEAD 878e95c matches its remote. Remote main already contains this checkpoint; no merge/push/deploy performed.
+- Fresh lint/build passed and 33 frontend unit tests passed. Seven HTTP scripts failed at session creation with 404: port 8000 serves SpeakEZ API, not BrandProof.
+- Backend pytest blocked by Windows Application Control, including escalated execution. Browser CDP unavailable after attempted launch. Historical results above are not fresh acceptance.
+- No frontend/backend code changed. See FINAL_QA_REPORT.md and BUG_TRACKER.md. Next: restore approved BrandProof runtime on a free port, align targets and rerun genuine API/browser/configured-provider acceptance. Current release verdict: NOT READY.
+
+## Port isolation follow-up — 2026-10-27
+
+- Frontend dev/preview proxy and HTTP/browser tests target :8001; shared configurable OpenAPI identity guard prevents tests creating sessions against another service.
+- Fresh lint/build pass; 36 unit tests pass. Seven HTTP reruns blocked at unreachable :8001 preflight. No connected workflow or release acceptance claimed.
+- Actual Uvicorn :8001 startup denied by Enterprise Code Integrity signing policy (3033/3077); approved Python/Linux runtime required. SpeakEZ untouched; backend logic unchanged. Full evidence and alternative-host command in FINAL_QA_REPORT.md.
+
+## Latest requested retest — 2026-10-27
+
+Fresh `npm.cmd run verify`: build PASS, lint PASS, 36 unit tests PASS (zero failed/skipped); test:api BLOCKED by ECONNREFUSED at :8001/openapi.json. Fail-fast verification did not execute the remaining six HTTP scripts or browser suite. Port :8000 still identifies SpeakEZ API and was left unchanged. Retried documented Uvicorn startup on :8001: `Program 'python.exe' failed to run: An Application Control policy has blocked this file`. No policy bypass or backend changes. Runtime-dependent tests remain blocked; next action is an approved Python runtime or private approved Linux test host. Release readiness remains NOT READY.
+
+
+## Signed Python runtime retest ? 2026-10-27 (latest evidence)
+
+Local application is running and core integration is verified; configured OCR/Groq and release acceptance remain incomplete. This section supersedes earlier runtime-blocked results, not their historical record.
+
+- Official Python 3.14.10 at `C:/Users/Admin/AppData/Local/Programs/Python/Python314/python.exe`: Authenticode Valid; executes. Created `.venv-check` without altering `.venv`; its Python also has Valid signature and executes under current security policies.
+- Installed repository dependencies using existing uv 0.13.5 with `UV_PROJECT_ENVIRONMENT=.venv-check`, workspace-local `UV_CACHE_DIR=.cache/uv`, `uv sync --extra dev --python <official interpreter> --locked`. Network access required sandbox escalation; installation succeeded without changing uv.lock. All 39 installed packages resolved for Python 3.14; runtime/import/API tests passed subject to the prerequisites below. This establishes exercised compatibility, not universal support.
+- Backend runs in dedicated terminal session on 127.0.0.1:8001 with access logging disabled and separate synthetic SQLite storage `data/qa-python314-20261027.db`; original database preserved. Health returns status/database ok; OpenAPI title is BrandProof API; /docs returns 200. SpeakEZ still identifies itself on :8000 and was untouched.
+- Frontend development server runs at http://127.0.0.1:5174/; production preview at http://127.0.0.1:4173/. Both returned HTTP 200 and proxy health to BrandProof successfully. Existing :5173 was occupied and its proxy returned 404, so it is not the verified URL for this run. Vite configuration already defaults to backend :8001.
+
+| Fresh check | Actual outcome |
+| --- | --- |
+| Frontend lint / TypeScript + Vite build | PASS |
+| Frontend unit tests | 36 passed, 0 failed/skipped |
+| Seven real API scripts | All PASS: session/campaign, sources, reviews, posters, collaboration, approval, consent |
+| Approved INR 499 versus caption INR 599 | Genuine contradicted finding with approved source v2 evidence; correction/history/staleness verified |
+| PNG and additional synthetic JPEG uploads | PASS upload/private retrieval/revision guards; OCR unavailable, tool_missing |
+| Connected browser suite | PASS all 22 reported groups, Sources ? Content ? Findings ? Human Review; desktop/320px/390px, comments, corrections, manual-note/role guards, stale receipts, conflicts, refresh and outage handling; no uncaught JS errors |
+| Backend pytest | 310 passed, 21 failed, 1 collection error; 86.78s using --continue-on-collection-errors |
+| Backend Ruff lint and format | PASS; 68 files already formatted |
+
+Backend test failures and collection error report `OSError: cannot open resource` for hardcoded `/usr/share/fonts/noto/NotoSans-Regular.ttf`; local Tesseract is also absent. Initial normal pytest stopped at collection; the continued run above exposes remaining results. No test or backend code was changed to hide failures. Detailed local evidence: `.cache/backend-python314-full.log` and `.cache/qa-python314-full.xml` (ignored runtime artifacts).
+
+Groq/provider is none, model/key are not configured, and external AI is disabled. Consent false and explicit true both correctly preserve incomplete contextual status; no live provider call or OCR extraction success is claimed. No secrets or bearer tokens printed or stored by test clients; backend retains documented token hashes. Browser refresh deliberately ends in-memory demo access while preserving server data; this is tested behavior, not resumable authentication.
+
+Chrome CDP initially refused :9223 inside the sandbox; a dedicated hidden Chrome process launched with approved escalation made the real connected suite executable (`BRANDPROOF_TEST_BACKEND=1 npm.cmd run test:browser`). No public deployment, push, merge, backend modifications or security-policy changes performed. `.venv-check/` and `.cache/` are ignored to protect local environment artifacts.
+
+Remaining: install/approve local Tesseract English and provide the documented font runtime (or run the unchanged suite on approved Linux); separately configure server-side Groq and obtain explicit per-review consent before a live check. Real OCR evidence/boxes, configured-provider acceptance, service restart durability, public hosting and human usability acceptance remain unverified. See configured-backend-tests.md. Running terminals must remain open to keep local URLs available.
+
+
+## Caption save clarity ? 2026-10-27
+
+User reported disabled Save caption at :5174. Reproduced successful genuine save/run journey there; exact user state not established. Added explicit empty/unchanged/busy/conflict explanations and ?Caption saved? button label for unchanged saved text, with accessible description. Conflict protection remains intact. Updated browser assertion for revised saved-state explanation. Lint/build and 36 unit tests pass; connected :5174 browser suite passes all 22 groups and real caption review script passes (confirmed INR 499 vs INR 599 contradiction and source v2 evidence). OCR poster coordinates and live contextual AI remain unavailable; no backend changes.
+
+
+## Completion Sprint 1 - 2026-10-27
+
+- User-approved Tesseract 5.5.3 installation succeeded; English data verified. Direct genuine PNG/JPEG OCR reads Workshop INR 599 and returns coordinates.
+- Application OCR remains BLOCKED: confirmed backend Windows incompatibility in selectors over subprocess pipes (WinError 10038/10093). Real application PNG/JPEG probes return extraction_failed and partial reviews without poster findings. Rushab review needed; no backend/tests changed. Existing :8001 also needs updated process PATH on restart.
+- Font is a test-image fixture prerequisite, not a production OCR dependency. Pre-install fresh suite: 310 passed, 21 failed, 1 collection error; 20 failures + collection error are missing Linux Noto fixture font, remaining failure is missing OCR tool. No skipped tests or masked assertions.
+- Groq BLOCKED: provider none, key/model absent, server disabled; no root .env or Process/User/Machine key/model configuration. User asked to configure locally without sharing key in chat. No paid/live calls made; one consented review pending configuration.
+- Fresh frontend lint/build/36 unit tests and real poster/consent HTTP scripts pass; actual OCR highlight acceptance remains blocked.
+- See FINAL_QA_REPORT.md and BUG_TRACKER.md for installation details, root causes and evidence. Refresh recovery/deployment remain open. No push/merge/deployment or security changes.
+
+
+### Post-install full-suite result - 2026-10-27
+
+With `C:/Program Files/Tesseract-OCR` explicitly on process PATH, the unchanged full suite completed: **310 passed, 21 failed, 1 collection error, 0 skipped**, 119.76s. The 20 font-rendering failures and import-time collection error remain. Blank-image OCR still fails because production Windows pipe selection returns unavailable/extraction_failed despite a working engine; this is now the confirmed runner compatibility defect, not missing Tesseract. Evidence: `.cache/backend-sprint1-ocr-installed.log` and `.cache/qa-sprint1-ocr-installed.xml`. No further reruns can resolve unchanged prerequisites/code; Rushab review is required. Latest local health and frontend HTTP checks remain ok/200. No Groq credentials arrived during this run; genuine provider call remains blocked.
+
+
+## Completion Sprint 1 - fixes accepted locally (2026-10-27)
+
+OCR is working end to end after explicitly authorised Windows runner and portable fixture-font fixes. Genuine PNG/JPEG INR 599 posters contradict confirmed INR 499 v2, with real persisted coordinates/evidence. Browser geometry and inspected mobile screenshot confirm alignment at desktop/390/320px. Exactly one consented Groq request completed with one validated claim finding, no rejections, persisted unchanged across GET/process restart. No-consent stayed unavailable. Overall review stayed partial. Automatic regressions disabled provider calls; final server restored to .env Groq enablement/Tesseract PATH.
+
+Frontend lint/build/36 unit tests, seven HTTP scripts, connected browser 23 groups and Ruff pass. First full backend run: 358 passed plus three new process regression tests passed separately; final combined result follows. Rushab review patch and summary: RUSHAB_OCR_REVIEW.md, rushab-ocr-review.patch. No push/merge/deploy or security changes. Linux CI, same-session refresh recovery, broader provider evaluation, production identity/public hosting and human acceptance remain.
+
+
+### Final combined verification - 2026-10-27
+
+**Backend: 361 passed, 0 failed, 0 errors, 0 skipped in 132.09s.** Full suite includes the three new real-pipe regressions. Evidence: .cache/backend-completion-final.log and .cache/qa-completion-final.xml. Ruff lint/format pass. Frontend lint/build/36 tests, all seven real HTTP scripts and connected browser 23 groups pass. Actual PNG/JPEG INR 499-versus-599 poster contradictions and desktop/mobile genuine-box alignment verified. Exactly one Groq provider admission, successful validated/persisted result, no retry. Backend is restored with .env Groq enabled and Tesseract PATH on 127.0.0.1:8001; health/database ok, docs 200, frontend :5174 returns 200. SpeakEZ still identifies on :8000 unchanged.
+
+No immediate user setup action is needed. Rushab review and Linux CI remain required before merging the focused backend diff; same-workspace refresh recovery, deployment, broader model evaluation and human usability acceptance remain separate. Nothing pushed, merged or deployed.
+
+
+## Full application retest requested before poster upload - 2026-10-27
+
+Fresh unchanged full backend suite: 361 passed, 0 failed/errors/skipped, 120.05s (.cache/backend-full-retest.log and .cache/qa-full-retest.xml). Ruff lint/format pass. Frontend lint/build, 36 unit tests, all seven genuine API scripts and all 23 connected browser groups pass, including real OCR poster contradiction and desktop/mobile box alignment. Fixture OCR low_confidence stays partial. Automated provider calls disabled only during HTTP/browser regression; final server restored with existing Groq .env settings and Tesseract PATH. Provider admission count remains exactly 1; no additional live Groq call made. Frontend :5174 and backend :8001/docs return 200, direct/proxied health status/database ok, API identity BrandProof verified. Synthetic sample poster available locally at .cache/sample-poster-inr599.png; confirm INR 499 source, upload sample, then run review for supported contradiction. Session refresh recovery and deployment remain open. No push/merge/deploy or SpeakEZ changes.
+
+
+## Run review disabled report - 2026-10-27
+
+User reports grey Run review button at local app. Backend health ok; connected browser/real OCR journey freshly passes all 23 groups without external AI consent or additional model calls. Exact user state remains unconfirmed; requested the helper text below button to distinguish pending poster upload, unsaved caption, revision conflict, missing content or local-only preview. No speculative code change or user-specific resolution claimed. Choose-image preview requires explicit Upload poster before review; changed caption requires Save caption. Investigation pending user state.
+
+
+## Image selection / grey Run review flow fixed - 2026-10-27
+
+User repeatedly reported that adding an image disabled review. Confirmed UI flow: pending image preview set posterPending and disabled the only primary review action, requiring a separate upload step. Updated frontend so selected image offers explicit Upload poster and run review. On click it awaits real revision-checked upload/canonical OCR, refreshes campaign, then reviews the acknowledged saved revision; upload/conflict failure aborts review and preserves the selected image. Caption edits still require save; concurrent writes still return 409 and require explicit reconciliation. No backend changes, auto-approval or silent AI consent.
+
+Files: frontend/src/ContentWorkspace.tsx, LiveCaption.tsx, LivePoster.tsx; frontend/tests/browser-smoke.mjs. Fresh lint/build and 36 unit tests pass. Connected browser 24 groups pass: selected poster plus caption save, combined-action 409 with no created run, explicit reconciliation/retry, real OCR boxes at desktop/mobile, and poster-only PNG then JPEG reviews against confirmed INR 499 with actual INR 599 contradictions. Provider admission count remains 1 (no new Groq calls). Original backend 361-pass result remains from preceding full run; backend was unchanged in this fix. No push/merge/deploy; current frontend :5174 serves the change without full-page refresh.
+
+
+## Brand-logo comparison feature - 2026-10-27
+
+User explicitly requested this new feature. Added private owner-only reference upload/confirmation, immutable versions/history, revision-bound snapshot provenance, conservative bounded local template comparison, and frontend reference upload/preview plus possible-mismatch findings. Confirmed logo replacement invalidates prior review currency. Pending references are excluded; uncertain matches never approve content. No provider calls or new dependencies. Empty findings/close candidates do not prove a correct logo; tiny changes, backgrounds, rotations and small logos require human inspection. See LOGO_COMPARISON_REVIEW.md for exact supported scope, new routes and focused backend patch for Rushab.
+
+Six focused backend tests pass; first full suite 366 passed before the additional immutable-snapshot test. Frontend lint/build/36 unit tests pass. Connected browser with BRANDPROOF_TEST_BACKEND=1 BRANDPROOF_TEST_OCR=1 BRANDPROOF_TEST_LOGO=1 passes all 25 groups, including actual logo reference upload/owner confirmation and real PNG/JPEG reviews that show possible mismatch and the historical reference image. Matching synthetic example scores 0.9745 and remains partial; altered example scores 0.7329 and warns. These are raw similarities, not calibrated confidence or representative accuracy.
+
+Final combined suite result follows. Runtime :8001 reloaded; UI :5174 contains Brand logo under Brand Information. No reset, existing-data deletion, external notification, extra Groq call, push/merge or deployment. Linux/real-logo quality acceptance and Rushab review remain outstanding.
+
+
+### Final logo-feature verification - 2026-10-27
+
+Full combined backend suite: **367 passed, 0 failed/errors/skipped**, 167.57s (.cache/backend-logo-combined.log / .cache/qa-logo-combined.xml). Backend Ruff lint/format and frontend lint/build/36 tests pass. Connected browser 25 groups pass with owner logo confirmation, real missing-logo warning, historical image and PNG/JPEG poster journey. Actual HTTP matching-versus-altered sample: matching candidate 0.9745/no warning; altered candidate 0.7329/one needs_clarification warning; both remain partial and persisted. Evidence .cache/logo-live-evidence.json; raw score is not calibrated confidence. Provider admissions remain exactly one from earlier Groq acceptance; no extra provider calls. Frontend :5174 returns 200 and backend health/database ok after feature restart. Focused new backend patch: rushab-logo-review.patch; scope/limits and Rushab review notes: LOGO_COMPARISON_REVIEW.md. No push/merge/deploy. Small alterations, rotations and complex/low-resolution backgrounds remain manual-review scope.
+
+
+## Full-poster logo reference false reassurance fixed - 2026-10-27
+
+User reported a visible logo mismatch despite similar-candidate result. Inspected latest saved reference/poster locally: reference was an entire 800x400 workshop poster (logo plus separated caption), and comparison reduced the whole foreground layout to 16x16. Changed small logo was overwhelmed by matching layout; score 0.9757 wrongly suppressed mismatch warning. Confirmed defect, not user approval or absence of an alteration.
+
+Added conservative reference-suitability guard: widely separated artwork/text blocks produce not_assessed with an explicit logo-reference-needs-cropping finding, including on persisted real API review. Such references are no longer presented as similar candidates. This heuristic may also abstain on legitimate separated brand lockups; owner must provide a tightly cropped logo and inspect fine details. It does not solve all subtle-logo detection limits or silently approve/replace the user's reference. Existing user review remains historical.
+
+Fresh verification: seven focused logo tests pass (new full-reference regression), backend Ruff pass, frontend lint/build pass, connected browser 25 groups pass, and genuine API reference/poster reproduction persists the new clarification finding. No additional Groq call; full 367-test result above predates this guard and is not claimed as a fresh full-suite rerun. Local server reloaded. User next step: upload logo-only reference, explicitly confirm and run a new review. No push/merge/deploy.
+
+
+## GitHub publication verification - 2026-10-27
+
+Final pre-push full backend suite: **368 passed, 0 failed/errors/skipped**, 136.94s. Backend Ruff lint/format pass; frontend lint/build and 36 tests pass. Latest connected browser check passed 25 groups; seven live API scripts passed during completion sprint. No additional provider call was made. Secrets-aware staged-content scan found no local credential match or credential-shaped value. No environment files, database/image storage, caches, binaries, screenshots or local patch exports included. User authorised normal push of integration/round2-backend-pr1; main is not merged or deployed. Teammate message and work list are in TEAM_UPDATE.md. Backend and logo limits remain explicitly documented for Rushab review.

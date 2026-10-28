@@ -1,6 +1,8 @@
+import { apiBase, verifyBackend } from './live-config.mjs'
+await verifyBackend()
 import assert from 'node:assert/strict'
 import { createBackendClient } from '../src/api/backend.ts'
-const client=createBackendClient('http://127.0.0.1:8000/api/v1')
+const client=createBackendClient(apiBase)
 await client.connect()
 const data=await client.create({title:'Y03 review flow',publicationDate:'2026-11-12',brand:'',brief:''})
 const id=data.data.reviews[0].id

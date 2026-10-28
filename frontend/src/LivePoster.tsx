@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useImperativeHandle, useRef, useState } from 'react'
+import type { RefObject } from 'react'
 import type { BackendClient,CampaignOut } from './api/backend'
 import type { ReviewResult } from './api/reviews'
 import type { PosterOut } from './api/posters'
@@ -7,7 +8,7 @@ import {validatePoster} from './contentDraft'
 import PrivatePoster from './PrivatePoster'
 import {useUnsavedChanges} from './unsavedChanges'
 
-export default function LivePoster({api,campaign,onCampaignChange,onAttached,onPendingChange,captionSaves}:{api:BackendClient;campaign:CampaignOut;onCampaignChange:(result:ReviewResult)=>void;onAttached:(attached:boolean)=>void;onPendingChange:(pending:boolean)=>void;captionSaves:{previous:number;current:number}[]}) {
+export default function LivePoster({api,campaign,onCampaignChange,onAttached,onPendingChange,captionSaves,uploadRef}:{api:BackendClient;campaign:CampaignOut;onCampaignChange:(result:ReviewResult)=>void;onAttached:(attached:boolean)=>void;onPendingChange:(pending:boolean)=>void;captionSaves:{previous:number;current:number}[];uploadRef:RefObject<{upload:()=>Promise<CampaignOut>}|null>}) {
   const [poster,setPoster]=useState<PosterOut|null>(null)
   const [picked,setPicked]=useState<{file:File;url:string;revision:number}|null>(null)
   const [busy,setBusy]=useState(false)
@@ -31,15 +32,23 @@ export default function LivePoster({api,campaign,onCampaignChange,onAttached,onP
     catch(error){if(url)URL.revokeObjectURL(url);if(request===generation.current)setError(describeError(error))}
     finally{if(request===generation.current)setValidating(false)}
   }
-  async function upload() {
-    if(!picked || lock.current || conflict)return
+  useImperativeHandle(uploadRef,()=>({upload:async()=>{
+    const updated=await upload(true)
+    if(!updated)throw new Error('Poster upload did not complete.')
+    return updated
+  }}))
+  async function upload(forReview=false) {
+    if(!picked || lock.current || conflict || validating){
+      if(forReview)throw new Error(conflict ? 'Resolve the poster version conflict before reviewing.' : 'Wait for the image to finish opening or uploading, then try again.')
+      return
+    }
     lock.current=true;setBusy(true);setError('');setNotice('Uploading and extracting text…')
     let saved=false
     // Advance only across our own successful revision-checked caption saves.
     // Concurrent writes are not rebased: their revision still produces a 409.
     const uploadRevision=captionSaves.reduce((revision,save)=>revision===save.previous ? save.current:revision,picked.revision)
-    try{const value=await api.uploadPoster(campaign.id,picked.file,uploadRevision);saved=true;setPoster(value);setPicked(null);onCampaignChange(await api.get(campaign.id));setNotice(`Poster saved privately · OCR ${value.ocr.status}${value.ocr.reason ? ` (${value.ocr.reason})`:''}`)}
-    catch(error){setError(saved?'Poster saved, but campaign reload failed. Reload before another upload.':describeError(error));setNotice('');if(error instanceof ApiError && error.status===409)setConflict(true)}
+    try{const value=await api.uploadPoster(campaign.id,picked.file,uploadRevision);saved=true;setPoster(value);setPicked(null);onAttached(true);const result=await api.get(campaign.id);const updated=result.data.reviews.find(record=>record.campaignId===campaign.id)?.backendCampaign;if(!updated)throw new Error('Saved campaign unavailable.');onCampaignChange(result);setNotice(`Poster saved privately · OCR ${value.ocr.status}${value.ocr.reason ? ` (${value.ocr.reason})`:''}`);return updated}
+    catch(error){setError(saved?'Poster saved, but campaign reload failed. Reload before another upload.':describeError(error));setNotice('');if(error instanceof ApiError && error.status===409)setConflict(true);if(forReview)throw error}
     finally{lock.current=false;setBusy(false)}
   }
   async function reconcile(){if(!picked || lock.current)return;setBusy(true);try{const value=await api.get(campaign.id);const current=value.data.reviews.find(record=>record.id===campaign.id)?.backendCampaign;if(!current)throw new Error('Campaign unavailable.');onCampaignChange(value);setPicked({...picked,revision:current.content_revision});setConflict(false);setNotice('Latest revision loaded. Upload explicitly to replace its poster.')}catch(error){setError(describeError(error))}finally{setBusy(false)}}

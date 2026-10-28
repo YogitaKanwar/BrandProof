@@ -1,16 +1,35 @@
 import importlib
+import os
 from io import BytesIO
 
 import pytest
 from PIL import Image, ImageDraw, ImageFont
 
-FONT = "/usr/share/fonts/noto/NotoSans-Regular.ttf"
+
+def fixture_font(size):
+    configured = os.environ.get("BRANDPROOF_TEST_FONT")
+    candidates = (
+        [configured]
+        if configured
+        else [
+            "/usr/share/fonts/noto/NotoSans-Regular.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "C:/Windows/Fonts/arial.ttf",
+            "/System/Library/Fonts/Supplemental/Arial.ttf",
+        ]
+    )
+    for candidate in candidates:
+        try:
+            return ImageFont.truetype(candidate, size)
+        except OSError:
+            continue
+    raise OSError("Install a TrueType fixture font or set BRANDPROOF_TEST_FONT to its path")
 
 
 def poster_bytes(text="SUMMER SALE 2026", *, size=(1000, 240), mode="RGB", fmt="PNG"):
     image = Image.new(mode, size, "white")
     if text:
-        ImageDraw.Draw(image).text((35, 60), text, fill="black", font=ImageFont.truetype(FONT, 64))
+        ImageDraw.Draw(image).text((35, 60), text, fill="black", font=fixture_font(64))
     output = BytesIO()
     image.save(output, format=fmt)
     return output.getvalue()

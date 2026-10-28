@@ -8,6 +8,7 @@ from brandproof.approval import router as approval_router
 from brandproof.config import Settings
 from brandproof.db import Base, make_engine, session_factory
 from brandproof.errors import install_errors
+from brandproof.logos import router as logos_router
 from brandproof.posters import router as posters_router
 from brandproof.reviews import router as reviews_router
 from brandproof.routes import router
@@ -36,6 +37,7 @@ def create_app(*, database_url: str | None = None):
     app.include_router(approval_router)
     app.include_router(suggestions_router)
     app.include_router(posters_router)
+    app.include_router(logos_router)
     app.state.engine = engine
     app.state.sessions = sessions
     app.state.settings = settings

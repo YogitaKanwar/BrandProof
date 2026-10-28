@@ -6,6 +6,7 @@ from brandproof.auth import actor, db, lock_campaign, require_role, scoped_campa
 from brandproof.contextual import ContextualConfig, ContextualResult, analyze_context
 from brandproof.errors import fail
 from brandproof.finding_groups import finding_groups
+from brandproof.logos import review_logo
 from brandproof.models import Actor, Campaign
 from brandproof.poster_review import review_poster
 from brandproof.quota import reserve_provider_call
@@ -158,6 +159,21 @@ def start_review(
     ]
     # OCR and deterministic checks belong to the same locked content/source snapshot.
     poster_findings, poster_check = review_poster(session, campaign, active, excluded)
+    logo_findings, logo_check, logo_snapshot = review_logo(session, campaign, poster_check)
+    if logo_check:
+        poster_check.setdefault("details", {})["logo"] = logo_check
+        poster_findings.extend(logo_findings)
+        if logo_snapshot["status"] == "approved":
+            sources.append(logo_snapshot)
+        else:
+            excluded.append(
+                {
+                    "source_id": logo_snapshot["id"],
+                    "source_version": logo_snapshot["version"],
+                    "kind": "logo",
+                    "reason": "pending_owner_confirmation",
+                }
+            )
     has_poster = bool(poster_check.get("details", {}).get("asset_id"))
     has_caption = bool(campaign.caption.strip())
     if not has_caption and not has_poster:

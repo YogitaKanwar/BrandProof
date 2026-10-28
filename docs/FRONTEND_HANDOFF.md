@@ -95,3 +95,8 @@ With a running API:
     uv run python scripts/workflow_smoke.py
 
 The last script uses real HTTP and Tesseract. Its exceptions/notes/approval are scripted demo actions, not user feedback. Saved results contain no tokens. These tests do not establish frontend completion, deployment, PostgreSQL support or real user testing.
+
+
+## Reference-logo comparison (2026-10-27)
+
+See [LOGO_COMPARISON_REVIEW.md](LOGO_COMPARISON_REVIEW.md) for actual new routes, raw PNG/JPEG format, owner confirmation, private image fetching, source revision changes and checks.poster.details.logo. Sources panel includes Brand logo. Results show possible mismatch plus historical reference/whole poster; no inferred bounding box or content approval. This is a bounded plain-background template comparison, not reliable subtle-logo-change or forgery detection. API contract regenerated in openapi.json.
