@@ -13,6 +13,7 @@ Database changes are additive, versioned and checked against the deployed legacy
 Validation:
 
 - Backend 514 tests passed; frontend 50 tests passed; Ruff lint/format, frontend lint/build, dependency check and running/saved OpenAPI parity passed.
+- Follow-up: 516 backend / 51 frontend tests now pass with connected Recent Reviews Delete/Cancel/Confirm and exact-generation Undo. Removal retains history, excludes normal access and denies running/stale/unauthorized attempts. Additive migration `0005_review_removal`; deletion browser/reload and all 26 existing browser groups passed. This feature is not live in production.
 - Seven genuine HTTP suites and all 26 existing browser groups passed, including actual Tesseract and logo-reference flow.
 - New real HTTP and browser acceptance passed PDF pending provenance/confirmation, OCR claim boxes, draft acceptance, description revision/staleness, measured background, readiness, governance/sample guards, exact historical links and responsive/reload behavior.
 - Backend wheel built; independently imported/started from its installed wheel with packaged migrations. Frozen lock is accepted by the Docker-pinned uv 0.12.21.

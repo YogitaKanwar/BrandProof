@@ -1,5 +1,11 @@
 # Final tests requiring a fully configured backend
 
+## Connected deletion local acceptance - 28 October 2026
+
+- Feature-branch only: 516 backend tests / 51 frontend tests, lint/format/build, seven HTTP suites, all 26 existing browser groups and new connected delete cancel/confirm/Undo/reload acceptance passed. Data/history preservation, owner/workspace/revision/running-job guards and old-Undo rejection tested. Saved OpenAPI matches running :8014.
+- Added `0005_review_removal` only; no production schema or deployment change. Public provider metadata and HTTP contract still verify `36cb8ae`, with no connected DELETE/PDF import routes. Copy-ready judging answers separate that public release from the review branch.
+- An old browser assertion expected connected deletion to be absent; it now asserts the new Delete button. The new end-to-end test exercises its real API actions, rather than simulating success. No existing user review was deleted during this work; acceptance used isolated fictional data.
+
 ## Feature-branch local acceptance - 28 October 2026
 
 This is local feature acceptance, not a deployment of the improvements. Existing production remains `36cb8ae`.

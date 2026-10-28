@@ -341,3 +341,5 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 .insight-table table { border-collapse:collapse; width:100%; font-size:13px; text-align:left; }
 .insight-table th,.insight-table td { border-bottom:1px solid var(--border); padding:12px; }
 .insight-card { border:1px solid var(--border); padding:18px; margin-block:16px; overflow-wrap:anywhere; }
+
+.review-undo { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:14px; margin-block:16px; border:1px solid var(--border); background:#f5faf9; }

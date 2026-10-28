@@ -15,6 +15,7 @@ interface DemoSessionOut {
   workspace_id: string; mode: 'synthetic_demo'; notice: string; expires_at: string
   actors: Record<'owner' | 'creator' | 'reviewer', { role: string; access_token: string }>
 }
+export interface ReviewRemoval {campaign_id:string;deletion_id:string;deleted:boolean;retained_history:boolean}
 export function createBackendClient(base = '/api/v1') {
   let session: DemoSessionOut | null = null
   let connecting: Promise<DemoSessionOut> | null = null
@@ -87,6 +88,18 @@ export function createBackendClient(base = '/api/v1') {
     async get(id: string) {
       const record = validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(id)}`, { headers: auth() }))
       campaigns.set(record.id, record)
+      return result()
+    },
+    async removeReview(id:string,snapshot:Snapshot){
+      const deletion=await requestJson<ReviewRemoval>(`${base}/campaigns/${encodeURIComponent(id)}`,{method:'DELETE',headers:{...auth('owner'),'Content-Type':'application/json'},body:JSON.stringify(snapshot)})
+      if(deletion.campaign_id!==id||deletion.deleted!==true||deletion.retained_history!==true||typeof deletion.deletion_id!=='string')throw invalid()
+      campaigns.delete(id)
+      return {...result(),deletion}
+    },
+    async restoreReview(campaign:CampaignOut,deletionId:string){
+      const restored=validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaign.id)}/restore`,{method:'POST',headers:{...auth('owner'),'Content-Type':'application/json'},body:JSON.stringify({expected_content_revision:campaign.content_revision,expected_source_revision:campaign.source_revision,expected_deletion_id:deletionId})}))
+      if(restored.id!==campaign.id)throw invalid()
+      campaigns.set(restored.id,restored)
       return result()
     },
     async create(input: ReviewInput) {

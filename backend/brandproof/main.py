@@ -16,6 +16,7 @@ from brandproof.logos import router as logos_router
 from brandproof.migrations import migrate
 from brandproof.posters import router as posters_router
 from brandproof.readiness import router as readiness_router
+from brandproof.removals import router as removals_router
 from brandproof.review_leases import recover_expired, recovery_loop
 from brandproof.reviews import router as reviews_router
 from brandproof.routes import router
@@ -52,6 +53,7 @@ def create_app(*, database_url: str | None = None):
     app.include_router(accessibility_router)
     app.include_router(readiness_router)
     app.include_router(insights_router)
+    app.include_router(removals_router)
     app.state.engine = engine
     app.state.sessions = sessions
     app.state.settings = settings
@@ -59,7 +61,7 @@ def create_app(*, database_url: str | None = None):
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT"],
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=[
             "Authorization",
             "Content-Type",

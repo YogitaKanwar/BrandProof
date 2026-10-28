@@ -24,6 +24,7 @@ def steps():
         ("0002_review_leases", ["review_leases"]),
         ("0003_guideline_documents", ["guideline_documents", "document_evidence"]),
         ("0004_alt_text", ["alt_text_versions"]),
+        ("0005_review_removal", ["campaign_removals"]),
     ]
 
 

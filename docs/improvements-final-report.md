@@ -1,5 +1,7 @@
 # Implementation report — 28 October 2026
 
+Follow-up: connected Recent Reviews deletion and Undo are implemented on this same review branch with additive migration `0005_review_removal`. Latest full checks are 516 backend tests, 51 frontend tests, seven HTTP suites, 26 existing browser groups and the new-feature/delete/Undo/reload browser journey. Original source/image/review history is retained; this is reversible removal rather than permanent erasure. Public `36cb8ae` remains unchanged. See [judging answers](judges-submission-2026-10-28.md).
+
 The authorized improvements are implemented on `feat/brandproof-improvements-20261028`, based on deployed `36cb8ae95adf42a252808e08f8dcdf972627c360`. Production code, services and database schema have not been updated by this feature work. The user requested preparation of the branch and PR text rather than connecting GitHub for automatic PR creation. See [PR text](improvements-pr.md).
 
 ## Implementation coverage

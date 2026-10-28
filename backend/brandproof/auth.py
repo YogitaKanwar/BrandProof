@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from brandproof.errors import fail
 from brandproof.models import Actor, Campaign
+from brandproof.removal_models import CampaignRemoval, active_campaigns
 
 bearer = HTTPBearer(auto_error=False)
 
@@ -43,7 +44,9 @@ def require_role(who: Actor, *roles: str):
 def scoped_campaign(session: Session, campaign_id: str, who: Actor) -> Campaign:
     found = session.scalar(
         select(Campaign).where(
-            Campaign.id == campaign_id, Campaign.workspace_id == who.workspace_id
+            Campaign.id == campaign_id,
+            Campaign.workspace_id == who.workspace_id,
+            active_campaigns(),
         )
     )
     if not found:
@@ -51,7 +54,7 @@ def scoped_campaign(session: Session, campaign_id: str, who: Actor) -> Campaign:
     return found
 
 
-def lock_campaign(session: Session, campaign: Campaign):
+def lock_campaign(session: Session, campaign: Campaign, *, allow_removed=False):
     """Serialize snapshot readers and all mutators until this transaction ends.
 
     A no-op UPDATE takes a database write lock on SQLite and a row lock on
@@ -67,3 +70,5 @@ def lock_campaign(session: Session, campaign: Campaign):
         execution_options={"synchronize_session": False},
     )
     session.refresh(campaign)
+    if not allow_removed and session.get(CampaignRemoval, campaign.id):
+        fail(404, "not_found", "Campaign not found")

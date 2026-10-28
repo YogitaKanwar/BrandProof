@@ -1,5 +1,7 @@
 # Yogita's frontend integration handoff
 
+Recent Reviews follow-up (feature branch only): owner DELETE `/api/v1/campaigns/{id}` requires both expected revisions and returns `{campaign_id,deletion_id,deleted:true,retained_history:true}`. This is reversible removal, not data erasure. Removed campaigns are excluded from lists/insights and ordinary resource access. Running reviews return 409; stale/cross-workspace/role guards remain authoritative. Owner POST `/campaigns/{id}/restore` requires both expected revisions plus `expected_deletion_id`; an older Undo cannot restore a later deletion. The UI requires explicit confirmation and keeps Undo metadata only in memory. Schema step `0005_review_removal` is additive. Public release `36cb8ae` does not have these routes yet.
+
 Feature-branch update (28 October): see `improvements-implementation.md`. Additive findings may include `unverified_draft_suggestion`; never send it to the verified apply endpoint. Copy only through explicit draft acceptance, save as a new revision, and re-review. Contextual consent now discloses high-confidence extracted poster text as well as caption/selected sources. Poster contextual findings retain their own poster IDs, code-point offsets and real OCR boxes. These feature-branch changes are not deployed to production yet.
 
 ## Manual-audit fixes — 28 October 2026

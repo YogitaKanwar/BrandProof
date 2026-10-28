@@ -36,7 +36,7 @@ function send(method, params = {}) {
   })
 }
 async function evaluate(expression) {
-  const result = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true })
+  const result = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }).catch(error=>{throw new Error(`${error.message} after ${checks.length} completed browser groups`,{cause:error})})
   if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails))
   return result.result.value
 }
@@ -376,7 +376,7 @@ try {
     assert.equal(await evaluate(`document.activeElement.id`),'human-review-heading')
     await pointerClick('.main-nav a[href="#/"]')
     await waitFor(`document.querySelector('.campaign-status')?.textContent.includes('Approved with manual checks')`)
-    assert.equal(await evaluate(`document.querySelector('.review-delete')`),null)
+    assert.equal(await evaluate(`!!document.querySelector('.review-delete > button')`),true)
     await pointerClick('.review-row h2 a')
     await waitFor(`document.querySelector('.receipt-readiness')?.textContent.includes('approved with manual checks')`)
     await pointerClick('.creator-request button')

@@ -1,5 +1,11 @@
 # BrandProof task status
 
+## Recent Reviews deletion and judging answers - 28 October
+
+- Added owner-authorized connected Delete/Cancel/Confirm and Undo on the feature branch, retaining audit records. Lists/insights and ordinary access exclude removed campaigns; running reviews and stale revisions are blocked. Exact deletion IDs guard Undo against later deletions. Local-draft deletion retained.
+- Additive schema step `0005_review_removal`; full backend 516 passed, frontend 51 passed, lint/format/build, seven HTTP suites, 26 existing browser groups and genuine delete/Undo/reload journey passed. API contract updated. Original local documentation additions preserved.
+- Judge-facing answers list only verified public `36cb8ae` features. Exactly three proposed Round 3 deliveries: PDF guideline import/evidence, measured visual/accessibility checks, and governance insights. See [copy-ready answers](judges-submission-2026-10-28.md). Connected deletion is not deployed; prior CI/review/migration/deployment gates remain.
+
 Updated: 2026-10-28. Current branch: `feat/brandproof-improvements-20261028`.
 
 ## Authorized improvements completed locally - 28 October

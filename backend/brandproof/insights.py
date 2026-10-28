@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db
 from brandproof.models import Actor, Campaign
+from brandproof.removal_models import active_campaigns
 from brandproof.review_models import ReviewRun
 from brandproof.workflow_models import FindingDecision
 
@@ -68,7 +69,9 @@ def summarize(session, workspace_id):
     rows = session.execute(
         select(ReviewRun, Campaign)
         .join(Campaign, Campaign.id == ReviewRun.campaign_id)
-        .where(Campaign.workspace_id == workspace_id, ReviewRun.status != "running")
+        .where(
+            Campaign.workspace_id == workspace_id, ReviewRun.status != "running", active_campaigns()
+        )
         .order_by(ReviewRun.created_at.desc(), ReviewRun.id.desc())
         .limit(MAX_RUNS + 1)
     ).all()
