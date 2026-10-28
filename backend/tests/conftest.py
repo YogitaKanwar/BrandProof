@@ -11,6 +11,11 @@ def offline_provider_environment(monkeypatch):
         raise RuntimeError("Network access is disabled in tests; use an explicit MockTransport")
 
     monkeypatch.setattr(httpx.HTTPTransport, "handle_request", blocked)
+    # Tests must not read local .env files, including credentials or cookie overrides.
+    from brandproof.config import Settings
+
+    monkeypatch.setitem(Settings.model_config, "env_file", None)
+    monkeypatch.setenv("BRANDPROOF_DEMO_COOKIE_SECURE", "false")
     # Real credentials may exist locally. Only explicit MockTransport tests opt in.
     for key, value in {
         "BRANDPROOF_AI_PROVIDER": "none",

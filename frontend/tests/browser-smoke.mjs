@@ -9,6 +9,7 @@ await new Promise((resolve, reject) => { socket.addEventListener('open', resolve
 let sequence = 0
 const pending = new Map()
 let demoResponseId = ''
+let demoCreateCount = 0
 const browserErrors=[]
 const dialogs=[]
 let acceptDialog=true
@@ -19,7 +20,7 @@ socket.addEventListener('message', event => {
     void send('Page.handleJavaScriptDialog',{accept:acceptDialog}).catch(error=>browserErrors.push(error.message))
   }
   if(data.method==='Runtime.exceptionThrown')browserErrors.push(data.params.exceptionDetails.exception?.description||data.params.exceptionDetails.text)
-  if (data.method === 'Network.responseReceived' && data.params.response.url.endsWith('/api/v1/demo-sessions')) demoResponseId = data.params.requestId
+  if (data.method === 'Network.responseReceived' && data.params.response.url.endsWith('/api/v1/demo-sessions')) { demoResponseId = data.params.requestId; demoCreateCount++ }
   const handler = pending.get(data.id)
   if (handler) {
     pending.delete(data.id)
@@ -72,6 +73,8 @@ try {
   await send('Page.enable')
   await send('Runtime.enable')
   await send('Network.enable')
+  // This suite uses a dedicated disposable browser profile.
+  await send('Network.clearBrowserCookies')
   await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false })
   await send('Page.navigate', { url: frontendUrl })
   await waitFor(`document.querySelector('h1')?.textContent === 'Every claim, accounted for.'`)
@@ -456,10 +459,17 @@ try {
     await waitFor(`!!document.querySelector('.draft-title')`)
     assert.equal(await evaluate(`document.querySelector('#marketing-caption').value`),'Book now for INR 699. New artwork.')
     assert.equal(await evaluate(`JSON.stringify({...localStorage,...sessionStorage}).includes('access_token')`), false)
+    const beforeResumeCount = demoCreateCount
+    const beforeResumeHash = await evaluate(`location.hash`)
     await evaluate(`location.reload()`)
-    await waitFor(`document.querySelector('.connection-status summary')?.textContent === 'Preview mode'`)
-    await waitFor(`document.querySelector('.empty h2')?.textContent === 'Review access unavailable'`)
-    assert.match(await evaluate(`document.querySelector('.session-ended').textContent`),/Refreshing does not delete saved server data/)
+    await waitFor(`document.querySelector('.connection-status summary')?.textContent === 'Demo connected'`)
+    await waitFor(`document.querySelector('#marketing-caption')?.value === 'Book now for INR 699. New artwork.'`)
+    await waitFor(`!!document.querySelector('.server-source')`)
+    assert.equal(await evaluate(`location.hash`), beforeResumeHash)
+    assert.equal(demoCreateCount, beforeResumeCount)
+    assert.equal(await evaluate(`JSON.stringify({...localStorage,...sessionStorage}).includes('access_token')`), false)
+    checks.push('reload resumes the same saved campaign and sources without creating a workspace or storing bearer tokens')
+    await send('Network.clearBrowserCookies')
     await send('Page.navigate',{url:`${frontendUrl.split('#')[0]}#/new`})
     await waitFor(`!!document.querySelector('.connected-entry button')`)
     assert.equal(await evaluate(`document.querySelector('.confirmed-sources')`),null)
@@ -508,7 +518,8 @@ try {
       }
       checks.push('poster-only PNG and JPEG: choose image then one upload/review action returns real INR 599 vs 499 findings without a caption')
     }
-    checks.push('real backend browser connection, campaign create/list/get, field validation, receipt-based dashboard status and honest refresh limitation')
+    checks.push('real backend browser connection, campaign create/list/get, field validation and receipt-based dashboard status')
+    await send('Network.clearBrowserCookies')
     await send('Page.navigate',{url:`${frontendUrl.split('#')[0]}#/new`})
     await waitFor(`location.hash === '#/new'`)
     await send('Page.reload')
@@ -532,6 +543,7 @@ try {
     await pointerClick('.review-delete > button')
     await pointerClick('.review-delete [role=group] button')
     await waitFor(`!!document.querySelector('.reviews-empty')`)
+    await send('Network.clearBrowserCookies')
     await evaluate(`location.reload()`)
     await waitFor(`document.querySelector('.reviews-empty')?.textContent === 'No reviews yet'`)
     checks.push('local deletion cancel/confirm and reload persistence use actual pointer clicks')

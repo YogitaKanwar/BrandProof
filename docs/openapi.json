@@ -26,6 +26,27 @@
         }
       }
     },
+    "/api/v1/demo-sessions/resume": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Resume Demo",
+        "operationId": "resume_demo_api_v1_demo_sessions_resume_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSessionOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/campaigns": {
       "get": {
         "tags": [
@@ -474,6 +495,63 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CaptionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/caption/clear": {
+      "post": {
+        "tags": [
+          "reviews"
+        ],
+        "summary": "Clear Caption",
+        "operationId": "clear_caption_api_v1_campaigns__campaign_id__caption_clear_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptionRevision"
               }
             }
           }
@@ -1192,7 +1270,13 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RevisionOut"
+                  },
+                  "title": "Response Revisions Api V1 Campaigns  Campaign Id  Revisions Get"
+                }
               }
             }
           },
@@ -1961,6 +2045,22 @@
           "created_at"
         ],
         "title": "CampaignOut"
+      },
+      "CaptionRevision": {
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "maximum": 2147483646.0,
+            "minimum": 1.0,
+            "title": "Expected Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_revision"
+        ],
+        "title": "CaptionRevision"
       },
       "CaptionUpdate": {
         "properties": {
@@ -3104,6 +3204,30 @@
           "expected_source_revision"
         ],
         "title": "ReviewStart"
+      },
+      "RevisionOut": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "revision",
+          "caption",
+          "created_at"
+        ],
+        "title": "RevisionOut"
       },
       "RuleCoverage": {
         "properties": {

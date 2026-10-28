@@ -12,6 +12,9 @@ class Base(DeclarativeBase):
 
 def make_engine(url: str):
     parsed = make_url(url)
+    # Hosted Postgres URLs omit a driver; this project installs psycopg 3.
+    if parsed.drivername in {"postgres", "postgresql"}:
+        parsed = parsed.set(drivername="postgresql+psycopg")
     kwargs = {"pool_pre_ping": True}
     if parsed.get_backend_name() == "sqlite":
         kwargs["connect_args"] = {"check_same_thread": False, "timeout": 15}
@@ -19,7 +22,7 @@ def make_engine(url: str):
             kwargs["poolclass"] = StaticPool
         else:
             Path(parsed.database).parent.mkdir(parents=True, exist_ok=True)
-    engine = create_engine(url, **kwargs)
+    engine = create_engine(parsed, **kwargs)
     if parsed.get_backend_name() == "sqlite":
 
         @event.listens_for(engine, "connect")

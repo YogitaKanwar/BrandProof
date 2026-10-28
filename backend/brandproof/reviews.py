@@ -8,10 +8,11 @@ from brandproof.errors import fail
 from brandproof.finding_groups import finding_groups
 from brandproof.logos import review_logo
 from brandproof.models import Actor, Campaign
+from brandproof.poster_models import PosterAsset
 from brandproof.poster_review import review_poster
 from brandproof.quota import reserve_provider_call
 from brandproof.review_models import ContentVersion, ReviewRun
-from brandproof.review_schemas import CaptionUpdate, ReviewOut, ReviewStart
+from brandproof.review_schemas import CaptionRevision, CaptionUpdate, ReviewOut, ReviewStart
 from brandproof.rules import exact_checks
 from brandproof.schemas import CampaignOut
 from brandproof.source_models import Source, SourceVersion
@@ -28,25 +29,50 @@ def update_caption(
     who: Actor = Depends(actor),
     session: Session = Depends(db),
 ):
+    if not payload.text.strip():
+        fail(422, "empty_caption", "Caption must contain text")
+    return write_caption(campaign_id, payload.text, payload.expected_revision, who, session)
+
+
+@router.post("/caption/clear", response_model=CampaignOut)
+def clear_caption(
+    campaign_id: str,
+    payload: CaptionRevision,
+    who: Actor = Depends(actor),
+    session: Session = Depends(db),
+):
+    return write_caption(campaign_id, "", payload.expected_revision, who, session)
+
+
+def write_caption(
+    campaign_id: str, text: str, expected_revision: int, who: Actor, session: Session
+):
     campaign = scoped_campaign(session, campaign_id, who)
     require_role(who, "owner", "creator")
     lock_campaign(session, campaign)
-    if not payload.text.strip():
-        fail(422, "empty_caption", "Caption must contain text")
+    if not text and not session.scalar(
+        select(PosterAsset.id)
+        .where(
+            PosterAsset.campaign_id == campaign_id,
+            PosterAsset.content_revision <= campaign.content_revision,
+        )
+        .limit(1)
+    ):
+        fail(422, "poster_required", "Upload a poster before removing the caption")
     initial_caption = campaign.caption
     changed = session.execute(
         update(Campaign)
         .where(
             Campaign.id == campaign_id,
-            Campaign.content_revision == payload.expected_revision,
+            Campaign.content_revision == expected_revision,
         )
-        .values(caption=payload.text, content_revision=Campaign.content_revision + 1),
+        .values(caption=text, content_revision=Campaign.content_revision + 1),
         execution_options={"synchronize_session": False},
     )
     if changed.rowcount != 1:
         fail(409, "version_conflict", "Caption changed; reload before saving")
     # Only the successful compare-and-swap may initialise legacy revision-one history.
-    if payload.expected_revision == 1 and not session.scalar(
+    if expected_revision == 1 and not session.scalar(
         select(ContentVersion.id).where(
             ContentVersion.campaign_id == campaign_id, ContentVersion.revision == 1
         )
@@ -55,13 +81,13 @@ def update_caption(
     session.add(
         ContentVersion(
             campaign_id=campaign_id,
-            revision=payload.expected_revision + 1,
-            caption=payload.text,
+            revision=expected_revision + 1,
+            caption=text,
         )
     )
     session.add(
         RevisionAuthor(
-            campaign_id=campaign_id, content_revision=payload.expected_revision + 1, actor_id=who.id
+            campaign_id=campaign_id, content_revision=expected_revision + 1, actor_id=who.id
         )
     )
     session.commit()

@@ -20,6 +20,11 @@ export function createBackendClient(base = '/api/v1') {
   let connecting: Promise<DemoSessionOut> | null = null
   const campaigns = new Map<string, CampaignOut>()
   const invalid = () => new ApiError('The API returned an unexpected response.', 502, 'invalid_response')
+  function validateSession(data: DemoSessionOut): DemoSessionOut {
+    if (!data || data.mode !== 'synthetic_demo' || typeof data.workspace_id !== 'string' || typeof data.notice !== 'string' || !Number.isFinite(Date.parse(data.expires_at)) ||
+      ['owner', 'creator', 'reviewer'].some(role => data.actors?.[role as keyof typeof data.actors]?.role !== role || typeof data.actors?.[role as keyof typeof data.actors]?.access_token !== 'string')) throw invalid()
+    return data
+  }
   function validateCampaign(value: CampaignOut): CampaignOut {
     if (!value || ['id', 'workspace_id', 'name', 'publication_date', 'caption', 'created_at'].some(key => typeof value[key as keyof CampaignOut] !== 'string') ||
       !Number.isInteger(value.content_revision) || !Number.isInteger(value.source_revision) || value.workspace_id !== session?.workspace_id) throw invalid()
@@ -46,14 +51,30 @@ export function createBackendClient(base = '/api/v1') {
   return {
     async connect() {
       if (!session) {
-        connecting ??= requestJson<DemoSessionOut>(`${base}/demo-sessions`, { method: 'POST' })
+        connecting ??= requestJson<DemoSessionOut>(`${base}/demo-sessions`, { method: 'POST', credentials: 'include', cache: 'no-store' })
         try {
-          const data = await connecting
-          if (!data || data.mode !== 'synthetic_demo' || typeof data.workspace_id !== 'string' || typeof data.notice !== 'string' || !Number.isFinite(Date.parse(data.expires_at)) ||
-            ['owner', 'creator', 'reviewer'].some(role => data.actors?.[role as keyof typeof data.actors]?.role !== role || typeof data.actors?.[role as keyof typeof data.actors]?.access_token !== 'string')) throw invalid()
-          session = data
+          session = validateSession(await connecting)
         } finally { connecting = null }
       }
+      return this.list()
+    },
+    async resume(): Promise<ReviewResult | null> {
+      let restored: DemoSessionOut
+      try {
+        restored = validateSession(await requestJson<DemoSessionOut>(`${base}/demo-sessions/resume`, {
+          method: 'POST', credentials: 'include', cache: 'no-store', headers: { 'X-BrandProof-Session': 'resume' },
+        }))
+      } catch (error) {
+        // A missing/expired cookie never creates another workspace or retries a write.
+        if (error instanceof ApiError && error.status === 401) {
+          session = null
+          campaigns.clear()
+          return null
+        }
+        throw error
+      }
+      session = restored
+      campaigns.clear()
       return this.list()
     },
     async list() {
@@ -107,6 +128,13 @@ export function createBackendClient(base = '/api/v1') {
     async saveCaption(campaignId: string, text: string, expectedRevision: number) {
       const record = validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/caption`, {
         method: 'PUT', headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ text, expected_revision: expectedRevision }),
+      }))
+      campaigns.set(record.id, record)
+      return result()
+    },
+    async clearCaption(campaignId: string, expectedRevision: number) {
+      const record = validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/caption/clear`, {
+        method: 'POST', headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_revision: expectedRevision }),
       }))
       campaigns.set(record.id, record)
       return result()

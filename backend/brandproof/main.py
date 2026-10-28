@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from brandproof.approval import router as approval_router
@@ -44,14 +45,33 @@ def create_app(*, database_url: str | None = None):
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
+        allow_credentials=True,
         allow_methods=["GET", "POST", "PUT"],
-        allow_headers=["Authorization", "Content-Type"],
+        allow_headers=["Authorization", "Content-Type", "X-BrandProof-Session"],
     )
+
+    @app.middleware("http")
+    async def prevent_session_caching(request, call_next):
+        response = await call_next(request)
+        if request.url.path.rstrip("/") in (
+            "/api/v1/demo-sessions",
+            "/api/v1/demo-sessions/resume",
+        ):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Pragma"] = "no-cache"
+        return response
 
     @app.get("/api/v1/health")
     def health():
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
         return {"status": "ok", "database": "ok", "version": "0.1.0"}
+
+    # The hash-routed UI and API share one origin, including the recovery cookie.
+    # API routes are registered first; only the built public assets are exposed.
+    if settings.frontend_dist is not None:
+        if not (settings.frontend_dist / "index.html").is_file():
+            raise RuntimeError("BRANDPROOF_FRONTEND_DIST must contain a built index.html")
+        app.mount("/", StaticFiles(directory=settings.frontend_dist, html=True), name="frontend")
 
     return app

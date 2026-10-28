@@ -1,12 +1,36 @@
-﻿# BrandProof task status
+# BrandProof task status
 
-Updated: 2026-10-26. Branch: `integration/round2-backend-pr1`.
+Updated: 2026-10-28. Current branch: `fix/demo-session-resume`.
+
+## Combined app and free hosting preparation - 28 October
+
+- Preserved the local session work as f7491d4 and merged origin/main 833c6ff (including Yogita's OCR, combined upload/review and owner-confirmed logo work) into this feature branch as 27dffb8. Main was not changed.
+- Added optional serving of the built React app from FastAPI, a multi-stage complete-app Dockerfile, automatic psycopg 3 selection for ordinary hosted PostgreSQL URLs, and a Render Free Blueprint with external Neon storage, secure same-origin cookies and external AI disabled. No cloud resources or public project URL exist.
+- Fresh combined backend suite: **445 passed, 0 failed/skipped, 39.05s**. Ruff lint/format passed. Frontend build/lint and **47 unit tests** passed; all seven real HTTP scripts passed against an isolated local database. The first aggregate verify attempt reached HTTP tests before the server started; those seven scripts were then explicitly rerun successfully against port 8001.
+- GitHub Actions container/PostgreSQL acceptance **passed**: run 40671322353 on 2e369f1 built the complete image, connected to PostgreSQL 16 and passed real caption/parser/OCR/human-workflow smoke scripts plus simulated TLS-offload origin/secure-cookie recovery and forged-origin rejection. Local Docker runtime is unavailable (daemon access denied). Actual Render/Neon public HTTPS/sleep/redeploy acceptance remains pending.
+- Packaged browser verification produced four source-backed fictional-caption findings and restored the exact campaign/review on reload. Three backend HTTP smoke scripts passed, including completed Tesseract OCR, explicit correction, persisted records, manual-supplement approval and stale approval after poster replacement. No new external model calls were made.
+- Pushed this feature branch and opened draft PR #6. Main remains unchanged by this continuation. The updated Round 2 PDF is a submission draft until a real public project URL and public source access are supplied.
+- Confirmed and fixed a TLS-termination defect: HTTPS browser origins could be rejected behind an HTTP container proxy. The app now accepts the exact configured public origin (automatic Render metadata), with strict validation and no trust in arbitrary forwarded headers. Full suite rerun after the fix: 445 passed in 39.05s.
+- User says the connected Vercel account is not theirs; it must not be used. User requested preparation of free hosting. See FREE_HOSTING.md. Repository is private; organiser-required public source access still needs a team-owner action.
+- Historical records below describe earlier checkpoints and runtimes; they are not current release claims.
+
+
+## Current local acceptance - 27 October
+
+- Completed the existing backend session-recovery work and connected frontend startup to it. A 24-hour HttpOnly, SameSite=Strict cookie restores the same workspace and actor identities after refresh. Role bearers remain in memory; resume neither creates another sandbox nor extends expiry. Missing cookies remain distinct from server/provenance failures. Existing local-draft deep links remain local.
+- Added an optional editable fictional workshop example. It creates real campaign/source/caption records and confirms only the fictional sample rules. Findings, corrections, reviewer notes and approvals are not pre-populated. Partial setup failures leave acknowledged records visible.
+- Local verification: **419 backend tests passed**, backend lint/format passed; frontend production build/lint and **44 frontend tests passed**. All seven frontend real-HTTP scripts passed against an isolated local database. Three backend HTTP smoke scripts passed, including real Tesseract extraction, poster contradiction, explicit suggestion/comments/decisions and stale approval after image replacement.
+- Browser verification in the Codex in-app browser: created a real campaign and source, ran a price review, reloaded the exact review URL and observed the same saved caption, confirmed source and persisted finding. The example entry creates real editable data and requires an explicit review. This is development verification with fictional data, not external user feedback.
+- Updated the dedicated Chrome regression script for resume. The full Chrome/CDP script was **not rerun in this environment**; previous 22-group results below are historical. Public HTTPS/redeploy tests and live contextual-model acceptance remain open. AI was explicitly disabled for this verification run.
+- Current checkout already contains merged frontend PRs in its history. Historical notes below describing main as unchanged refer to the earlier integration checkpoint, not today's Git state. No merge, deployment or publication was performed in this continuation.
+
+## Earlier integration baseline - 26 October
 
 Six task flows are implemented and verified against the local API; four tasks remain partial. This is a local integration milestone, not final hosted acceptance.
 
 | Task | Status | Implemented / remaining |
 | --- | --- | --- |
-| Y01 | Partial | App shell, navigation, real demo sessions and campaign create/list/get work. Server data persists; refresh loses memory-only demo access. Session resume and deployment remain. |
+| Y01 | Partial | App shell, navigation, real demo sessions, same-browser resume and campaign create/list/get work. Hosted deployment and its cookie/persistence acceptance remain. |
 | Y02 | Implemented locally | Six typed rules, explicit owner confirmation, pending/approved states, validity, versions/history and conflict preservation. Brand context is separate and unparsed. |
 | Y03 | Implemented locally | Caption saves, expected revisions, conflict reconciliation, real review initiation/history and honest running/partial/failed states. Run Review now shows a spinner and brings returned results/errors into view. |
 | Y04 | Implemented locally | Validated PNG/JPEG selection/drop/preview, real upload/replacement and private canonical/historical retrieval. No server-delete route exists. |
@@ -45,8 +69,8 @@ Six task flows are implemented and verified against the local API; four tasks re
 
 ## Remaining blockers and acceptance
 
-- **Session refresh:** no documented resume route. Rushab must provide a same-workspace resume/refresh contract that can restore authorised actor access without persisting bearer tokens in browser storage. No undocumented localStorage/sessionStorage workaround is used.
-- **OCR / contextual AI:** local OCR returns `unavailable/tool_missing`; consented contextual checking returns unavailable because Groq is unconfigured. Real extraction, INR 499 vs poster INR 599, responsive real boxes and contextual claim/citation quality require configured-runtime testing.
+- **Session refresh:** implemented and verified locally. Production must serve frontend and API under the same origin, retain the cookie through the proxy, and use HTTPS/Secure cookies. Resume does not preserve unsaved editor changes or provide production identity.
+- **OCR / contextual AI:** real Linux Tesseract extraction and the poster-price workflow passed on 27 October. Earlier tool_missing results were from Windows. Responsive genuine-box browser acceptance and fresh live contextual claim/citation quality remain to be verified. The latest local test server deliberately disabled external AI.
 - **Release:** public HTTPS API/frontend, CORS/private images, durable storage/restart, security/retention, accessibility/usability acceptance and submission evidence remain. No confidential-data or production-identity claims.
 - **Deletion:** only browser-local drafts can be deleted. Backend campaign/poster deletion requires an actual API contract.
 - See [configured-backend-tests.md](configured-backend-tests.md), [regression-report.md](regression-report.md) and [release-checklist.md](release-checklist.md).
@@ -56,6 +80,10 @@ Six task flows are implemented and verified against the local API; four tasks re
 1. Open `http://127.0.0.1:5173/#/new`, start connected review and create a campaign.
 2. Add a price fact, save it, then explicitly confirm as owner. Enter a conflicting caption and save it.
 3. Run review: check visible progress, actual results/evidence and unavailable coverage. For poster-only review, upload the file to the server first.
+4. Exercise explicit corrections/comments and creator/reviewer controls. Source confirmation is not content approval. Refresh and verify the saved campaign, source versions, findings and receipts return; unsaved edits must still warn before leaving.
+
+## Historical teammate runtime notes (before this integration)
+
 4. Exercise explicit corrections/comments and creator/reviewer controls. Source confirmation is not content approval; refreshing still loses demo access.
 
 ## Fresh audit — 2026-10-27
@@ -182,3 +210,16 @@ Fresh verification: seven focused logo tests pass (new full-reference regression
 ## GitHub publication verification - 2026-10-27
 
 Final pre-push full backend suite: **368 passed, 0 failed/errors/skipped**, 136.94s. Backend Ruff lint/format pass; frontend lint/build and 36 tests pass. Latest connected browser check passed 25 groups; seven live API scripts passed during completion sprint. No additional provider call was made. Secrets-aware staged-content scan found no local credential match or credential-shaped value. No environment files, database/image storage, caches, binaries, screenshots or local patch exports included. User authorised normal push of integration/round2-backend-pr1; main is not merged or deployed. Teammate message and work list are in TEAM_UPDATE.md. Backend and logo limits remain explicitly documented for Rushab review.
+
+## Manual acceptance audit - 2026-10-28
+
+User requested broad manual browser testing and a handoff for Sol to implement changes. Tested commit 8e93438 using the built UI/FastAPI at :8001 with a separate fictional-data SQLite database. Full results, 56 case entries (including limitations and partial observations), seven prioritised issues and explicit unverified boundaries are in MANUAL_QA_2026-10-28.md. Core caption/reference/correction/human-decision flow passed, including approval staleness, two-tab conflict protection, network-error draft preservation and local process-restart recovery. Actual OCR has layout misses and line-flattening limitations; no universal visual-accuracy claim. Other issues: workflow timestamp timezone, clearing a saved caption, conflict currentness display, expired-reference wording and logo punctuation.
+
+Fresh supporting checks: 445 backend tests passed in 39.21s; 47 frontend tests, frontend lint and production build passed. No external provider call, deployment, merge, push or application-code change. Only QA documentation added; runtime left on :8001 with the isolated test database. Public hosting/remote persistence and representative AI/visual accuracy remain unverified in this pass.
+
+
+## Manual-audit defects fixed - 2026-10-28
+
+User explicitly requested all seven audited fixes, including the confirmed backend defects. Switched bounded Tesseract segmentation to variable-size column mode, retained real TSV lines/offsets, and made phrase matching whitespace-tolerant. The previously omitted large price now has real OCR boxes; the unqualified multiline example produces a supported contradiction. Negative-language/conditional guards remain conservative. Added explicit caption removal with poster requirement, role/version checks, immutable history and stale prior decisions. Normalised workflow/campaign/source/revision timestamps to UTC-aware responses. Conflicts immediately stale the visible review and block dependent mutations. Expired references show applicability on the card and confirmation message; logo punctuation and OCR coverage wording corrected.
+
+Validation: 451 full backend tests passed in 40.62s; seven focused audit regression tests subsequently passed including one added real multiline case. Frontend 48 tests, lint, build; backend Ruff lint/format and git diff whitespace checks pass. Browser retests confirmed caption removal and poster-only review, price extraction, multiline supported contradiction, corrected old comment time, immediate conflict gating/reconciliation, expired confirmation and logo wording. See MANUAL_QA_2026-10-28.md for exact baseline/fix evidence. API handoff and OpenAPI updated. No external provider call, production deployment or main merge.

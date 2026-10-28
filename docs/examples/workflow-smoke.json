@@ -4,19 +4,19 @@
   "reviewer_actions": "scripted API demonstration, not real user feedback",
   "live_model_used": false,
   "comment": {
-    "id": "226bbc91-0ced-4c2e-a523-a135eba25e2b",
-    "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
-    "review_id": "718f771a-b441-42b3-ba1d-2e960de9b57c",
-    "actor_id": "aa187f63-b466-41e9-84c4-f8fe0489c66a",
+    "id": "5c4d87f2-ff77-433b-9c8e-9183cacf6d19",
+    "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
+    "review_id": "91bcf285-06c8-4415-95a5-27e758535f1e",
+    "actor_id": "4c29d2a5-72d4-4192-9b49-6d0415074b36",
     "actor_role": "creator",
     "content_revision": 2,
     "source_revision": 4,
     "text": "Scripted demo comment: use the owner-confirmed preferred term.",
-    "created_at": "2026-10-26T12:32:39.378944"
+    "created_at": "2026-10-27T12:01:44.253271"
   },
   "poster": {
-    "id": "b41cf546-005f-4a93-9ecb-5c33ce102e4a",
-    "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
+    "id": "6fc741dc-5105-4a7d-92e8-af9ce64147c4",
+    "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
     "content_revision": 4,
     "mime": "image/png",
     "sha256": "42a6767741e60fc0324d6ffc200dd32fe7691911bf37efac68904bab5f5bf471",
@@ -80,11 +80,11 @@
         }
       ]
     },
-    "created_at": "2026-10-26T12:32:39.575893Z"
+    "created_at": "2026-10-27T12:01:44.700384Z"
   },
   "review": {
-    "id": "0c32c5c6-472d-4503-abec-4d265e9b8ec8",
-    "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
+    "id": "46a13db8-a226-4a38-83e6-f5d71a25d144",
+    "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
     "content_revision": 4,
     "source_revision": 4,
     "caption": "Our affordable workshop. Terms apply.",
@@ -97,14 +97,14 @@
         "reason": null,
         "rules": [
           {
-            "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
+            "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
+            "source_id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
@@ -118,8 +118,8 @@
         "reason": "External contextual review is not enabled or configured.",
         "rules": [],
         "details": {
-          "provider": "groq",
-          "model": "openai/gpt-oss-120b",
+          "provider": "none",
+          "model": "",
           "prompt_version": "contextual-v1",
           "selected_source_ids": [],
           "selected_source_count": 0,
@@ -131,14 +131,14 @@
         "reason": "Only OCR-based exact text checks were attempted. Visual branding, accessibility and contextual poster claims require manual review.",
         "rules": [
           {
-            "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
+            "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
+            "source_id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
@@ -146,7 +146,7 @@
           }
         ],
         "details": {
-          "asset_id": "b41cf546-005f-4a93-9ecb-5c33ce102e4a",
+          "asset_id": "6fc741dc-5105-4a7d-92e8-af9ce64147c4",
           "asset_revision": 4,
           "sha256": "42a6767741e60fc0324d6ffc200dd32fe7691911bf37efac68904bab5f5bf471",
           "width": 1100,
@@ -163,8 +163,8 @@
     },
     "sources_used": [
       {
-        "id": "ce17c2f0-3165-4644-a168-3830d99d616e",
-        "version_id": "aaa95fda-7d0a-46fb-956f-5c5c743fc3f1",
+        "id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
+        "version_id": "67a431fc-ea88-4426-b403-eb1c5581728b",
         "version": 2,
         "title": "Synthetic workshop rule",
         "status": "approved",
@@ -176,12 +176,12 @@
         "text": "Use 'affordable' instead of 'cheap'.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "bc853974-452b-44ec-8d02-149ee76996f8",
-        "created_at": "2026-10-26T12:32:39.321333"
+        "confirmed_by": "5f184486-9be9-4923-aec0-a8d99b651c39",
+        "created_at": "2026-10-27T12:01:44.166021"
       },
       {
-        "id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
-        "version_id": "0fe36fdd-eab4-4580-9546-6af3e2829958",
+        "id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
+        "version_id": "675c0068-c83b-400b-bc2f-324621de0b05",
         "version": 2,
         "title": "Synthetic workshop rule",
         "status": "approved",
@@ -192,14 +192,14 @@
         "text": "Campaign copy must include: Terms apply",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "bc853974-452b-44ec-8d02-149ee76996f8",
-        "created_at": "2026-10-26T12:32:39.340928"
+        "confirmed_by": "5f184486-9be9-4923-aec0-a8d99b651c39",
+        "created_at": "2026-10-27T12:01:44.196316"
       }
     ],
     "excluded_sources": [],
     "findings": [
       {
-        "id": "e5a3553a-f0b4-4d67-950b-a0ced5d8100b",
+        "id": "4ffa600c-d36c-450d-8d86-632e25170435",
         "category": "terminology",
         "severity": "error",
         "evidence_status": "contradicted",
@@ -207,7 +207,7 @@
         "location": {
           "asset": "poster",
           "content_revision": 4,
-          "poster_id": "b41cf546-005f-4a93-9ecb-5c33ce102e4a",
+          "poster_id": "6fc741dc-5105-4a7d-92e8-af9ce64147c4",
           "boxes": [
             {
               "x": 127.0,
@@ -222,8 +222,8 @@
           "quote": "cheap"
         },
         "evidence": {
-          "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
-          "source_version_id": "aaa95fda-7d0a-46fb-956f-5c5c743fc3f1",
+          "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
+          "source_version_id": "67a431fc-ea88-4426-b403-eb1c5581728b",
           "source_version": 2,
           "quote": "Use 'affordable' instead of 'cheap'."
         },
@@ -233,34 +233,34 @@
     "finding_groups": [
       {
         "category": "terminology",
-        "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
+        "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
         "source_version": 2,
         "finding_ids": [
-          "e5a3553a-f0b4-4d67-950b-a0ced5d8100b"
+          "4ffa600c-d36c-450d-8d86-632e25170435"
         ],
         "assets": [
           "poster"
         ]
       }
     ],
-    "created_at": "2026-10-26T12:32:39.592419Z"
+    "created_at": "2026-10-27T12:01:44.715540Z"
   },
   "decision": {
-    "id": "ea9a006d-624d-4b80-aa0a-778ba3d2f416",
-    "review_id": "0c32c5c6-472d-4503-abec-4d265e9b8ec8",
-    "finding_id": "e5a3553a-f0b4-4d67-950b-a0ced5d8100b",
+    "id": "230d0969-183d-4db6-835d-05b18da982f3",
+    "review_id": "46a13db8-a226-4a38-83e6-f5d71a25d144",
+    "finding_id": "4ffa600c-d36c-450d-8d86-632e25170435",
     "version": 1,
-    "actor_id": "4d3dc2c0-eda7-4c4e-8011-b3b6de19359e",
+    "actor_id": "b2640be9-d88e-4083-85cc-98055507a9f3",
     "decision": "exception",
     "reason": "Scripted synthetic exception for exercising the decision record; not a real campaign sign-off.",
-    "created_at": "2026-10-26T12:32:39.613110"
+    "created_at": "2026-10-27T12:01:44.738488"
   },
   "approval": {
-    "id": "0caf4280-b907-46c0-a5c8-18b18855595c",
-    "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
-    "review_id": "0c32c5c6-472d-4503-abec-4d265e9b8ec8",
-    "request_id": "528b9368-8b2b-4158-be13-3406752953ad",
-    "reviewer_id": "4d3dc2c0-eda7-4c4e-8011-b3b6de19359e",
+    "id": "9dc20f55-46e0-4466-8344-ccb11a16d5e1",
+    "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
+    "review_id": "46a13db8-a226-4a38-83e6-f5d71a25d144",
+    "request_id": "34c30eb8-ce2f-4f2c-b53b-b52fb3dd1143",
+    "reviewer_id": "b2640be9-d88e-4083-85cc-98055507a9f3",
     "content_revision": 4,
     "source_revision": 4,
     "decision": "approve",
@@ -271,13 +271,13 @@
       "poster": "Scripted attestation for visual branding, contextual claims and accessibility, not automated completion."
     },
     "decision_snapshot": {
-      "e5a3553a-f0b4-4d67-950b-a0ced5d8100b": "ea9a006d-624d-4b80-aa0a-778ba3d2f416"
+      "4ffa600c-d36c-450d-8d86-632e25170435": "230d0969-183d-4db6-835d-05b18da982f3"
     },
-    "created_at": "2026-10-26T12:32:39.643669",
+    "created_at": "2026-10-27T12:01:44.767577",
     "is_current": true
   },
   "approved_receipt": {
-    "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
+    "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
     "content_revision": 4,
     "source_revision": 4,
     "readiness": "approved_with_manual_checks",
@@ -289,14 +289,14 @@
         "reason": null,
         "rules": [
           {
-            "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
+            "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
+            "source_id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
@@ -308,8 +308,8 @@
         "status": "unavailable",
         "reason": "External contextual review is not enabled or configured.",
         "details": {
-          "provider": "groq",
-          "model": "openai/gpt-oss-120b",
+          "provider": "none",
+          "model": "",
           "prompt_version": "contextual-v1",
           "selected_source_ids": [],
           "selected_source_count": 0,
@@ -321,14 +321,14 @@
         "reason": "Only OCR-based exact text checks were attempted. Visual branding, accessibility and contextual poster claims require manual review.",
         "rules": [
           {
-            "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
+            "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
+            "source_id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
@@ -336,7 +336,7 @@
           }
         ],
         "details": {
-          "asset_id": "b41cf546-005f-4a93-9ecb-5c33ce102e4a",
+          "asset_id": "6fc741dc-5105-4a7d-92e8-af9ce64147c4",
           "asset_revision": 4,
           "sha256": "42a6767741e60fc0324d6ffc200dd32fe7691911bf37efac68904bab5f5bf471",
           "width": 1100,
@@ -353,8 +353,8 @@
     },
     "sources_used": [
       {
-        "id": "ce17c2f0-3165-4644-a168-3830d99d616e",
-        "version_id": "aaa95fda-7d0a-46fb-956f-5c5c743fc3f1",
+        "id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
+        "version_id": "67a431fc-ea88-4426-b403-eb1c5581728b",
         "version": 2,
         "title": "Synthetic workshop rule",
         "status": "approved",
@@ -366,12 +366,12 @@
         "text": "Use 'affordable' instead of 'cheap'.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "bc853974-452b-44ec-8d02-149ee76996f8",
-        "created_at": "2026-10-26T12:32:39.321333"
+        "confirmed_by": "5f184486-9be9-4923-aec0-a8d99b651c39",
+        "created_at": "2026-10-27T12:01:44.166021"
       },
       {
-        "id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
-        "version_id": "0fe36fdd-eab4-4580-9546-6af3e2829958",
+        "id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
+        "version_id": "675c0068-c83b-400b-bc2f-324621de0b05",
         "version": 2,
         "title": "Synthetic workshop rule",
         "status": "approved",
@@ -382,26 +382,26 @@
         "text": "Campaign copy must include: Terms apply",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "bc853974-452b-44ec-8d02-149ee76996f8",
-        "created_at": "2026-10-26T12:32:39.340928"
+        "confirmed_by": "5f184486-9be9-4923-aec0-a8d99b651c39",
+        "created_at": "2026-10-27T12:01:44.196316"
       }
     ],
     "requests": [
       {
-        "id": "528b9368-8b2b-4158-be13-3406752953ad",
-        "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
-        "review_id": "0c32c5c6-472d-4503-abec-4d265e9b8ec8",
-        "requested_by": "aa187f63-b466-41e9-84c4-f8fe0489c66a",
-        "created_at": "2026-10-26T12:32:39.625683"
+        "id": "34c30eb8-ce2f-4f2c-b53b-b52fb3dd1143",
+        "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
+        "review_id": "46a13db8-a226-4a38-83e6-f5d71a25d144",
+        "requested_by": "4c29d2a5-72d4-4192-9b49-6d0415074b36",
+        "created_at": "2026-10-27T12:01:44.750748"
       }
     ],
     "approvals": [
       {
-        "id": "0caf4280-b907-46c0-a5c8-18b18855595c",
-        "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
-        "review_id": "0c32c5c6-472d-4503-abec-4d265e9b8ec8",
-        "request_id": "528b9368-8b2b-4158-be13-3406752953ad",
-        "reviewer_id": "4d3dc2c0-eda7-4c4e-8011-b3b6de19359e",
+        "id": "9dc20f55-46e0-4466-8344-ccb11a16d5e1",
+        "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
+        "review_id": "46a13db8-a226-4a38-83e6-f5d71a25d144",
+        "request_id": "34c30eb8-ce2f-4f2c-b53b-b52fb3dd1143",
+        "reviewer_id": "b2640be9-d88e-4083-85cc-98055507a9f3",
         "content_revision": 4,
         "source_revision": 4,
         "decision": "approve",
@@ -412,26 +412,26 @@
           "poster": "Scripted attestation for visual branding, contextual claims and accessibility, not automated completion."
         },
         "decision_snapshot": {
-          "e5a3553a-f0b4-4d67-950b-a0ced5d8100b": "ea9a006d-624d-4b80-aa0a-778ba3d2f416"
+          "4ffa600c-d36c-450d-8d86-632e25170435": "230d0969-183d-4db6-835d-05b18da982f3"
         },
-        "created_at": "2026-10-26T12:32:39.643669",
+        "created_at": "2026-10-27T12:01:44.767577",
         "is_current": true
       }
     ],
     "finding_decisions": [
       {
-        "finding_id": "e5a3553a-f0b4-4d67-950b-a0ced5d8100b",
-        "decision_id": "ea9a006d-624d-4b80-aa0a-778ba3d2f416",
+        "finding_id": "4ffa600c-d36c-450d-8d86-632e25170435",
+        "decision_id": "230d0969-183d-4db6-835d-05b18da982f3",
         "decision": "exception",
         "reason": "Scripted synthetic exception for exercising the decision record; not a real campaign sign-off.",
-        "actor_id": "4d3dc2c0-eda7-4c4e-8011-b3b6de19359e",
+        "actor_id": "b2640be9-d88e-4083-85cc-98055507a9f3",
         "version": 1
       }
     ],
     "notice": "Human decision record inside BrandProof, not legal certification or control of external publication. Manual checks are reviewer attestations, not AI completion."
   },
   "after_edit_receipt": {
-    "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
+    "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
     "content_revision": 5,
     "source_revision": 4,
     "readiness": "stale",
@@ -443,14 +443,14 @@
         "reason": null,
         "rules": [
           {
-            "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
+            "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
+            "source_id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
@@ -462,8 +462,8 @@
         "status": "unavailable",
         "reason": "External contextual review is not enabled or configured.",
         "details": {
-          "provider": "groq",
-          "model": "openai/gpt-oss-120b",
+          "provider": "none",
+          "model": "",
           "prompt_version": "contextual-v1",
           "selected_source_ids": [],
           "selected_source_count": 0,
@@ -475,14 +475,14 @@
         "reason": "Only OCR-based exact text checks were attempted. Visual branding, accessibility and contextual poster claims require manual review.",
         "rules": [
           {
-            "source_id": "ce17c2f0-3165-4644-a168-3830d99d616e",
+            "source_id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
             "source_version": 2,
             "kind": "terminology",
             "status": "completed",
             "reason": null
           },
           {
-            "source_id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
+            "source_id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
             "source_version": 2,
             "kind": "required_text",
             "status": "completed",
@@ -490,7 +490,7 @@
           }
         ],
         "details": {
-          "asset_id": "b41cf546-005f-4a93-9ecb-5c33ce102e4a",
+          "asset_id": "6fc741dc-5105-4a7d-92e8-af9ce64147c4",
           "asset_revision": 4,
           "sha256": "42a6767741e60fc0324d6ffc200dd32fe7691911bf37efac68904bab5f5bf471",
           "width": 1100,
@@ -507,8 +507,8 @@
     },
     "sources_used": [
       {
-        "id": "ce17c2f0-3165-4644-a168-3830d99d616e",
-        "version_id": "aaa95fda-7d0a-46fb-956f-5c5c743fc3f1",
+        "id": "3a8c9343-3655-463b-97c4-ef28cfaa5efc",
+        "version_id": "67a431fc-ea88-4426-b403-eb1c5581728b",
         "version": 2,
         "title": "Synthetic workshop rule",
         "status": "approved",
@@ -520,12 +520,12 @@
         "text": "Use 'affordable' instead of 'cheap'.",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "bc853974-452b-44ec-8d02-149ee76996f8",
-        "created_at": "2026-10-26T12:32:39.321333"
+        "confirmed_by": "5f184486-9be9-4923-aec0-a8d99b651c39",
+        "created_at": "2026-10-27T12:01:44.166021"
       },
       {
-        "id": "0a4aa354-dbbc-4d8d-976e-bde6fa0c47f3",
-        "version_id": "0fe36fdd-eab4-4580-9546-6af3e2829958",
+        "id": "2867fa95-6a99-4e27-9d18-c7e85a159213",
+        "version_id": "675c0068-c83b-400b-bc2f-324621de0b05",
         "version": 2,
         "title": "Synthetic workshop rule",
         "status": "approved",
@@ -536,26 +536,26 @@
         "text": "Campaign copy must include: Terms apply",
         "valid_from": null,
         "valid_until": null,
-        "confirmed_by": "bc853974-452b-44ec-8d02-149ee76996f8",
-        "created_at": "2026-10-26T12:32:39.340928"
+        "confirmed_by": "5f184486-9be9-4923-aec0-a8d99b651c39",
+        "created_at": "2026-10-27T12:01:44.196316"
       }
     ],
     "requests": [
       {
-        "id": "528b9368-8b2b-4158-be13-3406752953ad",
-        "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
-        "review_id": "0c32c5c6-472d-4503-abec-4d265e9b8ec8",
-        "requested_by": "aa187f63-b466-41e9-84c4-f8fe0489c66a",
-        "created_at": "2026-10-26T12:32:39.625683"
+        "id": "34c30eb8-ce2f-4f2c-b53b-b52fb3dd1143",
+        "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
+        "review_id": "46a13db8-a226-4a38-83e6-f5d71a25d144",
+        "requested_by": "4c29d2a5-72d4-4192-9b49-6d0415074b36",
+        "created_at": "2026-10-27T12:01:44.750748"
       }
     ],
     "approvals": [
       {
-        "id": "0caf4280-b907-46c0-a5c8-18b18855595c",
-        "campaign_id": "bff63a18-7b13-4ed6-96f1-21301b65cc4d",
-        "review_id": "0c32c5c6-472d-4503-abec-4d265e9b8ec8",
-        "request_id": "528b9368-8b2b-4158-be13-3406752953ad",
-        "reviewer_id": "4d3dc2c0-eda7-4c4e-8011-b3b6de19359e",
+        "id": "9dc20f55-46e0-4466-8344-ccb11a16d5e1",
+        "campaign_id": "0c02411c-6d4b-467d-97eb-759d6ece12d1",
+        "review_id": "46a13db8-a226-4a38-83e6-f5d71a25d144",
+        "request_id": "34c30eb8-ce2f-4f2c-b53b-b52fb3dd1143",
+        "reviewer_id": "b2640be9-d88e-4083-85cc-98055507a9f3",
         "content_revision": 4,
         "source_revision": 4,
         "decision": "approve",
@@ -566,19 +566,19 @@
           "poster": "Scripted attestation for visual branding, contextual claims and accessibility, not automated completion."
         },
         "decision_snapshot": {
-          "e5a3553a-f0b4-4d67-950b-a0ced5d8100b": "ea9a006d-624d-4b80-aa0a-778ba3d2f416"
+          "4ffa600c-d36c-450d-8d86-632e25170435": "230d0969-183d-4db6-835d-05b18da982f3"
         },
-        "created_at": "2026-10-26T12:32:39.643669",
+        "created_at": "2026-10-27T12:01:44.767577",
         "is_current": false
       }
     ],
     "finding_decisions": [
       {
-        "finding_id": "e5a3553a-f0b4-4d67-950b-a0ced5d8100b",
-        "decision_id": "ea9a006d-624d-4b80-aa0a-778ba3d2f416",
+        "finding_id": "4ffa600c-d36c-450d-8d86-632e25170435",
+        "decision_id": "230d0969-183d-4db6-835d-05b18da982f3",
         "decision": "exception",
         "reason": "Scripted synthetic exception for exercising the decision record; not a real campaign sign-off.",
-        "actor_id": "4d3dc2c0-eda7-4c4e-8011-b3b6de19359e",
+        "actor_id": "b2640be9-d88e-4083-85cc-98055507a9f3",
         "version": 1
       }
     ],

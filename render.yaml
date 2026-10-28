@@ -1,0 +1,26 @@
+# Create this Blueprint from fix/demo-session-resume until its PR is merged.
+# Database URL is entered privately in Render, never in this file.
+services:
+  - type: web
+    name: brandproof
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: off
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: BRANDPROOF_DATABASE_URL
+        sync: false
+      - key: BRANDPROOF_FRONTEND_DIST
+        value: /app/frontend-dist
+      - key: BRANDPROOF_DEMO_COOKIE_SECURE
+        value: "true"
+      - key: BRANDPROOF_CORS_ORIGINS
+        value: "[]"
+      - key: BRANDPROOF_EXTERNAL_AI_ENABLED
+        value: "false"
+      - key: BRANDPROOF_AI_PROVIDER
+        value: none
+      - key: OMP_NUM_THREADS
+        value: "1"

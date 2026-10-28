@@ -9,6 +9,7 @@ services:
       BRANDPROOF_DATABASE_URL: sqlite:////app/data/brandproof.db
       BRANDPROOF_EXTERNAL_AI_ENABLED: "false"
       BRANDPROOF_AI_PROVIDER: none
+      BRANDPROOF_DEMO_COOKIE_SECURE: "false"
       BRANDPROOF_CORS_ORIGINS: '["http://localhost:5173","http://127.0.0.1:5173"]'
     restart: unless-stopped
     init: true

@@ -6,11 +6,23 @@ These are remaining acceptance tests, not features silently reported complete. C
 - [ ] Approved reference price INR 499 vs actual poster INR 599 -> real poster contradiction. Inspect real boxes at desktop/mobile sizes; verify old-run overlays keep their historical poster after replacement.
 - [ ] Live Groq: consent false makes no external call; explicit true with server enablement/key/model produces actual validated contextual output. Verify unsupported guarantees mean missing substantiation/clarification, not proven falsehood. Preserve refusals/quotas/timeouts as incomplete.
 - [ ] Overlay DOM and screenshots with genuine OCR boxes. Pure percentage/bounds tests pass locally but do not prove OCR quality.
-- [ ] Replay full backend suite on its documented Linux/font/Tesseract runtime. Current Windows run: 310 passed, 21 failed, 1 collection error from font/OCR prerequisites. No backend tests changed to mask this.
+- [x] Replay full backend suite on its documented Linux/font/Tesseract runtime. On 27 October: 419 passed, including the new session-recovery tests; lint and formatting passed. The earlier Windows prerequisite failures remain historical evidence, not the current Linux result.
 - [ ] Public HTTPS frontend/API: CORS/authenticated private images, exact revisions, comments, source/caption/poster stale receipts and provider outage. Test page refresh/session contract honestly.
 - [ ] Persistent database/images/receipts survive actual service restart/redeploy; verify storage/retention/security limits from BACKEND_DEPLOYMENT.md.
 - [ ] Real reviewer usability and accessibility feedback. Test actual incomplete-check notes without prefilled attestations; scripted local approvals are not user feedback.
 - [ ] Final release URL, submission screenshots/materials, ownership/provenance and account-specific provider quota checks.
+
+Local additions verified 27 October: session-cookie resume preserves the existing campaign/actor identity across reload; three real HTTP smoke scripts passed with completed Tesseract extraction and poster-price findings. The seven frontend HTTP scripts passed; their small poster fixture correctly reported partial/low-confidence OCR. No fresh live-model call, public deployment or full Chrome/CDP regression is claimed by these results.
+
+This checklist does not authorise a paid service, public deployment or system-level OCR installation.
+
+## Hosting preparation - 28 October
+
+Latest combined suite: 445 backend tests passed, 47 frontend tests passed, build/lint/format passed, and all seven actual HTTP integration scripts passed. FastAPI serves the built UI and real API together on port 8001. External AI is off for this run. Browser reload restored the same campaign and four findings. Three local HTTP smoke scripts passed with real OCR and human workflow. Free hosting setup is prepared in FREE_HOSTING.md and render.yaml; no public service or account was created. Docker daemon access remains denied locally.
+
+**Container/PostgreSQL CI passed:** [run 40671322353](https://github.com/YogitaKanwar/BrandProof/actions/runs/40671322353), commit 2e369f1, 28 October 10:21 UTC. The complete image built; UI/health and caption/parser/OCR/human-workflow smoke scripts passed against PostgreSQL 16. This does not establish public HTTPS, Neon TLS, sleep/redeploy persistence, actual external-model quality or independent human acceptance. Those checklist items remain open.
+
+## Historical teammate runtime notes (before this integration)
 
 No paid service, public deployment, system-level OCR install or backend modification is authorised by this checklist.
 

@@ -327,3 +327,5 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+.live-sources .fact-status.inactive { background: #fbf5ed; border-color: #ead8c2; color: #79572d; }

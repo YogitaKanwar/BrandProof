@@ -1,5 +1,13 @@
 # Yogita's frontend integration handoff
 
+## Manual-audit fixes — 28 October 2026
+
+`POST /api/v1/campaigns/{campaign_id}/caption/clear` accepts `{ "expected_revision": n }` and returns CampaignOut. It requires an owner/creator, an existing saved poster and the current content revision. It records an empty-caption revision, retains the poster/history and invalidates previous review/approval currency. Ordinary PUT /caption still rejects empty text. The UI asks for explicit confirmation through Remove saved caption. See the regenerated OpenAPI contract.
+
+Workflow, campaign, source and caption-revision timestamps now include UTC timezone metadata, including SQLite readback. OCR uses bounded variable-size column segmentation and preserves actual TSV line boundaries/offsets. Required wording and terminology accept whitespace across line wraps. An OCR extraction completing does not certify all text was read. Qualifiers such as “only if” or negative copy still require clarification; source applicability remains separate from source confirmation.
+
+Known caption conflicts immediately stale the visible review and disable correction, comment and human-request controls until reconciliation. Source cards expose expired/future applicability and confirmation messaging respects it. Audit baseline and fix verification: MANUAL_QA_2026-10-28.md.
+
 ## Setup and scope
 
 Run locally from this repository. http://127.0.0.1:8000 is not a public URL. Swagger: /docs; live contract: /openapi.json; saved contract: docs/openapi.json. Default CORS: http://localhost:5173 and http://127.0.0.1:5173. Never put provider keys in browser code.
@@ -7,6 +15,8 @@ Run locally from this repository. http://127.0.0.1:8000 is not a public URL. Swa
 Sources, caption/poster revisions, exact findings, real local OCR, contextual-provider integration, comments, explicit suggestions, decisions, requests and receipts are implemented. Provider contract tests simulate the network. A genuine Groq openai/gpt-oss-120b API probe is also recorded; a reduced six-case evaluation had three assessed development matches and three unassessed holdouts, not a validated accuracy benchmark. Visual branding, accessibility and contextual poster analysis are not automated. Independent foundation acceptance does not cover this new milestone; see STATUS.md.
 
 POST /api/v1/demo-sessions without a body creates an isolated fictional workspace and owner/creator/reviewer tokens. Store tokens in memory, never logs; attach Authorization: Bearer <token>. Every new session creates another sandbox. Show the synthetic-demo notice. Role switching is not production auth or proof of independent human sign-off. Do not upload confidential materials.
+
+Session continuity added 2026-10-27: creation also sets a 24-hour HttpOnly, SameSite=Strict browser cookie scoped to /api/v1/demo-sessions. POST /demo-sessions/resume with X-BrandProof-Session: resume and credentials:include returns the same workspace, actor IDs and role tokens without extending expiry or writing records. The cookie is Secure by default; explicitly set BRANDPROOF_DEMO_COOKIE_SECURE=false only for local HTTP. Session responses use no-store. Missing/invalid/expired cookies return 401 without creating a sandbox; unsafe browser provenance returns 403. Do not automatically create on a failed resume. Use a same-origin frontend/API proxy in production. Cookie-only access to campaign APIs is not supported; those still require the in-memory role bearer.
 
 Owner configures sources and can perform content/reviewer actions except self-approval. Creator edits content, comments and requests review; no source confirmation/decisions/approval. Reviewer reads/comments, decides findings and approves/requests changes; no content/source edits. Server permissions are authoritative.
 

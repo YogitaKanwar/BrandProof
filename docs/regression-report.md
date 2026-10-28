@@ -1,4 +1,14 @@
-# Local regression report — 2026-10-26
+# Local regression report — 2026-10-27
+
+## Current Linux verification
+
+- Backend: 419 tests passed in 36.33 seconds; Ruff lint and format checks passed.
+- Frontend: build/lint and 44 tests passed, including successful resume, 401/403/404/5xx handling, invalid envelopes, local draft isolation and inaccessible browser storage.
+- All seven real HTTP frontend scripts passed. Three backend HTTP smoke scripts passed. Evidence JSONs in docs/examples/live-review.json, parser-regressions.json and workflow-smoke.json were refreshed from the actual fictional-data runs.
+- Browser verification through the Codex in-app browser confirmed same-URL reload recovery of a saved campaign, confirmed reference, caption and persisted price finding. The editable example creates real records and requires an explicit review; no seeded findings or approval.
+- External AI was deliberately disabled. A live provider evaluation and hosted release verification remain open. The dedicated Chrome/CDP script was updated for resume but was not rerun here; the previous broad browser result below is historical.
+
+## Historical Windows / integration results — 2026-10-26
 
 Tested frontend: http://127.0.0.1:5173/ and the exact /#/new entry; production preview: :4173; genuine API: :8000. Existing user records were not cleared: browser tests use a dedicated Chrome profile and fictional data.
 
@@ -29,4 +39,4 @@ For the full browser pass, also start dedicated Chrome CDP :9223 and preview :41
 
 ## Known incomplete behaviour
 
-Refreshing loses memory-only demo credentials; the backend has no resume contract. Real local OCR reports tool_missing, and consented Groq checks report unconfigured/unavailable. Server campaign/poster deletion has no API. These are not claimed fixed or successful; configured-backend-tests.md remains open. Backend source was not modified and nothing was deployed.
+The refresh limitation described in the historical run is now fixed locally through a protected session cookie. The historical tool_missing OCR result was specific to that Windows runtime; Linux extraction now passes. Live contextual checks, public deployment and server campaign/poster deletion remain incomplete. See configured-backend-tests.md for the remaining acceptance work.
