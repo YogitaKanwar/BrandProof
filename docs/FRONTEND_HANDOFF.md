@@ -86,7 +86,7 @@ Reviewer/eligible owner POST /reviews/{review_id}/approvals:
 
 Decision is approve or request_changes. Approver must differ from requester and must not have edited ANY content revision in this campaign. Switching requester cannot bypass self-approval. One decision per request; another decision needs a fresh request.
 
-Latest review/request must be current and not running. Approval requires active sources, no excluded sources and no unresolved blocking findings. manual_checks must name EXACTLY the incomplete required checks: exact_text/contextual, plus poster when attached. Collect actual reviewer notes (minimum 20 characters); never auto-fill claims that the person performed them. request_changes uses an empty manual_checks object.
+Latest review/request must be current and not running. Approval requires active sources, no excluded sources and no unresolved blocking findings. manual_checks must name EXACTLY the incomplete required checks: exact_text/contextual, plus poster when attached and claim_risk when recorded on the run. Collect actual reviewer notes (minimum 20 characters); never auto-fill claims that the person performed them. request_changes uses an empty manual_checks object.
 
 Manual notes do not change automated coverage. approved_with_manual_checks can coexist with partial automation: a reviewer attestation, not an AI pass or legal certification.
 
@@ -108,3 +108,8 @@ The last script uses real HTTP and Tesseract. Its exceptions/notes/approval are 
 ## Reference-logo comparison (2026-10-27)
 
 See [LOGO_COMPARISON_REVIEW.md](LOGO_COMPARISON_REVIEW.md) for actual new routes, raw PNG/JPEG format, owner confirmation, private image fetching, source revision changes and checks.poster.details.logo. Sources panel includes Brand logo. Results show possible mismatch plus historical reference/whole poster; no inferred bounding box or content approval. This is a bounded plain-background template comparison, not reliable subtle-logo-change or forgery detection. API contract regenerated in openapi.json.
+
+
+## Local claim-risk screening — 28 October
+
+New runs add `checks.claim_risk`; caption and OCR-based poster findings use category `claim_risk`, warning severity and `needs_clarification`, with no invented source evidence or replacement. This works with no approved facts and AI disabled. Partial claim coverage requires dedicated reviewer notes in addition to explicit finding disposition. Existing runs without this check remain unchanged. See [CLAIM_RISK_SCREENING.md](CLAIM_RISK_SCREENING.md) for supported patterns, limits and the judge demonstration. Saved OpenAPI includes the new manual-check key.
