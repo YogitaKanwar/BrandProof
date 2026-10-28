@@ -5,6 +5,33 @@ import { requestJson, describeError } from '../src/api/client.ts'
 const fetchOriginal = globalThis.fetch
 afterEach(() => { globalThis.fetch = fetchOriginal })
 const campaign = { id: 'c1', workspace_id: 'w1', name: 'Launch', publication_date: '2026-11-12', caption: '', content_revision: 1, source_revision: 0, created_at: '2026-10-26T00:00:00Z' }
+
+test('connected deletion uses owner, exact revisions and acknowledged removal; failed requests preserve cached review',async()=>{
+  let conflict=false,removals=0
+  globalThis.fetch=async(url,options)=>{
+    if(url.endsWith('demo-sessions'))return Response.json(session())
+    if(options.method==='DELETE'){
+      removals++;assert.equal(options.headers.get('Authorization'),'Bearer test-owner')
+      assert.deepEqual(JSON.parse(options.body),{expected_content_revision:1,expected_source_revision:0})
+      if(conflict)return Response.json({error:{code:'version_conflict',message:'Changed'}},{status:409})
+      return Response.json({campaign_id:'c1',deletion_id:'deletion-1',deleted:true,retained_history:true})
+    }
+    if(url.endsWith('/restore')){
+      assert.equal(options.headers.get('Authorization'),'Bearer test-owner')
+      assert.deepEqual(JSON.parse(options.body),{expected_content_revision:1,expected_source_revision:0,expected_deletion_id:'deletion-1'})
+      return Response.json(campaign)
+    }
+    return Response.json([campaign])
+  }
+  const api=createBackendClient('http://test/api/v1');await api.connect()
+  const removed=await api.removeReview('c1',{expected_content_revision:1,expected_source_revision:0})
+  assert.equal(removed.data.reviews.length,0)
+  assert.equal((await api.restoreReview(campaign,'deletion-1')).data.reviews.length,1)
+  conflict=true
+  await assert.rejects(api.removeReview('c1',{expected_content_revision:1,expected_source_revision:0}),error=>error.status===409)
+  assert.equal(removals,2)
+  assert.equal((await api.list()).data.reviews.length,1)
+})
 test('caption removal uses an explicit creator write with the expected revision and never retries a conflict', async () => {
   let removals = 0
   globalThis.fetch = async (url, options) => {

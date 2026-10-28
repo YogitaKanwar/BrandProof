@@ -4,7 +4,7 @@ import { reviewClient, deleteLocalReview } from './api/reviews'
 import type { ReviewResult } from './api/reviews'
 import ContentWorkspace from './ContentWorkspace'
 import { createBackendClient } from './api/backend'
-import type { BackendClient } from './api/backend'
+import type { BackendClient, CampaignOut } from './api/backend'
 import { ApiError, describeError } from './api/client'
 import { UnsavedChangesContext, useDraftGuard } from './unsavedChanges'
 import CampaignStatus from './CampaignStatus'
@@ -25,6 +25,7 @@ export default function ReviewWorkspace() {
   const [route, setRoute] = useState(currentRoute)
   const [result, setResult] = useState<ReviewResult | null>(null)
   const [loading, setLoading] = useState(true)
+  const [connectionNotice, setConnectionNotice] = useState('')
   const [saving, setSaving] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [saveError, setSaveError] = useState('')
@@ -35,6 +36,7 @@ export default function ReviewWorkspace() {
   const [notice, setNotice] = useState('')
   const [deletingId, setDeletingId] = useState('')
   const [deleting, setDeleting] = useState(false)
+  const [removedReview,setRemovedReview]=useState<{campaign:CampaignOut;deletionId:string}|null>(null)
   const [publicationDate, setPublicationDate] = useState('')
   const [connecting, setConnecting] = useState(false)
   const [creatingExample, setCreatingExample] = useState(false)
@@ -80,7 +82,7 @@ export default function ReviewWorkspace() {
   useEffect(() => {
     let active = true
     const version = ++workspaceLoadVersion.current
-    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
     loadInitialWorkspace(client, reviewClient, currentRoute()).then(data => {
       if (!active || version !== workspaceLoadVersion.current) return
       needsInitialLoad.current = false
@@ -98,7 +100,7 @@ export default function ReviewWorkspace() {
     setLoading(true); setLoadError('')
     try {
       if (needsInitialLoad.current) {
-        const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+        const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
         const data = await loadInitialWorkspace(client, reviewClient, currentRoute())
         if (version !== workspaceLoadVersion.current) return
         service.current = data.mode === 'backend' ? client : reviewClient
@@ -114,26 +116,27 @@ export default function ReviewWorkspace() {
     finally { if (version === workspaceLoadVersion.current) setLoading(false) }
   }
   async function connectDemo(destination='/') {
-    if (loading || connectionInFlight.current || !confirmLeave()) return
+    if (loading || deleting || connectionInFlight.current || !confirmLeave()) return
     connectionInFlight.current = true
     setConnecting(true); setNotice('')
     // Explicit action always means a new isolated demo, never silent session renewal.
-    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
     try {
       const data = await client.connect()
       service.current = client
       needsInitialLoad.current = false
       setSourceClient(client)
+      setRemovedReview(null)
       setResult(data); setLoadError(''); goTo(destination)
     } catch (error) { setNotice(describeError(error)) }
     finally { connectionInFlight.current = false; setConnecting(false) }
   }
-  async function startReview(){if(loading || creatingExample)return;if(result?.mode==='backend'){window.location.hash='/new';return}await connectDemo('/new')}
+  async function startReview(){if(loading || creatingExample || deleting)return;if(result?.mode==='backend'){window.location.hash='/new';return}await connectDemo('/new')}
   async function startExample() {
-    if (loading || connecting || creatingExample || connectionInFlight.current || !confirmLeave()) return
+    if (loading || deleting || connecting || creatingExample || connectionInFlight.current || !confirmLeave()) return
     connectionInFlight.current = true
     setCreatingExample(true); setNotice('')
-    const client = sourceClient || createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+    const client = sourceClient || createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
     let created: ReviewResult | undefined
     try {
       if (!sourceClient) await client.connect()
@@ -156,11 +159,12 @@ export default function ReviewWorkspace() {
     } finally { connectionInFlight.current = false; setCreatingExample(false) }
   }
   async function openLocalDrafts(destination = '/') {
-    if (connectionInFlight.current || !confirmLeave()) return
+    if (deleting || connectionInFlight.current || !confirmLeave()) return
     workspaceLoadVersion.current++
     service.current = reviewClient
     needsInitialLoad.current = false
     setSourceClient(null)
+    setRemovedReview(null)
     await retry(); goTo(destination)
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -188,14 +192,31 @@ export default function ReviewWorkspace() {
     } finally { savingRef.current = false; setSaving(false) }
   }
   async function removeDraft(id: string) {
-    if (deleting || result?.mode !== 'local') return
+    if (deleting || !result) return
     setDeleting(true); setNotice('')
     try {
-      const deleted = await deleteLocalReview(id)
-      setResult(previous => previous ? { ...previous, data: deleted.data } : previous)
-      setDeletingId(''); setNotice(deleted.warning || 'Local draft deleted.')
-    } catch (error) { setNotice(describeError(error)) }
+      if(result.mode==='backend'){
+        if(!sourceClient)throw new Error('Connected workspace is unavailable. Reload before deleting.')
+        const campaign=result.data.reviews.find(row=>row.id===id)?.backendCampaign
+        if(!campaign)throw new Error('Review is unavailable. Reload before deleting.')
+        const deleted=await sourceClient.removeReview(id,{expected_content_revision:campaign.content_revision,expected_source_revision:campaign.source_revision})
+        setResult(deleted);setRemovedReview({campaign,deletionId:deleted.deletion.deletion_id})
+        setNotice('Review deleted from Recent Reviews. Audit history is retained. Undo is available below until you reload or change workspace.')
+      }else{
+        const deleted = await deleteLocalReview(id)
+        setResult(previous => previous ? { ...previous, data: deleted.data } : previous)
+        setNotice(deleted.warning || 'Local draft deleted.')
+      }
+      setDeletingId('')
+    } catch (error) { setNotice(`${describeError(error)} Deletion was not confirmed. Reload recent reviews before trying again.`);setDeletingId('') }
     finally { setDeleting(false) }
+  }
+  async function undoDelete(){
+    if(deleting||!sourceClient||!removedReview||result?.mode!=='backend')return
+    setDeleting(true);setNotice('')
+    try{setResult(await sourceClient.restoreReview(removedReview.campaign,removedReview.deletionId));setRemovedReview(null);setNotice('Review restored with its original saved content and audit history.')}
+    catch(error){setNotice(`Restore was not confirmed. ${describeError(error)}`)}
+    finally{setDeleting(false)}
   }
   const draft = result?.data.reviews.find(review => review.id === route.id)
   const campaign = result?.data.campaigns.find(item => item.id === draft?.campaignId)
@@ -212,19 +233,20 @@ export default function ReviewWorkspace() {
       <p className="sidebar-note">Brand governance</p>
     </aside>
     <div className="workspace">
-      <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Saved work can be restored in this browser for up to 24 hours. A new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. A protected browser cookie restores the demo; role tokens stay in memory. Server deletion is unavailable. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={loading || connecting || saving} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p>}</div></details></header>
+      <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Saved work can be restored in this browser for up to 24 hours. A new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. A protected browser cookie restores the demo; role tokens stay in memory. Owner deletion hides reviews while retaining audit history. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={loading || connecting || saving || deleting} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving || deleting} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving || deleting} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p>}</div></details></header>
       <main id="main" tabIndex={-1}>
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>
         <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page === 'home' ? 'Every claim, accounted for.' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page === 'home' ? 'Review marketing content against approved brand information.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}</a>}</div>
         {route.page === 'home' && <ol aria-label="Review workflow" className="workflow">{steps.map((name, index) => <li key={name}>{index > 0 && <span aria-hidden="true" className="step-divider">→</span>}{name}</li>)}</ol>}
+        {connectionNotice && <p className="form-help" role="status">{connectionNotice}</p>}
         {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page === 'home' ? <section aria-labelledby="drafts-heading">
-          <div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span></div>
-          <p className="form-help">Want to explore first? <button type="button" disabled={loading || connecting || creatingExample} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button> Creates a fictional workshop campaign. Review findings and approval still require your actions.</p>
+          <div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span><button type="button" disabled={deleting} onClick={()=>void retry()}>Reload recent reviews</button></div>{removedReview&&result?.mode==='backend'&&<div className="review-undo" role="status"><span>Deleted {removedReview.campaign.name}. Saved audit history is retained.</span><button type="button" disabled={deleting} onClick={()=>void undoDelete()}>Undo delete</button></div>}
+          <p className="form-help">Want to explore first? <button type="button" disabled={loading || connecting || creatingExample || deleting} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button> Creates a fictional workshop campaign. Review findings and approval still require your actions.</p>
           {!result?.data.reviews.length ? <p className="reviews-empty">No reviews yet</p> : <div className="review-list">{result.data.reviews.map(review => <article className="campaign-card review-row" key={review.id}>
             <h2><a href={`#/review/${review.id}`}>{review.title}</a></h2>
             {result.mode === 'backend' && sourceClient ? <CampaignStatus api={sourceClient} campaignId={review.id}/> : <span className="badge">Draft · Not checked</span>}
             <small><time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time></small>
-            {result.mode === 'local' && <div className="review-delete">{deletingId === review.id ? <div role="group" aria-label={`Delete ${review.title}?`}><span>Delete this local draft?</span><button type="button" disabled={deleting} onClick={() => void removeDraft(review.id)}>Confirm delete</button><button type="button" disabled={deleting} onClick={() => setDeletingId('')}>Cancel</button></div> : <button type="button" disabled={deleting} aria-label={`Delete ${review.title}`} onClick={() => setDeletingId(review.id)}>Delete</button>}</div>}
+            <div className="review-delete">{deletingId === review.id ? <div role="group" aria-label={`Delete ${review.title}?`}><span>{result.mode==='backend'?`Delete "${review.title}" from Recent Reviews? This hides the campaign and retains its audit history. Owner action; Undo is available until reload.`:'Delete this local draft and its browser-saved content?'}</span><button type="button" disabled={deleting} onClick={() => void removeDraft(review.id)}>Confirm delete</button><button type="button" disabled={deleting} onClick={() => setDeletingId('')}>Cancel</button></div> : <button type="button" disabled={deleting} aria-label={`Delete ${review.title}`} onClick={() => setDeletingId(review.id)}>Delete</button>}</div>
           </article>)}</div>}
         </section> : route.page==='new' && result?.mode!=='backend' && !route.local ? <section className="campaign-form connected-entry"><h2>Start a connected review</h2><p className="form-help">Create a real demo workspace to save sources and confirm them as owner. Saved work can be restored in this browser for up to 24 hours; unsaved edits are not restored. No local draft is uploaded automatically.</p><button type="button" className="primary" disabled={connecting} onClick={()=>void connectDemo('/new')}>{connecting?'Connecting…':'Start connected review'}</button><p className="form-help"><a href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p></section> : route.page === 'new' ? <form className="campaign-form" onSubmit={submit} noValidate aria-busy={saving}>
           <h2>Review details</h2>
