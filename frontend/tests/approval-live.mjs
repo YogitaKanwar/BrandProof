@@ -2,6 +2,7 @@ import { apiBase, verifyBackend } from './live-config.mjs'
 await verifyBackend()
 import assert from 'node:assert/strict'
 import {createBackendClient} from '../src/api/backend.ts'
+import {incompleteChecks} from '../src/api/workflow.ts'
 import {readFileSync} from 'node:fs'
 const api=createBackendClient(apiBase);await api.connect()
 const data=await api.create({title:'Y07 approval workflow',publicationDate:'2026-11-12',brand:'',brief:''}),id=data.data.reviews[0].id
@@ -12,7 +13,7 @@ const run=await api.runReview(id,campaign.content_revision,campaign.source_revis
 const request=await api.requestReview(id,run.id,snapshot)
 await assert.rejects(api.approve(id,run.id,snapshot,request.id,'approve','Creator must not approve their own work.',{},'creator'),e=>e.status===403)
 await assert.rejects(api.approve(id,run.id,snapshot,request.id,'approve','Incomplete checks require real reviewer notes.',{}),e=>e.status===409&&e.code==='checks_incomplete')
-const incomplete=['exact_text','contextual'].filter(name=>run.checks[name].status!=='completed')
+const incomplete=incompleteChecks(run)
 const manual=Object.fromEntries(incomplete.map(name=>[name,`Scripted test attestation for ${name}; not actual user feedback.`]))
 await api.approve(id,run.id,snapshot,request.id,'approve','Scripted demo reviewer approval for workflow verification.',manual)
 const receipt=await api.receipt(id);assert.equal(receipt.readiness,'approved_with_manual_checks');assert.equal(receipt.approvals.length,1)
@@ -37,7 +38,7 @@ const posterRequest=await api.requestReview(id,posterRun.id,posterSnapshot)
 for(const finding of posterRun.findings.filter(f=>f.severity==='error'||['needs_clarification','insufficient_evidence'].includes(f.evidence_status))) {
   await api.decideFinding(id,posterRun.id,finding.id,posterSnapshot,0,'exception','Scripted reviewer exception for test workflow only; not real human evaluation.')
 }
-const required=['exact_text','contextual','poster'].filter(name=>posterRun.checks[name]?.status!=='completed')
+const required=incompleteChecks(posterRun)
 const posterNotes=Object.fromEntries(required.map(name=>[name,`Scripted workflow check for ${name}; not a real human evaluation.`]))
 await api.approve(id,posterRun.id,posterSnapshot,posterRequest.id,'approve','Scripted approval including actual incomplete-check keys.',posterNotes)
 await api.updateSource(id,source.id,2,{title:'Revised price',rule:{kind:'price',amount:'599',currency:'INR'},valid_from:null,valid_until:null})
