@@ -41,7 +41,7 @@ export async function requestJson<T>(url: string, options: RequestInit = {}): Pr
 export function describeError(error: unknown): string {
   if (!(error instanceof ApiError)) return error instanceof Error ? error.message : 'Request failed. Please retry.'
   const actions: Record<number, string> = {
-    401: 'Demo access expired or missing. Start a new demo; it creates a separate workspace.',
+    401: 'Demo access expired or missing. Reload to restore a valid browser session. Starting a new demo creates a separate workspace.',
     403: 'Your demo role cannot perform this action.',
     404: 'This resource is missing or inaccessible in this workspace.',
     409: 'State changed. Reload and reconcile before trying again.',

@@ -26,6 +26,27 @@
         }
       }
     },
+    "/api/v1/demo-sessions/resume": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Resume Demo",
+        "operationId": "resume_demo_api_v1_demo_sessions_resume_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSessionOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/campaigns": {
       "get": {
         "tags": [

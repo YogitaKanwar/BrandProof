@@ -24,6 +24,7 @@ A container host must provide a writable persistent /app/data volume owned by UI
 - Confirm actual service price, disk retention, sleep/cold-start policy, concurrency, memory and timeout limits before accepting a plan. No paid fallback is authorised.
 - Configure ingress body/time/concurrency limits and session-creation abuse limits. Existing per-provider admission is not complete public abuse protection.
 - Set BRANDPROOF_CORS_ORIGINS to the exact deployed frontend origin (JSON list); do not use wildcard credentials.
+- Serve the frontend and /api under one public origin. Demo resume uses a host-only HttpOnly, SameSite=Strict cookie and credentialed fetch. Secure cookies default on; BRANDPROOF_DEMO_COOKIE_SECURE=false is only a local HTTP override. Verify that the reverse proxy preserves the cookie and that refresh restores the same workspace, without extending its 24-hour lifetime.
 - Keep secrets server-side, never image build arguments, repository files, frontend bundles or logs.
 - Deploy the image, verify HTTPS health plus a persisted campaign round trip, then restart/redeploy and read the same campaign and historical image bytes back.
 - Run fresh-session, clean/flawed content, OCR, permission, approval/edit and outage checks against the remote API.

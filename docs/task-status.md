@@ -1,12 +1,23 @@
 ﻿# BrandProof task status
 
-Updated: 2026-10-26. Branch: `integration/round2-backend-pr1`.
+Updated: 2026-10-27. Current branch: `fix/demo-session-resume`.
+
+## Current local acceptance - 27 October
+
+- Completed the existing backend session-recovery work and connected frontend startup to it. A 24-hour HttpOnly, SameSite=Strict cookie restores the same workspace and actor identities after refresh. Role bearers remain in memory; resume neither creates another sandbox nor extends expiry. Missing cookies remain distinct from server/provenance failures. Existing local-draft deep links remain local.
+- Added an optional editable fictional workshop example. It creates real campaign/source/caption records and confirms only the fictional sample rules. Findings, corrections, reviewer notes and approvals are not pre-populated. Partial setup failures leave acknowledged records visible.
+- Local verification: **419 backend tests passed**, backend lint/format passed; frontend production build/lint and **44 frontend tests passed**. All seven frontend real-HTTP scripts passed against an isolated local database. Three backend HTTP smoke scripts passed, including real Tesseract extraction, poster contradiction, explicit suggestion/comments/decisions and stale approval after image replacement.
+- Browser verification in the Codex in-app browser: created a real campaign and source, ran a price review, reloaded the exact review URL and observed the same saved caption, confirmed source and persisted finding. The example entry creates real editable data and requires an explicit review. This is development verification with fictional data, not external user feedback.
+- Updated the dedicated Chrome regression script for resume. The full Chrome/CDP script was **not rerun in this environment**; previous 22-group results below are historical. Public HTTPS/redeploy tests and live contextual-model acceptance remain open. AI was explicitly disabled for this verification run.
+- Current checkout already contains merged frontend PRs in its history. Historical notes below describing main as unchanged refer to the earlier integration checkpoint, not today's Git state. No merge, deployment or publication was performed in this continuation.
+
+## Earlier integration baseline - 26 October
 
 Six task flows are implemented and verified against the local API; four tasks remain partial. This is a local integration milestone, not final hosted acceptance.
 
 | Task | Status | Implemented / remaining |
 | --- | --- | --- |
-| Y01 | Partial | App shell, navigation, real demo sessions and campaign create/list/get work. Server data persists; refresh loses memory-only demo access. Session resume and deployment remain. |
+| Y01 | Partial | App shell, navigation, real demo sessions, same-browser resume and campaign create/list/get work. Hosted deployment and its cookie/persistence acceptance remain. |
 | Y02 | Implemented locally | Six typed rules, explicit owner confirmation, pending/approved states, validity, versions/history and conflict preservation. Brand context is separate and unparsed. |
 | Y03 | Implemented locally | Caption saves, expected revisions, conflict reconciliation, real review initiation/history and honest running/partial/failed states. Run Review now shows a spinner and brings returned results/errors into view. |
 | Y04 | Implemented locally | Validated PNG/JPEG selection/drop/preview, real upload/replacement and private canonical/historical retrieval. No server-delete route exists. |
@@ -45,8 +56,8 @@ Six task flows are implemented and verified against the local API; four tasks re
 
 ## Remaining blockers and acceptance
 
-- **Session refresh:** no documented resume route. Rushab must provide a same-workspace resume/refresh contract that can restore authorised actor access without persisting bearer tokens in browser storage. No undocumented localStorage/sessionStorage workaround is used.
-- **OCR / contextual AI:** local OCR returns `unavailable/tool_missing`; consented contextual checking returns unavailable because Groq is unconfigured. Real extraction, INR 499 vs poster INR 599, responsive real boxes and contextual claim/citation quality require configured-runtime testing.
+- **Session refresh:** implemented and verified locally. Production must serve frontend and API under the same origin, retain the cookie through the proxy, and use HTTPS/Secure cookies. Resume does not preserve unsaved editor changes or provide production identity.
+- **OCR / contextual AI:** real Linux Tesseract extraction and the poster-price workflow passed on 27 October. Earlier tool_missing results were from Windows. Responsive genuine-box browser acceptance and fresh live contextual claim/citation quality remain to be verified. The latest local test server deliberately disabled external AI.
 - **Release:** public HTTPS API/frontend, CORS/private images, durable storage/restart, security/retention, accessibility/usability acceptance and submission evidence remain. No confidential-data or production-identity claims.
 - **Deletion:** only browser-local drafts can be deleted. Backend campaign/poster deletion requires an actual API contract.
 - See [configured-backend-tests.md](configured-backend-tests.md), [regression-report.md](regression-report.md) and [release-checklist.md](release-checklist.md).
@@ -56,4 +67,4 @@ Six task flows are implemented and verified against the local API; four tasks re
 1. Open `http://127.0.0.1:5173/#/new`, start connected review and create a campaign.
 2. Add a price fact, save it, then explicitly confirm as owner. Enter a conflicting caption and save it.
 3. Run review: check visible progress, actual results/evidence and unavailable coverage. For poster-only review, upload the file to the server first.
-4. Exercise explicit corrections/comments and creator/reviewer controls. Source confirmation is not content approval; refreshing still loses demo access.
+4. Exercise explicit corrections/comments and creator/reviewer controls. Source confirmation is not content approval. Refresh and verify the saved campaign, source versions, findings and receipts return; unsaved edits must still warn before leaving.

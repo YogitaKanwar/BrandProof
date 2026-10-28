@@ -1,43 +1,23 @@
-import secrets
-from datetime import UTC, datetime, timedelta
-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from brandproof.auth import actor, db, require_role, scoped_campaign, token_hash
-from brandproof.models import Actor, Campaign, Workspace
+from brandproof.auth import actor, db, require_role, scoped_campaign
+from brandproof.demo_sessions import create_browser_session, resume_browser_session
+from brandproof.models import Actor, Campaign
 from brandproof.schemas import CampaignCreate, CampaignOut, DemoSessionOut
 
 router = APIRouter(prefix="/api/v1")
 
 
 @router.post("/demo-sessions", status_code=201, response_model=DemoSessionOut, tags=["demo"])
-def create_demo(session: Session = Depends(db)):
-    workspace = Workspace()
-    session.add(workspace)
-    session.flush()
-    expires = datetime.now(UTC) + timedelta(hours=24)
-    actors = {}
-    for role in ("owner", "creator", "reviewer"):
-        token = secrets.token_urlsafe(32)
-        session.add(
-            Actor(
-                workspace_id=workspace.id,
-                role=role,
-                token_hash=token_hash(token),
-                expires_at=expires,
-            )
-        )
-        actors[role] = {"role": role, "access_token": token}
-    session.commit()
-    return {
-        "workspace_id": workspace.id,
-        "mode": "synthetic_demo",
-        "expires_at": expires,
-        "notice": "Isolated fictional-data sandbox. Demo role switching is not production authentication. Do not upload confidential materials.",
-        "actors": actors,
-    }
+def create_demo(request: Request, response: Response, session: Session = Depends(db)):
+    return create_browser_session(request, response, session)
+
+
+@router.post("/demo-sessions/resume", response_model=DemoSessionOut, tags=["demo"])
+def resume_demo(request: Request, session: Session = Depends(db)):
+    return resume_browser_session(request, session)
 
 
 @router.post("/campaigns", status_code=201, response_model=CampaignOut, tags=["campaigns"])

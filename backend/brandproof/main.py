@@ -42,9 +42,21 @@ def create_app(*, database_url: str | None = None):
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
+        allow_credentials=True,
         allow_methods=["GET", "POST", "PUT"],
-        allow_headers=["Authorization", "Content-Type"],
+        allow_headers=["Authorization", "Content-Type", "X-BrandProof-Session"],
     )
+
+    @app.middleware("http")
+    async def prevent_session_caching(request, call_next):
+        response = await call_next(request)
+        if request.url.path.rstrip("/") in (
+            "/api/v1/demo-sessions",
+            "/api/v1/demo-sessions/resume",
+        ):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Pragma"] = "no-cache"
+        return response
 
     @app.get("/api/v1/health")
     def health():

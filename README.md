@@ -33,6 +33,7 @@ The smoke test requires a running API. It creates a new fictional sandbox, confi
 ## What works
 
 - Persistent, isolated demo workspaces and 24-hour bearer tokens for owner/creator/reviewer roles.
+- Same-browser refresh recovery through a 24-hour HttpOnly, SameSite=Strict cookie. Recovery retains workspace/actor identity and does not extend expiry; role bearer tokens remain in memory. Secure cookies default on; local HTTP requires the explicit example override. Serve frontend and API under the same origin for browser recovery.
 - Campaign creation/read/list with explicit publication date.
 - Typed price/date/terminology/required-text sources and tone/claim-policy guidance for bounded contextual retrieval.
 - Owner confirmation and immutable source version history. Revisions become pending until reconfirmed; the previous approved version remains historical, not active.
