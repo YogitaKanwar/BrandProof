@@ -25,6 +25,7 @@ export default function ReviewWorkspace() {
   const [route, setRoute] = useState(currentRoute)
   const [result, setResult] = useState<ReviewResult | null>(null)
   const [loading, setLoading] = useState(true)
+  const [connectionNotice, setConnectionNotice] = useState('')
   const [saving, setSaving] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [saveError, setSaveError] = useState('')
@@ -80,7 +81,7 @@ export default function ReviewWorkspace() {
   useEffect(() => {
     let active = true
     const version = ++workspaceLoadVersion.current
-    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
     loadInitialWorkspace(client, reviewClient, currentRoute()).then(data => {
       if (!active || version !== workspaceLoadVersion.current) return
       needsInitialLoad.current = false
@@ -98,7 +99,7 @@ export default function ReviewWorkspace() {
     setLoading(true); setLoadError('')
     try {
       if (needsInitialLoad.current) {
-        const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+        const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
         const data = await loadInitialWorkspace(client, reviewClient, currentRoute())
         if (version !== workspaceLoadVersion.current) return
         service.current = data.mode === 'backend' ? client : reviewClient
@@ -118,7 +119,7 @@ export default function ReviewWorkspace() {
     connectionInFlight.current = true
     setConnecting(true); setNotice('')
     // Explicit action always means a new isolated demo, never silent session renewal.
-    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
     try {
       const data = await client.connect()
       service.current = client
@@ -133,7 +134,7 @@ export default function ReviewWorkspace() {
     if (loading || connecting || creatingExample || connectionInFlight.current || !confirmLeave()) return
     connectionInFlight.current = true
     setCreatingExample(true); setNotice('')
-    const client = sourceClient || createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1')
+    const client = sourceClient || createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
     let created: ReviewResult | undefined
     try {
       if (!sourceClient) await client.connect()
@@ -217,6 +218,7 @@ export default function ReviewWorkspace() {
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>
         <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page === 'home' ? 'Every claim, accounted for.' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page === 'home' ? 'Review marketing content against approved brand information.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}</a>}</div>
         {route.page === 'home' && <ol aria-label="Review workflow" className="workflow">{steps.map((name, index) => <li key={name}>{index > 0 && <span aria-hidden="true" className="step-divider">→</span>}{name}</li>)}</ol>}
+        {connectionNotice && <p className="form-help" role="status">{connectionNotice}</p>}
         {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page === 'home' ? <section aria-labelledby="drafts-heading">
           <div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span></div>
           <p className="form-help">Want to explore first? <button type="button" disabled={loading || connecting || creatingExample} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button> Creates a fictional workshop campaign. Review findings and approval still require your actions.</p>
