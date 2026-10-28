@@ -6,7 +6,7 @@ Current update, 28 October 2026: the Docker package now includes the compiled Re
 
 Dockerfile: Node 24 builds React using the frontend lockfile; Python 3.12 runs locked Python dependencies via uv, Pillow, Tesseract English OCR, Noto fonts, non-root UID 10001, one Uvicorn worker and a database-backed health probe. The entry point reads PORT (1–65535) and disables access logs. compose.yaml keeps the port on loopback, persists /app/data in a named volume and applies basic container restrictions. .dockerignore allows only required source/build manifests and excludes local data and credentials.
 
-The Python wheel/source package builds with `uv build`. The entry-point contract and local API/OCR are tested. `docker compose config --quiet` validates the Compose configuration. Docker image build/start is NOT verified: this machine denies access to the Docker daemon. Installing a Dockerfile is not a deployment success.
+The Python wheel/source package builds with `uv build`. The entry-point contract and local API/OCR are tested. `docker compose config --quiet` validates the Compose configuration. Local Docker daemon access is denied. The complete Docker image build/start and actual PostgreSQL 16 workflows passed in [GitHub Actions run 40671322353](https://github.com/YogitaKanwar/BrandProof/actions/runs/40671322353) on 2e369f1. This is container acceptance in CI, not a public deployment.
 
 ## Local container route, once Docker access is available
 

@@ -18,7 +18,9 @@ This checklist does not authorise a paid service, public deployment or system-le
 
 ## Hosting preparation - 28 October
 
-Latest combined suite: 434 backend tests passed, 47 frontend tests passed, build/lint/format passed, and all seven actual HTTP integration scripts passed. FastAPI serves the built UI and real API together on port 8001. External AI is off for this run. Free hosting setup is prepared in FREE_HOSTING.md and render.yaml; no public service or account was created. Docker daemon access remains denied locally. PostgreSQL/container CI and actual remote HTTPS/redeploy acceptance must be recorded from real results before checking those items complete.
+Latest combined suite: 445 backend tests passed, 47 frontend tests passed, build/lint/format passed, and all seven actual HTTP integration scripts passed. FastAPI serves the built UI and real API together on port 8001. External AI is off for this run. Browser reload restored the same campaign and four findings. Three local HTTP smoke scripts passed with real OCR and human workflow. Free hosting setup is prepared in FREE_HOSTING.md and render.yaml; no public service or account was created. Docker daemon access remains denied locally.
+
+**Container/PostgreSQL CI passed:** [run 40671322353](https://github.com/YogitaKanwar/BrandProof/actions/runs/40671322353), commit 2e369f1, 28 October 10:21 UTC. The complete image built; UI/health and caption/parser/OCR/human-workflow smoke scripts passed against PostgreSQL 16. This does not establish public HTTPS, Neon TLS, sleep/redeploy persistence, actual external-model quality or independent human acceptance. Those checklist items remain open.
 
 ## Historical teammate runtime notes (before this integration)
 

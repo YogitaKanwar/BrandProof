@@ -17,7 +17,7 @@ Contract: docs/openapi.json
 
 For frontend development, run `npm ci` then `npm run dev` in `frontend/`; Vite proxies `/api` to port 8001. For the packaged app, run `npm run build` in `frontend/`, set `BRANDPROOF_FRONTEND_DIST=./frontend/dist`, and open port 8001 directly. Local HTTP requires `BRANDPROOF_DEMO_COOKIE_SECURE=false`; HTTPS hosting defaults to secure cookies.
 
-On first startup, the app creates its initial tables and data/brandproof.db. SQLite is the exercised development database. SQLAlchemy and the psycopg driver provide a PostgreSQL configuration path, but PostgreSQL has NOT been tested. The current schema bootstrap is not a migration system; use a fresh database for this initial milestone and do not assume future upgrades can alter old tables automatically.
+On first startup, the app creates its initial tables and data/brandproof.db. SQLite is the exercised development database. The full container and actual caption/parser/OCR/human-workflow smoke scripts passed against PostgreSQL 16 in [GitHub Actions run 40671322353](https://github.com/YogitaKanwar/BrandProof/actions/runs/40671322353). Actual Render/Neon acceptance remains pending. The current schema bootstrap is not a migration system; use a fresh database and do not assume future upgrades can alter old tables automatically.
 
 Optional configuration uses .env or environment variables; copy the names from .env.example. Never commit real secrets or data. BRANDPROOF_DATABASE_URL selects storage; BRANDPROOF_CORS_ORIGINS is a JSON list of exact authorised frontend origins. Configuration is read when creating the app.
 
@@ -66,7 +66,7 @@ The configured local Groq model has been exercised, but the reduced synthetic ev
 
 ## Deployment and operational evidence
 
-See docs/FREE_HOSTING.md for the current setup and docs/BACKEND_DEPLOYMENT.md for operational boundaries. The multi-stage Dockerfile builds React and includes Python/Tesseract in one service. PostgreSQL stores image bytes as well as review records. A GitHub Actions workflow checks the image against PostgreSQL; inspect its actual result before treating it as verified. Local Docker build/runtime is unavailable because daemon access is denied. Remote deployment and persistence acceptance remain pending.
+See docs/FREE_HOSTING.md for the current setup and docs/BACKEND_DEPLOYMENT.md for operational boundaries. The multi-stage Dockerfile builds React and includes Python/Tesseract in one service. PostgreSQL stores image bytes as well as review records. GitHub Actions run 40671322353 passed the image build and real PostgreSQL workflows on commit 2e369f1. Local Docker build/runtime is unavailable because daemon access is denied. Public deployment and restart persistence acceptance remain pending.
 
 ## Team handoff
 
