@@ -19,7 +19,11 @@ BASELINE = json.loads(Path(__file__).with_name("migration_baseline.json").read_t
 
 
 def steps():
-    return [("0001_legacy", list(BASELINE)), ("0002_review_leases", ["review_leases"])]
+    return [
+        ("0001_legacy", list(BASELINE)),
+        ("0002_review_leases", ["review_leases"]),
+        ("0003_guideline_documents", ["guideline_documents", "document_evidence"]),
+    ]
 
 
 def validate_table(connection, name, expected):

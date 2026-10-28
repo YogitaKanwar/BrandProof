@@ -140,10 +140,13 @@ export function createBackendClient(base = '/api/v1') {
       return result()
     },
     async runReview(campaignId: string, contentRevision: number, sourceRevision: number, externalConsent = false) {
+      
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews`, {
         method: 'POST', signal: AbortSignal.timeout(120000), headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_content_revision: contentRevision, expected_source_revision: sourceRevision, external_ai_consent: externalConsent }),
       }))
     },
+    async documents(campaignId:string){return requestJson<import('./documents').GuidelineDocument[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/guideline-documents`,{headers:auth(),cache:'no-store'})},
+    async importDocument(campaignId:string,file:File,revision:number){return requestJson<{document:import('./documents').GuidelineDocument;sources:SourceOut[];notice:string}>(`${base}/campaigns/${encodeURIComponent(campaignId)}/guideline-documents?expected_source_revision=${revision}`,{method:'POST',headers:{...auth('owner'),'Content-Type':'application/pdf','X-BrandProof-Filename':encodeURIComponent(file.name)},body:file,signal:AbortSignal.timeout(30000)})},
     async listReviews(campaignId: string) {
       const records = await requestJson<ReviewOut[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews`, { headers: auth() })
       if (!Array.isArray(records)) throw invalid()

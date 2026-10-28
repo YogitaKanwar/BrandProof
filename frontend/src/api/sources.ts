@@ -6,6 +6,7 @@ export type SourceRule =
   | { kind: 'tone' | 'claim_policy'; guidance: string }
 export interface SourceCreate { title: string; rule: SourceRule; valid_from?: string | null; valid_until?: string | null }
 export interface SourceOut extends SourceCreate {
+  document_evidence?: import('./documents').DocumentCitation | null
   id: string; version_id: string; version: number; status: 'pending' | 'approved'
   text: string; confirmed_by: string | null; created_at: string
   valid_from: string | null; valid_until: string | null

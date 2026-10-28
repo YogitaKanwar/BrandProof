@@ -1780,6 +1780,113 @@
         }
       }
     },
+    "/api/v1/campaigns/{campaign_id}/guideline-documents": {
+      "post": {
+        "tags": [
+          "guideline documents"
+        ],
+        "summary": "Import Document",
+        "operationId": "import_document_api_v1_campaigns__campaign_id__guideline_documents_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "expected_source_revision",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 2147483646,
+              "minimum": 0,
+              "title": "Expected Source Revision"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "guideline documents"
+        ],
+        "summary": "List Documents",
+        "operationId": "list_documents_api_v1_campaigns__campaign_id__guideline_documents_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentOut"
+                  },
+                  "title": "Response List Documents Api V1 Campaigns  Campaign Id  Guideline Documents Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "summary": "Health",
@@ -2319,6 +2426,141 @@
         ],
         "title": "DemoSessionOut"
       },
+      "DocumentCitation": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "page_number": {
+            "type": "integer",
+            "title": "Page Number"
+          },
+          "start": {
+            "type": "integer",
+            "title": "Start"
+          },
+          "end": {
+            "type": "integer",
+            "title": "End"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_id",
+          "filename",
+          "sha256",
+          "page_number",
+          "start",
+          "end",
+          "quote"
+        ],
+        "title": "DocumentCitation"
+      },
+      "DocumentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentPage"
+            },
+            "type": "array",
+            "title": "Pages"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "candidate_limit_reached": {
+            "type": "boolean",
+            "title": "Candidate Limit Reached"
+          },
+          "candidate_count": {
+            "type": "integer",
+            "title": "Candidate Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "filename",
+          "sha256",
+          "created_at",
+          "status",
+          "pages",
+          "scope",
+          "candidate_limit_reached",
+          "candidate_count"
+        ],
+        "title": "DocumentOut"
+      },
+      "DocumentPage": {
+        "properties": {
+          "page_number": {
+            "type": "integer",
+            "title": "Page Number"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page_number",
+          "text",
+          "status",
+          "reason"
+        ],
+        "title": "DocumentPage"
+      },
       "Evidence": {
         "properties": {
           "source_id": {
@@ -2592,6 +2834,31 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ImportOut": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/DocumentOut"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceOut"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document",
+          "sources",
+          "notice"
+        ],
+        "title": "ImportOut"
       },
       "Location": {
         "properties": {
@@ -3457,6 +3724,16 @@
             "type": "string",
             "format": "date-time",
             "title": "Created At"
+          },
+          "document_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DocumentCitation"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",

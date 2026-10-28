@@ -3,7 +3,7 @@ from datetime import timedelta
 import pytest
 from brandproof.db import make_engine, session_factory
 from brandproof.main import create_app
-from brandproof.migrations import history, migrate
+from brandproof.migrations import history, migrate, steps
 from brandproof.models import Campaign, Workspace, utcnow
 from brandproof.review_leases import ReviewLease, acquire, fence, recover_expired
 from brandproof.review_models import ReviewRun
@@ -20,7 +20,7 @@ def test_additive_migration_adopts_existing_database_without_data_loss(tmp_path)
         connection.execute(
             text("INSERT INTO workspaces (id,created_at) VALUES ('preserve','2026-10-28')")
         )
-    assert migrate(app.state.engine)["pending"] == ["0001_legacy", "0002_review_leases"]
+    assert migrate(app.state.engine)["pending"] == [version for version, _ in steps()]
     assert migrate(app.state.engine)["pending"] == []
     with app.state.engine.connect() as connection:
         assert connection.scalar(text("SELECT id FROM workspaces")) == "preserve"

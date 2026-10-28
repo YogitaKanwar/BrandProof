@@ -64,6 +64,16 @@ class VersionRequest(StrictModel):
     expected_version: int = Field(ge=1, le=MAX_INCREMENT_EXPECTATION)
 
 
+class DocumentCitation(BaseModel):
+    document_id: str
+    filename: str
+    sha256: str
+    page_number: int
+    start: int
+    end: int
+    quote: str
+
+
 class SourceOut(BaseModel):
     id: str
     version_id: str
@@ -76,3 +86,4 @@ class SourceOut(BaseModel):
     valid_until: date | None
     confirmed_by: str | None
     created_at: UTCDateTime
+    document_evidence: DocumentCitation | None = None

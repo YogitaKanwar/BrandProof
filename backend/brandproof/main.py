@@ -8,6 +8,7 @@ from sqlalchemy import text
 from brandproof.approval import router as approval_router
 from brandproof.config import Settings
 from brandproof.db import make_engine, session_factory
+from brandproof.documents import router as documents_router
 from brandproof.errors import install_errors
 from brandproof.logos import router as logos_router
 from brandproof.migrations import migrate
@@ -43,6 +44,7 @@ def create_app(*, database_url: str | None = None):
     app.include_router(suggestions_router)
     app.include_router(posters_router)
     app.include_router(logos_router)
+    app.include_router(documents_router)
     app.state.engine = engine
     app.state.sessions = sessions
     app.state.settings = settings
@@ -51,7 +53,12 @@ def create_app(*, database_url: str | None = None):
         allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT"],
-        allow_headers=["Authorization", "Content-Type", "X-BrandProof-Session"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-BrandProof-Session",
+            "X-BrandProof-Filename",
+        ],
     )
 
     @app.middleware("http")

@@ -154,7 +154,7 @@ def start_review(
         .where(Source.campaign_id == campaign_id)
     ).all()
     active = [
-        render_source(s, v)
+        render_source(s, v, session)
         for s, v in rows
         if v.status == "approved"
         and (not v.valid_from or v.valid_from <= campaign.publication_date)
