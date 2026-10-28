@@ -1,6 +1,23 @@
 # BrandProof task status
 
-Updated: 2026-10-28. Current branch: `fix/demo-session-resume`.
+Updated: 2026-10-28. Current branch: `integration/round2-backend-pr1`.
+
+## Release preparation and verified hosting connections - 28 October
+
+- Read-only MCP verified Render BrandProof and Vercel yogitakanwar's projects, both identifying yogi2kanwar@gmail.com. No existing services/databases/projects returned. No resources created or deployment performed.
+- Fresh fetch confirms remote 627be7a and local 8e93438, nine ahead/zero behind. Both cdda60f backend PR1 and a93f782 frontend checkpoints remain ancestors; main remains b73d535. All nine commit trees scanned (323 unique blobs), plus current 198 tracked files: no detected credential matches or sensitive tracked paths. Local .env, environments, databases and caches are ignored and outside Docker's allowlisted context.
+- Fresh release checks: 445 backend tests pass in 145.14 seconds; Ruff lint/format (70 files), frontend build/lint, 47 unit tests, seven genuine HTTP suites, real Tesseract workflow and 26 browser groups pass. External AI disabled. Initial HTTP attempt had no server; initial browser attempt lacked exact local preview CORS origin. Both rerun successfully against isolated data/release-qa-20261028.db with exact localhost origins, no product/backend edits.
+- Preserved and verified the pre-existing browser clear-cookie/reload test fix. Preparing a local checkpoint containing that fix and deployment/acceptance documentation only; normal branch push requires user approval. Docker CLI unavailable on current PATH; earlier Linux Docker/PostgreSQL CI is historical evidence, not a fresh container run.
+- Proposed resources and alternatives are in VERCEL_RENDER_DEPLOYMENT.md: Singapore PostgreSQL 16 (0.1c-256mb, 1 GB) and Docker API (0.5c-512mb), Vercel Hobby static frontend/global CDN. Base USD 13.30/month before taxes/usage/AI; no workspace upgrade. Resource/public-deployment approval and private database/Groq configuration remain pending. Health-check dashboard setting and hostname-dependent rewrite are explicit remaining steps.
+
+## Fresh GitHub integration and deployment gate - 28 October
+
+- Fetched all refs. Integration initially matched its remote at 627be7a; origin/main contained merge commits with the same tree. Newly fetched fix/demo-session-resume had nine further commits through 8e93438. After explicit user approval for backend/session/hosting integration, fast-forwarded the integration branch to 8e93438. Main and a93f782 preserved. No push or deployment. The existing frontend/.env.example port edit is preserved in named stash pre-pull-env-example-20261028; incoming file already includes it. Integration now matches fetched fix/demo-session-resume and is nine commits ahead of its own remote.
+- Fresh current-checkout checks: backend 445 passed (148.83s), Ruff lint/format pass (70 files); frontend build/lint and 47 unit tests pass; seven genuine HTTP scripts and 26 connected browser groups pass. Real PNG/JPEG OCR, responsive boxes, owner logo workflow, roles/receipts/staleness and same-campaign reload recovery exercised. External AI disabled; no provider call. Initial pre-pull backend run lacked Tesseract PATH (357 pass/11 fail); corrected current run supersedes that result.
+- Browser-test setup fix: clearing cookies followed by hash navigation retains memory state, so explicitly reload before asserting disconnected entry. No product/backend changes made locally.
+- Verified local runtime: API 127.0.0.1:8001, production preview 127.0.0.1:4173; separate fictional data/deployment-qa-20261028.db. Secure-cookie disabled only for local HTTP process. Hosted settings remain secure.
+- Vercel/Render preparation: see VERCEL_RENDER_DEPLOYMENT.md for frontend root/build, relative API rewrite, exact origins and PostgreSQL durability. Actual Render hostname required before generating deployable Vercel config. Relevant plugins discovered but not connected; team-owned account connections requested. Fetched notes flag an unrelated Vercel account: do not use it.
+- Remaining: connect intended accounts, privately configure durable PostgreSQL, deploy Render/Vercel, then verify hosted HTTPS, cookie/private-image proxy, upload/review latency and restart/redeploy/sleep durability. No cloud resources or paid resources created; no hosted acceptance claimed.
 
 ## Combined app and free hosting preparation - 28 October
 

@@ -471,6 +471,8 @@ try {
     checks.push('reload resumes the same saved campaign and sources without creating a workspace or storing bearer tokens')
     await send('Network.clearBrowserCookies')
     await send('Page.navigate',{url:`${frontendUrl.split('#')[0]}#/new`})
+    await waitFor(`location.hash === '#/new'`)
+    await send('Page.reload')
     await waitFor(`!!document.querySelector('.connected-entry button')`)
     assert.equal(await evaluate(`document.querySelector('.confirmed-sources')`),null)
     await pointerClick('.connected-entry button')

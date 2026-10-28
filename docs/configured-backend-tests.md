@@ -1,5 +1,19 @@
 # Final tests requiring a fully configured backend
 
+## Fresh pre-push release acceptance - 28 October 2026
+
+- Backend: 445 passed in 145.14 seconds, zero failures/skips; .cache/release-20261028.xml. Ruff lint and format pass (70 files).
+- Frontend: build/lint, 47 unit tests, seven genuine HTTP suites and all 26 connected browser groups pass against isolated local HTTP/SQLite. Exact preview CORS origin configured for QA after the initial browser setup failure; no backend code change.
+- Genuine Tesseract workflow: completed extraction, real poster price finding, explicit suggestion, persisted records, approval with real scripted manual-check notes, then stale receipt after poster edit. Evidence .cache/release-workflow.json. Browser covered PNG/JPEG INR 599 vs confirmed INR 499, responsive boxes, historical images, logo-reference confirmation and same-workspace refresh recovery.
+- External AI disabled throughout; no fresh Groq call. Existing OCR/Groq implementations and historical acceptance are included; Groq requires private cloud configuration and explicit consented live acceptance.
+- Render/Vercel account verification passed. No resources/public URLs yet. PostgreSQL durability, public HTTPS/proxy cookies/private images, near-limit upload latency and restart persistence remain untested. Docker CLI absent from current PATH; earlier CI evidence below is retained with its original commit scope.
+
+## Fresh local evidence - 28 October 2026
+
+Integration includes approved session/hosting branch at 8e93438. Fresh backend 445/445, frontend 47/47, seven HTTP suites and 26 connected browser groups pass. Actual Tesseract PNG/JPEG contradictions, desktop/mobile boxes, reference-logo workflow and same-campaign cookie recovery exercised on local HTTP/SQLite. Browser clear-cookie scenario explicitly reloads to discard memory state. Backend evidence: .cache/deployment-current.xml and .cache/deployment-current.log (ignored local artifacts). External AI disabled; no fresh provider-quality claim.
+
+Hosted acceptance remains pending: team-owned Vercel/Render connections, privately configured PostgreSQL, HTTPS API rewrite with private response/cookie handling, near-limit upload/review latency, same-workspace reload, redeploy/restart/sleep durability and retained original image. Instructions: VERCEL_RENDER_DEPLOYMENT.md. No public URL or cloud resource created. Earlier checklists/results below retain their original dates and scope.
+
 These are remaining acceptance tests, not features silently reported complete. Continue frontend work against local responses; do not wait for public hosting or fabricate outputs.
 
 - [ ] Real Tesseract extraction on canonical PNG/JPEG, including rotated/transparent inputs, blank images, low-confidence text and unavailable/tool timeout. Windows currently returns tool_missing.
