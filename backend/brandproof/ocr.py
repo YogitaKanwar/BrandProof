@@ -14,7 +14,8 @@ MAX_OCR_ERROR_BYTES = 64 * 1024
 def _run_tesseract(png: bytes) -> bytes:
     """Drain pipes incrementally: neither stderr nor TSV may grow without bound."""
     with subprocess.Popen(
-        ["tesseract", "stdin", "stdout", "-l", "eng", "--psm", "6", "tsv"],
+        # Posters often mix heading and price sizes; they are not uniform blocks.
+        ["tesseract", "stdin", "stdout", "-l", "eng", "--psm", "4", "tsv"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -96,6 +97,7 @@ def parse_tsv(raw: bytes, width: int, height: int) -> dict:
         raise ValueError("Invalid OCR header")
     words = []
     text = ""
+    previous_line = None
     for row in reader:
         if None in row or any(row.get(key) is None for key in required):
             raise ValueError("Invalid OCR row")
@@ -108,8 +110,13 @@ def parse_tsv(raw: bytes, width: int, height: int) -> dict:
             raise ValueError("Invalid OCR coordinates")
         if not 0 <= confidence <= 1:
             raise ValueError("Invalid OCR confidence")
+        # Keep actual TSV line boundaries so separate price/disclosure lines do
+        # not become a fabricated sentence. Legacy/minimal TSV remains supported.
+        line = tuple(row.get(key) for key in ("page_num", "block_num", "par_num", "line_num"))
+        separator = "\n" if previous_line is not None and line != previous_line else " "
         start = len(text) + bool(text)
-        text += (" " if text else "") + value
+        text += (separator if text else "") + value
+        previous_line = line
         words.append(
             {
                 "text": value,

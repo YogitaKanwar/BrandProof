@@ -10,6 +10,7 @@ from brandproof.review_schemas import CaptionUpdate, ReviewCreate
 from brandproof.reviews import update_caption
 from brandproof.schemas import CampaignOut
 from brandproof.workflow import ensure_current, finding_in, require_snapshot, scoped_run
+from brandproof.workflow_schemas import RevisionOut
 
 router = APIRouter(prefix="/api/v1/campaigns/{campaign_id}", tags=["revisions"])
 
@@ -57,7 +58,7 @@ def apply_suggestion(
     return update_caption(campaign_id, update, who, session)
 
 
-@router.get("/revisions")
+@router.get("/revisions", response_model=list[RevisionOut])
 def revisions(campaign_id: str, who: Actor = Depends(actor), session: Session = Depends(db)):
     campaign = scoped_campaign(session, campaign_id, who)
     rows = session.scalars(

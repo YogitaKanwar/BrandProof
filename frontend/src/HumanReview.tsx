@@ -16,7 +16,7 @@ export default function HumanReview({api,campaign,run,stale,onChanged,epoch}:{ap
   const latestRequest=receipt?.requests[receipt.requests.length-1]
   const requestCurrent=latestRequest?.review_id===run.id && !stale
   const alreadyDecided=receipt?.approvals.some(approval=>approval.request_id===latestRequest?.id)
-  const receiptCurrent=receipt?.content_revision===campaign.content_revision && receipt?.source_revision===campaign.source_revision
+  const receiptCurrent=!stale && receipt?.content_revision===campaign.content_revision && receipt?.source_revision===campaign.source_revision
   useEffect(()=>{let active=true;api.receipt(campaign.id).then(record=>{if(active){setReceipt(record);setError('')}}).catch(error=>{if(active){setReceipt(null);setError(describeError(error))}});return()=>{active=false}},[api,campaign.id,campaign.content_revision,campaign.source_revision,run.id,run.readiness,epoch])
   async function refresh(){setError('');try{setReceipt(null);setReceipt(await api.receipt(campaign.id));await onChanged()}catch(error){setError(describeError(error))}}
   async function request(){if(lock.current||stale||run.status==='running')return;lock.current=true;setBusy(true);setError('');setNotice('');try{await api.requestReview(campaign.id,run.id,{expected_content_revision:run.content_revision,expected_source_revision:run.source_revision});setReceipt(null);setReceipt(await api.receipt(campaign.id));await onChanged();setNotice('Creator review request saved. No approval has been granted.')}catch(error){setError(describeError(error))}finally{lock.current=false;setBusy(false)}}

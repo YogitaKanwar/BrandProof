@@ -1,10 +1,11 @@
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
 from brandproof.schemas import MAX_INCREMENT_EXPECTATION, StrictModel
+from brandproof.timestamps import UTCDateTime
 
 
 class PriceRule(StrictModel):
@@ -74,4 +75,4 @@ class SourceOut(BaseModel):
     valid_from: date | None
     valid_until: date | None
     confirmed_by: str | None
-    created_at: datetime
+    created_at: UTCDateTime

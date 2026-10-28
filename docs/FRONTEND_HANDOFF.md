@@ -1,5 +1,13 @@
 # Yogita's frontend integration handoff
 
+## Manual-audit fixes — 28 October 2026
+
+`POST /api/v1/campaigns/{campaign_id}/caption/clear` accepts `{ "expected_revision": n }` and returns CampaignOut. It requires an owner/creator, an existing saved poster and the current content revision. It records an empty-caption revision, retains the poster/history and invalidates previous review/approval currency. Ordinary PUT /caption still rejects empty text. The UI asks for explicit confirmation through Remove saved caption. See the regenerated OpenAPI contract.
+
+Workflow, campaign, source and caption-revision timestamps now include UTC timezone metadata, including SQLite readback. OCR uses bounded variable-size column segmentation and preserves actual TSV line boundaries/offsets. Required wording and terminology accept whitespace across line wraps. An OCR extraction completing does not certify all text was read. Qualifiers such as “only if” or negative copy still require clarification; source applicability remains separate from source confirmation.
+
+Known caption conflicts immediately stale the visible review and disable correction, comment and human-request controls until reconciliation. Source cards expose expired/future applicability and confirmation messaging respects it. Audit baseline and fix verification: MANUAL_QA_2026-10-28.md.
+
 ## Setup and scope
 
 Run locally from this repository. http://127.0.0.1:8000 is not a public URL. Swagger: /docs; live contract: /openapi.json; saved contract: docs/openapi.json. Default CORS: http://localhost:5173 and http://127.0.0.1:5173. Never put provider keys in browser code.
