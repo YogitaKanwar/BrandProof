@@ -1,6 +1,38 @@
 # BrandProof task status
 
-Updated: 2026-10-28. Current branch: `fix/demo-session-resume`.
+Updated: 2026-10-28. Current branch: `integration/round2-backend-pr1`.
+
+## Strict-zero-budget deployment execution - 28 October
+
+- After user completed repository access, Render Free Docker service creation succeeded: srv-dbgtr7nb9u1s73981s70, assigned https://brandproof-api-slz9.onrender.com, initial deployment dep-dbgtr7vb9u1s73981st0. Explicit free compute, one instance, Singapore, automatic deploys off. Database is now available on its Free plan. No public health acceptance yet; private database URL and dashboard health-check path remain required. Database URL is explicitly empty pending private setup, preventing SQLite fallback.
+- Vercel create_project retry still returned 403; asked user for dashboard project creation in the verified Hobby team. Added frontend/vercel.json with the actual Render hostname and relative API proxy; UI unchanged. Asked user to configure Render database URL and health path privately. No database credentials requested in chat.
+
+- User confirmed Render workspace Hobby/free, no attached payment method and no card required. Created PostgreSQL 16 brandproof-db on explicit free plan in Singapore: dpg-dbgtpn5g1s2s73c9tg60-a, expires 2026-11-27T11:30:36.905505Z, disk autoscaling off. Internal connection URL is not exposed by MCP and must be configured privately in Render after a web service exists.
+- Free Docker web creation attempted with explicit integration branch, autoDeploy no, secure cookies and external AI disabled. Render returned HTTP 400: repository URL invalid or unfetchable. No service created; private GitHub repository authorization is required before retry. No temporary SQLite deployment was accepted.
+- Vercel team authorization still requires browser action; supplied a new 10-minute consent link. Public URLs/live acceptance remain pending. No paid resources or upgrades selected.
+
+- User authorized normal integration-branch push and only strictly free public resources. Fresh scan covered all 10 unpublished trees / 327 unique blobs: no detected credential matches or sensitive tracked paths. Pushed and independently verified GitHub SHA 5a8aeb1705382c9b4d892b90d04d04c5d017216d. Main unchanged; release tests remain those recorded below.
+- Paid hosting proposal is superseded by the user's strict USD 0 budget. Target: Render Free web + Free PostgreSQL 16 (1 GB, 30-day expiry), Vercel Hobby, Groq free usage only after private configuration. No card, paid trial, workspace upgrade or usage overage authorized.
+- Render billing is a required manual gate: MCP exposes no billing/payment-method/spend-limit reader. Official Free documentation says bandwidth/build overages can bill when a payment method exists; without one, services/builds are suspended instead. Asked user to verify Hobby/free workspace, no attached payment method and no card requirement before creation. No Render resource created.
+- Vercel active account reports Hobby, no trial, excess data-cache billing false. create_project in the verified team returned HTTP 403 / no permission to create project; list_projects still empty. CLI executable and authentication files absent. Team authorization path checked; no frontend deployed or public URL claimed.
+- Public application/OCR/Groq/persistence checks have not run because cloud deployment is blocked by billing verification and Vercel creation authorization. Local application/UI/backend source unchanged.
+
+## Release preparation and verified hosting connections - 28 October
+
+- Read-only MCP verified Render BrandProof and Vercel yogitakanwar's projects, both identifying yogi2kanwar@gmail.com. No existing services/databases/projects returned. No resources created or deployment performed.
+- Fresh fetch confirms remote 627be7a and local 8e93438, nine ahead/zero behind. Both cdda60f backend PR1 and a93f782 frontend checkpoints remain ancestors; main remains b73d535. All nine commit trees scanned (323 unique blobs), plus current 198 tracked files: no detected credential matches or sensitive tracked paths. Local .env, environments, databases and caches are ignored and outside Docker's allowlisted context.
+- Fresh release checks: 445 backend tests pass in 145.14 seconds; Ruff lint/format (70 files), frontend build/lint, 47 unit tests, seven genuine HTTP suites, real Tesseract workflow and 26 browser groups pass. External AI disabled. Initial HTTP attempt had no server; initial browser attempt lacked exact local preview CORS origin. Both rerun successfully against isolated data/release-qa-20261028.db with exact localhost origins, no product/backend edits.
+- Preserved and verified the pre-existing browser clear-cookie/reload test fix. Preparing a local checkpoint containing that fix and deployment/acceptance documentation only; normal branch push requires user approval. Docker CLI unavailable on current PATH; earlier Linux Docker/PostgreSQL CI is historical evidence, not a fresh container run.
+- Proposed resources and alternatives are in VERCEL_RENDER_DEPLOYMENT.md: Singapore PostgreSQL 16 (0.1c-256mb, 1 GB) and Docker API (0.5c-512mb), Vercel Hobby static frontend/global CDN. Base USD 13.30/month before taxes/usage/AI; no workspace upgrade. Resource/public-deployment approval and private database/Groq configuration remain pending. Health-check dashboard setting and hostname-dependent rewrite are explicit remaining steps.
+
+## Fresh GitHub integration and deployment gate - 28 October
+
+- Fetched all refs. Integration initially matched its remote at 627be7a; origin/main contained merge commits with the same tree. Newly fetched fix/demo-session-resume had nine further commits through 8e93438. After explicit user approval for backend/session/hosting integration, fast-forwarded the integration branch to 8e93438. Main and a93f782 preserved. No push or deployment. The existing frontend/.env.example port edit is preserved in named stash pre-pull-env-example-20261028; incoming file already includes it. Integration now matches fetched fix/demo-session-resume and is nine commits ahead of its own remote.
+- Fresh current-checkout checks: backend 445 passed (148.83s), Ruff lint/format pass (70 files); frontend build/lint and 47 unit tests pass; seven genuine HTTP scripts and 26 connected browser groups pass. Real PNG/JPEG OCR, responsive boxes, owner logo workflow, roles/receipts/staleness and same-campaign reload recovery exercised. External AI disabled; no provider call. Initial pre-pull backend run lacked Tesseract PATH (357 pass/11 fail); corrected current run supersedes that result.
+- Browser-test setup fix: clearing cookies followed by hash navigation retains memory state, so explicitly reload before asserting disconnected entry. No product/backend changes made locally.
+- Verified local runtime: API 127.0.0.1:8001, production preview 127.0.0.1:4173; separate fictional data/deployment-qa-20261028.db. Secure-cookie disabled only for local HTTP process. Hosted settings remain secure.
+- Vercel/Render preparation: see VERCEL_RENDER_DEPLOYMENT.md for frontend root/build, relative API rewrite, exact origins and PostgreSQL durability. Actual Render hostname required before generating deployable Vercel config. Relevant plugins discovered but not connected; team-owned account connections requested. Fetched notes flag an unrelated Vercel account: do not use it.
+- Remaining: connect intended accounts, privately configure durable PostgreSQL, deploy Render/Vercel, then verify hosted HTTPS, cookie/private-image proxy, upload/review latency and restart/redeploy/sleep durability. No cloud resources or paid resources created; no hosted acceptance claimed.
 
 ## Combined app and free hosting preparation - 28 October
 
