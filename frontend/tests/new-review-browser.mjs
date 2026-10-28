@@ -18,7 +18,7 @@ socket.addEventListener('message',event=>{
     if(path==='/api/v1/demo-sessions')sessionPosts++
   }
   const handler=pending.get(data.id)
-  if(handler){pending.delete(data.id);data.error?handler.reject(new Error(data.error.message)):handler.resolve(data.result)}
+  if(handler){pending.delete(data.id);if(data.error)handler.reject(new Error(data.error.message));else handler.resolve(data.result)}
 })
 function send(method,params={}){return new Promise((resolve,reject)=>{const id=++sequence;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}))})}
 async function evaluate(expression){const result=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(result.exceptionDetails)throw new Error('Browser expression failed');return result.result.value}
