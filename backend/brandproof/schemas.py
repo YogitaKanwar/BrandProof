@@ -1,7 +1,9 @@
-from datetime import date, datetime
+from datetime import date
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from brandproof.timestamps import UTCDateTime
 
 # SQLAlchemy Integer is signed 32-bit on PostgreSQL; reserve room for mutations.
 MAX_DB_INTEGER = 2**31 - 1
@@ -26,7 +28,7 @@ class CampaignOut(BaseModel):
     caption: str
     content_revision: int
     source_revision: int
-    created_at: datetime
+    created_at: UTCDateTime
 
 
 class DemoActor(BaseModel):
@@ -38,5 +40,5 @@ class DemoSessionOut(BaseModel):
     workspace_id: str
     mode: Literal["synthetic_demo"]
     notice: str
-    expires_at: datetime
+    expires_at: UTCDateTime
     actors: dict[str, DemoActor]

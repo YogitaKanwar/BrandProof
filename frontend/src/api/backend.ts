@@ -132,6 +132,13 @@ export function createBackendClient(base = '/api/v1') {
       campaigns.set(record.id, record)
       return result()
     },
+    async clearCaption(campaignId: string, expectedRevision: number) {
+      const record = validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/caption/clear`, {
+        method: 'POST', headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_revision: expectedRevision }),
+      }))
+      campaigns.set(record.id, record)
+      return result()
+    },
     async runReview(campaignId: string, contentRevision: number, sourceRevision: number, externalConsent = false) {
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews`, {
         method: 'POST', signal: AbortSignal.timeout(120000), headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_content_revision: contentRevision, expected_source_revision: sourceRevision, external_ai_consent: externalConsent }),

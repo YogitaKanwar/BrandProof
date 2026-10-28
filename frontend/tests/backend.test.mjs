@@ -5,6 +5,28 @@ import { requestJson, describeError } from '../src/api/client.ts'
 const fetchOriginal = globalThis.fetch
 afterEach(() => { globalThis.fetch = fetchOriginal })
 const campaign = { id: 'c1', workspace_id: 'w1', name: 'Launch', publication_date: '2026-11-12', caption: '', content_revision: 1, source_revision: 0, created_at: '2026-10-26T00:00:00Z' }
+test('caption removal uses an explicit creator write with the expected revision and never retries a conflict', async () => {
+  let removals = 0
+  globalThis.fetch = async (url, options) => {
+    if (url.endsWith('demo-sessions')) return Response.json(session())
+    if (url.endsWith('/caption/clear')) {
+      removals++
+      assert.equal(options.method, 'POST')
+      assert.equal(options.headers.get('Authorization'), 'Bearer test-creator')
+      assert.deepEqual(JSON.parse(options.body), {expected_revision: 4})
+      if (removals > 1) return Response.json({error:{code:'version_conflict',message:'Caption changed'}},{status:409})
+      return Response.json({...campaign, content_revision:5})
+    }
+    return Response.json([])
+  }
+  const client = createBackendClient('http://test/api/v1')
+  await client.connect()
+  const cleared = await client.clearCaption('c1',4)
+  assert.equal(cleared.data.reviews[0].backendCampaign.caption,'')
+  assert.equal(cleared.data.reviews[0].backendCampaign.content_revision,5)
+  await assert.rejects(client.clearCaption('c1',4), error=>error.status===409)
+  assert.equal(removals,2)
+})
 function session() { return { workspace_id: 'w1', mode: 'synthetic_demo', notice: 'Synthetic demo', expires_at: '2099-01-01T00:00:00Z', actors: Object.fromEntries(['owner','creator','reviewer'].map(role => [role, {role,access_token: `test-${role}`}])) } }
 test('bodyless session uses creator bearer; exact campaign payload and full revisions preserved', async () => {
   const calls = []

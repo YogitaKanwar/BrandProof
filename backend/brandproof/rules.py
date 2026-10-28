@@ -173,7 +173,8 @@ def exact_checks(text: str, revision: int, sources: list[dict]) -> tuple[list[di
             peers = [peer for peer in sources if peer["rule"]["kind"] == kind]
             local_findings = numeric_findings(text, revision, source, peers, candidates[kind])
         elif kind == "required_text":
-            if not re.search(r"(?<!\w)" + re.escape(rule["text"]) + r"(?!\w)", text, re.IGNORECASE):
+            phrase = r"\s+".join(re.escape(part) for part in rule["text"].split())
+            if not re.search(r"(?<!\w)" + phrase + r"(?!\w)", text, re.IGNORECASE):
                 local_findings = [
                     finding(
                         kind,
@@ -184,7 +185,8 @@ def exact_checks(text: str, revision: int, sources: list[dict]) -> tuple[list[di
                     )
                 ]
         else:
-            pattern = re.compile(r"(?<!\w)" + re.escape(rule["term"]) + r"(?!\w)", re.IGNORECASE)
+            phrase = r"\s+".join(re.escape(part) for part in rule["term"].split())
+            pattern = re.compile(r"(?<!\w)" + phrase + r"(?!\w)", re.IGNORECASE)
             local_findings = [
                 finding(
                     kind,

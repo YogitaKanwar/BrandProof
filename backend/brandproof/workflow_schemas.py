@@ -1,10 +1,10 @@
-from datetime import datetime
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from brandproof.review_schemas import ReviewCreate
 from brandproof.schemas import MAX_INCREMENT_EXPECTATION
+from brandproof.timestamps import UTCDateTime
 
 
 class ApprovalCreate(ReviewCreate):
@@ -12,7 +12,7 @@ class ApprovalCreate(ReviewCreate):
     decision: Literal["approve", "request_changes"]
     reason: str = Field(min_length=10, max_length=2000)
     manual_checks: dict[
-        Literal["exact_text", "contextual", "poster"],
+        Literal["exact_text", "contextual", "poster", "claim_risk"],
         Annotated[str, Field(min_length=20, max_length=2000)],
     ] = Field(default_factory=dict)
 
@@ -30,7 +30,7 @@ class ApprovalOut(BaseModel):
     coverage_mode: str
     manual_checks: dict[str, str]
     decision_snapshot: dict[str, str]
-    created_at: datetime
+    created_at: UTCDateTime
     is_current: bool
 
 
@@ -40,7 +40,7 @@ class ReviewRequestOut(BaseModel):
     campaign_id: str
     review_id: str
     requested_by: str
-    created_at: datetime
+    created_at: UTCDateTime
 
 
 class FindingDecisionCreate(ReviewCreate):
@@ -58,7 +58,7 @@ class FindingDecisionOut(BaseModel):
     actor_id: str
     decision: str
     reason: str
-    created_at: datetime
+    created_at: UTCDateTime
 
 
 class CommentCreate(ReviewCreate):
@@ -76,4 +76,10 @@ class CommentOut(BaseModel):
     content_revision: int
     source_revision: int
     text: str
-    created_at: datetime
+    created_at: UTCDateTime
+
+
+class RevisionOut(BaseModel):
+    revision: int
+    caption: str
+    created_at: UTCDateTime

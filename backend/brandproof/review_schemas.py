@@ -6,9 +6,12 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, 
 from brandproof.schemas import MAX_DB_INTEGER, MAX_INCREMENT_EXPECTATION, StrictModel
 
 
-class CaptionUpdate(StrictModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=False)
+class CaptionRevision(StrictModel):
     expected_revision: int = Field(ge=1, le=MAX_INCREMENT_EXPECTATION)
+
+
+class CaptionUpdate(CaptionRevision):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=False)
     text: str = Field(min_length=1, max_length=20000)
 
 

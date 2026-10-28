@@ -1,5 +1,13 @@
 # Yogita's frontend integration handoff
 
+## Manual-audit fixes — 28 October 2026
+
+`POST /api/v1/campaigns/{campaign_id}/caption/clear` accepts `{ "expected_revision": n }` and returns CampaignOut. It requires an owner/creator, an existing saved poster and the current content revision. It records an empty-caption revision, retains the poster/history and invalidates previous review/approval currency. Ordinary PUT /caption still rejects empty text. The UI asks for explicit confirmation through Remove saved caption. See the regenerated OpenAPI contract.
+
+Workflow, campaign, source and caption-revision timestamps now include UTC timezone metadata, including SQLite readback. OCR uses bounded variable-size column segmentation and preserves actual TSV line boundaries/offsets. Required wording and terminology accept whitespace across line wraps. An OCR extraction completing does not certify all text was read. Qualifiers such as “only if” or negative copy still require clarification; source applicability remains separate from source confirmation.
+
+Known caption conflicts immediately stale the visible review and disable correction, comment and human-request controls until reconciliation. Source cards expose expired/future applicability and confirmation messaging respects it. Audit baseline and fix verification: MANUAL_QA_2026-10-28.md.
+
 ## Setup and scope
 
 Run locally from this repository. http://127.0.0.1:8000 is not a public URL. Swagger: /docs; live contract: /openapi.json; saved contract: docs/openapi.json. Default CORS: http://localhost:5173 and http://127.0.0.1:5173. Never put provider keys in browser code.
@@ -78,7 +86,7 @@ Reviewer/eligible owner POST /reviews/{review_id}/approvals:
 
 Decision is approve or request_changes. Approver must differ from requester and must not have edited ANY content revision in this campaign. Switching requester cannot bypass self-approval. One decision per request; another decision needs a fresh request.
 
-Latest review/request must be current and not running. Approval requires active sources, no excluded sources and no unresolved blocking findings. manual_checks must name EXACTLY the incomplete required checks: exact_text/contextual, plus poster when attached. Collect actual reviewer notes (minimum 20 characters); never auto-fill claims that the person performed them. request_changes uses an empty manual_checks object.
+Latest review/request must be current and not running. Approval requires active sources, no excluded sources and no unresolved blocking findings. manual_checks must name EXACTLY the incomplete required checks: exact_text/contextual, plus poster when attached and claim_risk when recorded on the run. Collect actual reviewer notes (minimum 20 characters); never auto-fill claims that the person performed them. request_changes uses an empty manual_checks object.
 
 Manual notes do not change automated coverage. approved_with_manual_checks can coexist with partial automation: a reviewer attestation, not an AI pass or legal certification.
 
@@ -100,3 +108,8 @@ The last script uses real HTTP and Tesseract. Its exceptions/notes/approval are 
 ## Reference-logo comparison (2026-10-27)
 
 See [LOGO_COMPARISON_REVIEW.md](LOGO_COMPARISON_REVIEW.md) for actual new routes, raw PNG/JPEG format, owner confirmation, private image fetching, source revision changes and checks.poster.details.logo. Sources panel includes Brand logo. Results show possible mismatch plus historical reference/whole poster; no inferred bounding box or content approval. This is a bounded plain-background template comparison, not reliable subtle-logo-change or forgery detection. API contract regenerated in openapi.json.
+
+
+## Local claim-risk screening — 28 October
+
+New runs add `checks.claim_risk`; caption and OCR-based poster findings use category `claim_risk`, warning severity and `needs_clarification`, with no invented source evidence or replacement. This works with no approved facts and AI disabled. Partial claim coverage requires dedicated reviewer notes in addition to explicit finding disposition. Existing runs without this check remain unchanged. See [CLAIM_RISK_SCREENING.md](CLAIM_RISK_SCREENING.md) for supported patterns, limits and the judge demonstration. Saved OpenAPI includes the new manual-check key.
