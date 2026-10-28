@@ -55,10 +55,12 @@ def check_browser_context(request: Request, *, resume: bool = False):
         fail(403, "forbidden", "Cross-site demo session requests are not permitted")
     origins = request.headers.getlist("origin")
     own_origin = f"{request.url.scheme}://{request.url.netloc}"
-    if origins and (
-        len(origins) != 1
-        or origins[0] not in [own_origin, *request.app.state.settings.cors_origins]
-    ):
+    # TLS may end at a hosting proxy. Use configured platform metadata, never
+    # untrusted forwarded headers, to recognise its public HTTPS origin.
+    allowed = [own_origin, *request.app.state.settings.cors_origins]
+    if request.app.state.settings.public_origin:
+        allowed.append(request.app.state.settings.public_origin)
+    if origins and (len(origins) != 1 or origins[0] not in allowed):
         fail(403, "forbidden", "Demo session origin is not permitted")
     if resume and request.headers.getlist("x-brandproof-session") != ["resume"]:
         fail(403, "forbidden", "X-BrandProof-Session: resume is required")

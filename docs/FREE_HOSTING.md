@@ -25,6 +25,8 @@ Official limits checked on 28 October 2026:
 
 If Blueprint access is unavailable, create a Free **Web Service**, select the same repository/branch, choose **Docker**, root `Dockerfile`, health check `/api/v1/health`, and copy the environment names/values from `render.yaml`. Enter the database URL only in Render's secret environment editor. Keep `BRANDPROOF_DEMO_COOKIE_SECURE=true` on HTTPS. No separate Vercel deployment is needed.
 
+Render's [default environment](https://render.com/docs/environment-variables) supplies `RENDER_EXTERNAL_URL`. The app accepts that exact public origin even when TLS ends before the container. For a custom domain or another host, set `BRANDPROOF_PUBLIC_ORIGIN` to the exact verified HTTPS origin. Wildcards, credentials, query strings and paths are rejected; arbitrary forwarded headers do not establish an authorised origin.
+
 ## Required acceptance before calling it deployed
 
 Use fictional data only. This is a public demo with selectable simulated roles, not customer authentication.
@@ -36,7 +38,7 @@ Use fictional data only. This is a public demo with selectable simulated roles, 
 5. Reload the exact review URL; it must restore the same workspace/campaign. Record a campaign/review ID, manually redeploy the service, then verify that campaign, findings and original image still load in the same browser. Check once after the service has slept. Do not claim persistence from a health check alone.
 6. Open the final project, source repository and PDF links in a private window. The **source repository is currently private**, so the team owner must explicitly make the submission source public or provide an organiser-approved public source copy. A collaborator-only GitHub link does not meet the email's public-access requirement.
 
-The Docker image and PostgreSQL workflow have a GitHub Actions check in `.github/workflows/hosting-check.yml`. Its presence is not a passing result. Local Docker daemon access is denied, so local image runtime verification is unavailable. Hosted acceptance stays pending until the real URL passes the steps above.
+The complete Docker image and PostgreSQL workflow **passed** in [GitHub Actions run 40670242539](https://github.com/YogitaKanwar/BrandProof/actions/runs/40670242539) on commit `da1c810`. The run built the UI/runtime, connected to PostgreSQL 16 and passed real caption/parser/OCR/human-workflow scripts: four flawed-caption findings, ten parser cases, completed OCR, a poster contradiction, explicit correction, persisted records, manual-supplement approval and stale approval after poster replacement. The run is CI evidence, not a public deployment. Local Docker daemon access remains denied; real hosted HTTPS/sleep/redeploy acceptance stays pending.
 
 ## Optional contextual AI later
 
