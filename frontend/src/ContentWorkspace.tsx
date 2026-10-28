@@ -8,6 +8,7 @@ import BrandLogo from './BrandLogo'
 import type { BackendClient, CampaignOut } from './api/backend'
 import type { ReviewResult } from './api/reviews'
 import LiveCaption from './LiveCaption'
+import AltTextEditor from './AltTextEditor'
 import LivePoster from './LivePoster'
 import { useUnsavedChanges } from './unsavedChanges'
 
@@ -79,7 +80,7 @@ export default function ContentWorkspace({ review, campaign, sourceClient, onCam
     <div className="content-columns">
       <section id="marketing-content" className="content-panel" aria-labelledby="content-heading">
         <div className="panel-heading"><h2 id="content-heading" tabIndex={-1}>Marketing Content</h2><small>{sourceClient ? 'Caption and poster review' : 'Caption, poster or both'}</small></div>
-        {sourceClient && review.backendCampaign && onCampaignChange ? <LiveCaption api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onResultsAvailable={setHasResults} posterAttached={posterAttached} posterPending={posterPending} preparePoster={async()=>{if(!posterUpload.current)throw new Error("Poster upload is not ready. Try again.");return posterUpload.current.upload()}} onCaptionSaved={(previous,current)=>setCaptionSaves(records=>[...records,{previous,current}])}><LivePoster api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onAttached={setPosterAttached} onPendingChange={setPosterPending} captionSaves={captionSaves} uploadRef={posterUpload}/></LiveCaption> : <><label htmlFor="marketing-caption">Marketing caption</label>
+        {sourceClient && review.backendCampaign && onCampaignChange ? <LiveCaption api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onResultsAvailable={setHasResults} posterAttached={posterAttached} posterPending={posterPending} preparePoster={async()=>{if(!posterUpload.current)throw new Error("Poster upload is not ready. Try again.");return posterUpload.current.upload()}} onCaptionSaved={(previous,current)=>setCaptionSaves(records=>[...records,{previous,current}])}><LivePoster api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange} onAttached={setPosterAttached} onPendingChange={setPosterPending} captionSaves={captionSaves} uploadRef={posterUpload}/><AltTextEditor api={sourceClient} campaign={review.backendCampaign} onCampaignChange={onCampaignChange}/></LiveCaption> : <><label htmlFor="marketing-caption">Marketing caption</label>
         <textarea id="marketing-caption" rows={7} maxLength={MAX_CAPTION_LENGTH} value={caption} onChange={event => { setCaption(event.target.value); setCaptionNotice('') }} placeholder="Paste the marketing caption you want to review…" aria-describedby="caption-help caption-state" />
         <div className="caption-footer"><small id="caption-help">{caption.length.toLocaleString()}/10,000 characters</small><button type="button" disabled={!!initial.error} onClick={save}>Save caption</button></div>
         <p id="caption-state" className="form-help">{caption !== savedCaption ? 'Unsaved changes' : ''}</p>

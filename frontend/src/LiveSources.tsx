@@ -9,14 +9,14 @@ import { readSource, saveSource } from './sourceDraft'
 import { useUnsavedChanges } from './unsavedChanges'
 import DocumentImport from './DocumentImport'
 
-const labels = { price: 'Price', date: 'Date', terminology: 'Words to avoid', required_text: 'Required wording', tone: 'Tone guidance (optional AI)', claim_policy: 'Claim policy (optional AI)' }
+const labels = { price: 'Price', date: 'Date', terminology: 'Words to avoid', required_text: 'Required wording', tone: 'Tone guidance (optional AI)', claim_policy: 'Claim policy (optional AI)',brand_color:'Flat background colour',contrast:'Minimum text contrast ratio',alt_text:'Poster description required' }
 type Editor = { kind: SourceRule['kind']; title: string; value: string; preferred: string; currency: 'INR' | 'USD' | 'EUR' | 'GBP'; from: string; until: string }
 const emptyEditor: Editor = { kind: 'price', title: '', value: '', preferred: '', currency: 'INR', from: '', until: '' }
 function editorFor(source: SourceOut): Editor {
   const rule = source.rule
   return { kind: rule.kind, title: source.title, currency: rule.kind === 'price' ? rule.currency : 'INR',
-    value: rule.kind === 'price' ? rule.amount : rule.kind === 'date' ? rule.date : rule.kind === 'terminology' ? rule.term : rule.kind === 'required_text' ? rule.text : rule.guidance,
-    preferred: rule.kind === 'terminology' ? rule.preferred : '', from: source.valid_from || '', until: source.valid_until || '' }
+    value: rule.kind === 'price' ? rule.amount : rule.kind === 'date' ? rule.date : rule.kind === 'terminology' ? rule.term : rule.kind === 'required_text' ? rule.text : rule.kind==='brand_color'?rule.hex:rule.kind==='contrast'?String(rule.minimum_ratio):rule.kind==='alt_text'?'Required':rule.guidance,
+    preferred: rule.kind === 'terminology' ? rule.preferred : rule.kind==='brand_color'?String(rule.tolerance):'', from: source.valid_from || '', until: source.valid_until || '' }
 }
 function payloadFor(editor: Editor): SourceCreate {
   const value = editor.value.trim()
@@ -26,6 +26,9 @@ function payloadFor(editor: Editor): SourceCreate {
     case 'date': rule = { kind: 'date', date: value }; break
     case 'terminology': rule = { kind: 'terminology', term: value, preferred: editor.preferred.trim() }; break
     case 'required_text': rule = { kind: 'required_text', text: value }; break
+    case 'brand_color': rule={kind:'brand_color',hex:value,tolerance:editor.preferred.trim()?Number(editor.preferred):10};break
+    case 'contrast':rule={kind:'contrast',minimum_ratio:Number(value)};break
+    case 'alt_text':rule={kind:'alt_text',required:true};break
     default: rule = { kind: editor.kind, guidance: value }
   }
   return { title: editor.title.trim() || labels[editor.kind], rule, valid_from: editor.from || null, valid_until: editor.until || null }
@@ -98,7 +101,7 @@ export default function LiveSources({ api, campaignId, publicationDate, onCampai
   function edit(source: SourceOut) { setEditing(source); setEditor(editorFor(source)); setConflict(false); setError(''); setNotice('') }
   function selectKind(kind: SourceRule['kind']) {
     if (!editor || editing) return
-    setEditor({ ...editor, kind, title: '', value: '', preferred: '' })
+    setEditor({ ...editor, kind, title: '', value: kind==='contrast'?'4.5':kind==='alt_text'?'Required':kind==='brand_color'?'#FFFFFF':'', preferred: '' })
   }
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -139,11 +142,11 @@ export default function LiveSources({ api, campaignId, publicationDate, onCampai
     {editor && <form className="fact-editor" onSubmit={save} aria-label="Source fact editor">
       <div className="panel-heading"><div><h3>{editing ? 'Edit this fact' : 'Add a fact'}</h3><small>Enter the correct information as provided by the brand.</small></div></div>
       <fieldset disabled={busy}>
-        <label htmlFor="fact-kind">What kind of fact?</label><select id="fact-kind" value={editor.kind} disabled={!!editing} onChange={event => selectKind(event.target.value as SourceRule['kind'])}><optgroup label="Facts check">{(['price', 'date', 'terminology', 'required_text'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup><optgroup label="Requires optional AI check">{(['tone', 'claim_policy'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup></select>
+        <label htmlFor="fact-kind">What kind of fact?</label><select id="fact-kind" value={editor.kind} disabled={!!editing} onChange={event => selectKind(event.target.value as SourceRule['kind'])}><optgroup label="Facts check">{(['price', 'date', 'terminology', 'required_text', 'brand_color', 'contrast', 'alt_text'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup><optgroup label="Requires optional AI check">{(['tone', 'claim_policy'] as SourceRule['kind'][]).map(kind => <option key={kind} value={kind}>{labels[kind]}</option>)}</optgroup></select>
         <label htmlFor="fact-value">{editor.kind === 'price' ? 'What is the correct price?' : editor.kind === 'date' ? 'What is the correct date?' : editor.kind === 'terminology' ? 'Which word should be avoided?' : editor.kind === 'required_text' ? 'What exact words are required?' : labels[editor.kind]}</label>
         {editor.kind === 'required_text' || editor.kind === 'tone' || editor.kind === 'claim_policy' ? <textarea id="fact-value" rows={3} required maxLength={editor.kind === 'required_text' ? 500 : 5000} value={editor.value} onChange={event => setEditor({ ...editor, value: event.target.value })} /> : <input id="fact-value" type={editor.kind === 'date' ? 'date' : 'text'} inputMode={editor.kind === 'price' ? 'decimal' : undefined} required maxLength={editor.kind === 'terminology' ? 100 : 32} value={editor.value} onChange={event => setEditor({ ...editor, value: event.target.value })} />}
         {editor.kind === 'price' && <><label htmlFor="fact-currency">Currency</label><select id="fact-currency" value={editor.currency} onChange={event => setEditor({ ...editor, currency: event.target.value as Editor['currency'] })}>{['INR', 'USD', 'EUR', 'GBP'].map(currency => <option key={currency}>{currency}</option>)}</select></>}
-        {editor.kind === 'terminology' && <><label htmlFor="fact-preferred">What word should be used instead?</label><input id="fact-preferred" required maxLength={100} value={editor.preferred} onChange={event => setEditor({ ...editor, preferred: event.target.value })} /></>}
+        {editor.kind === 'brand_color' && <><label htmlFor="colour-tolerance">CIE76 Delta-E tolerance (0?30)</label><input id="colour-tolerance" type="number" min="0" max="30" value={editor.preferred} placeholder="10" onChange={event=>setEditor({...editor,preferred:event.target.value})}/><p className="form-help">Only reliably uniform flat poster backgrounds are supported. Other regions, gradients and photographs require manual inspection.</p></>}{editor.kind === 'terminology' && <><label htmlFor="fact-preferred">What word should be used instead?</label><input id="fact-preferred" required maxLength={100} value={editor.preferred} onChange={event => setEditor({ ...editor, preferred: event.target.value })} /></>}
         {(editor.kind === 'tone' || editor.kind === 'claim_policy') && <p className="form-help">Requires an available contextual AI check and your consent for that review. Exact-text checks do not evaluate this guidance.</p>}
         <details className="source-metadata" open={!!(editing?.valid_from || editing?.valid_until) || undefined}><summary>Does this fact have a date limit? (optional)</summary><label htmlFor="fact-title">Short name (optional)</label><input id="fact-title" maxLength={160} value={editor.title} onChange={event => setEditor({ ...editor, title: event.target.value })} placeholder={labels[editor.kind]} /><div className="source-fields"><div><label htmlFor="fact-from">Use from</label><input id="fact-from" type="date" value={editor.from} onChange={event => setEditor({ ...editor, from: event.target.value })} /></div><div><label htmlFor="fact-until">Use until</label><input id="fact-until" type="date" value={editor.until} onChange={event => setEditor({ ...editor, until: event.target.value })} /></div></div></details>
       </fieldset>

@@ -4,6 +4,9 @@ export type SourceRule =
   | { kind: 'terminology'; term: string; preferred: string }
   | { kind: 'required_text'; text: string }
   | { kind: 'tone' | 'claim_policy'; guidance: string }
+  | { kind: 'brand_color'; hex:string; tolerance:number; scope?:'flat_background' }
+  | { kind: 'contrast'; minimum_ratio:number }
+  | { kind: 'alt_text'; required?:true }
 export interface SourceCreate { title: string; rule: SourceRule; valid_from?: string | null; valid_until?: string | null }
 export interface SourceOut extends SourceCreate {
   document_evidence?: import('./documents').DocumentCitation | null
@@ -30,6 +33,9 @@ export function isSource(value: SourceOut): boolean {
     case 'terminology': return typeof rule.term === 'string' && typeof rule.preferred === 'string'
     case 'required_text': return typeof rule.text === 'string'
     case 'tone': case 'claim_policy': return typeof rule.guidance === 'string'
+    case 'brand_color': return /^#[0-9a-f]{6}$/i.test(rule.hex)&&Number.isFinite(rule.tolerance)
+    case 'contrast': return Number.isFinite(rule.minimum_ratio)
+    case 'alt_text': return rule.required===undefined||rule.required===true
     default: return false
   }
 }

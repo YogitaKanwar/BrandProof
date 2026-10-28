@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
+from brandproof.accessibility import router as accessibility_router
 from brandproof.approval import router as approval_router
 from brandproof.config import Settings
 from brandproof.db import make_engine, session_factory
@@ -45,6 +46,7 @@ def create_app(*, database_url: str | None = None):
     app.include_router(posters_router)
     app.include_router(logos_router)
     app.include_router(documents_router)
+    app.include_router(accessibility_router)
     app.state.engine = engine
     app.state.sessions = sessions
     app.state.settings = settings

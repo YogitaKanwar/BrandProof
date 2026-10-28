@@ -1887,6 +1887,108 @@
         }
       }
     },
+    "/api/v1/campaigns/{campaign_id}/alt-text": {
+      "get": {
+        "tags": [
+          "accessibility"
+        ],
+        "summary": "Get Alt Text",
+        "operationId": "get_alt_text_api_v1_campaigns__campaign_id__alt_text_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltTextOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "accessibility"
+        ],
+        "summary": "Save Alt Text",
+        "operationId": "save_alt_text_api_v1_campaigns__campaign_id__alt_text_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AltTextUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "summary": "Health",
@@ -1906,6 +2008,79 @@
   },
   "components": {
     "schemas": {
+      "AltTextOut": {
+        "properties": {
+          "poster_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Poster Id"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "poster_id",
+          "content_revision",
+          "text"
+        ],
+        "title": "AltTextOut"
+      },
+      "AltTextRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "alt_text",
+            "title": "Kind"
+          },
+          "required": {
+            "type": "boolean",
+            "const": true,
+            "title": "Required",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "AltTextRule"
+      },
+      "AltTextUpdate": {
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "maximum": 2147483646.0,
+            "minimum": 1.0,
+            "title": "Expected Revision"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_revision",
+          "text"
+        ],
+        "title": "AltTextUpdate"
+      },
       "ApprovalCreate": {
         "properties": {
           "expected_content_revision": {
@@ -2081,6 +2256,40 @@
           "height"
         ],
         "title": "Box"
+      },
+      "BrandColorRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "brand_color",
+            "title": "Kind"
+          },
+          "hex": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "title": "Hex"
+          },
+          "tolerance": {
+            "type": "number",
+            "maximum": 30.0,
+            "minimum": 0.0,
+            "title": "Tolerance",
+            "default": 10
+          },
+          "scope": {
+            "type": "string",
+            "const": "flat_background",
+            "title": "Scope",
+            "default": "flat_background"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "hex"
+        ],
+        "title": "BrandColorRule"
       },
       "CampaignCreate": {
         "properties": {
@@ -2337,6 +2546,28 @@
           "created_at"
         ],
         "title": "CommentOut"
+      },
+      "ContrastRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "contrast",
+            "title": "Kind"
+          },
+          "minimum_ratio": {
+            "type": "number",
+            "maximum": 21.0,
+            "minimum": 1.0,
+            "title": "Minimum Ratio",
+            "default": 4.5
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "ContrastRule"
       },
       "DateRule": {
         "properties": {
@@ -3576,13 +3807,25 @@
               },
               {
                 "$ref": "#/components/schemas/ToneRule"
+              },
+              {
+                "$ref": "#/components/schemas/BrandColorRule"
+              },
+              {
+                "$ref": "#/components/schemas/ContrastRule"
+              },
+              {
+                "$ref": "#/components/schemas/AltTextRule"
               }
             ],
             "title": "Rule",
             "discriminator": {
               "propertyName": "kind",
               "mapping": {
+                "alt_text": "#/components/schemas/AltTextRule",
+                "brand_color": "#/components/schemas/BrandColorRule",
                 "claim_policy": "#/components/schemas/ToneRule",
+                "contrast": "#/components/schemas/ContrastRule",
                 "date": "#/components/schemas/DateRule",
                 "price": "#/components/schemas/PriceRule-Input",
                 "required_text": "#/components/schemas/RequiredRule",
@@ -3666,13 +3909,25 @@
               },
               {
                 "$ref": "#/components/schemas/ToneRule"
+              },
+              {
+                "$ref": "#/components/schemas/BrandColorRule"
+              },
+              {
+                "$ref": "#/components/schemas/ContrastRule"
+              },
+              {
+                "$ref": "#/components/schemas/AltTextRule"
               }
             ],
             "title": "Rule",
             "discriminator": {
               "propertyName": "kind",
               "mapping": {
+                "alt_text": "#/components/schemas/AltTextRule",
+                "brand_color": "#/components/schemas/BrandColorRule",
                 "claim_policy": "#/components/schemas/ToneRule",
+                "contrast": "#/components/schemas/ContrastRule",
                 "date": "#/components/schemas/DateRule",
                 "price": "#/components/schemas/PriceRule-Output",
                 "required_text": "#/components/schemas/RequiredRule",
@@ -3776,13 +4031,25 @@
               },
               {
                 "$ref": "#/components/schemas/ToneRule"
+              },
+              {
+                "$ref": "#/components/schemas/BrandColorRule"
+              },
+              {
+                "$ref": "#/components/schemas/ContrastRule"
+              },
+              {
+                "$ref": "#/components/schemas/AltTextRule"
               }
             ],
             "title": "Rule",
             "discriminator": {
               "propertyName": "kind",
               "mapping": {
+                "alt_text": "#/components/schemas/AltTextRule",
+                "brand_color": "#/components/schemas/BrandColorRule",
                 "claim_policy": "#/components/schemas/ToneRule",
+                "contrast": "#/components/schemas/ContrastRule",
                 "date": "#/components/schemas/DateRule",
                 "price": "#/components/schemas/PriceRule-Input",
                 "required_text": "#/components/schemas/RequiredRule",

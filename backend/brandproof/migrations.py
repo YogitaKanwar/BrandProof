@@ -23,6 +23,7 @@ def steps():
         ("0001_legacy", list(BASELINE)),
         ("0002_review_leases", ["review_leases"]),
         ("0003_guideline_documents", ["guideline_documents", "document_evidence"]),
+        ("0004_alt_text", ["alt_text_versions"]),
     ]
 
 

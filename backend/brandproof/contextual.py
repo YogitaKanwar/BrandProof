@@ -218,6 +218,8 @@ def _select_sources(text, sources, config, metadata):
     for source in sources:
         if not isinstance(source, dict) or source.get("status") != "approved":
             continue
+        if source.get("rule", {}).get("kind") in {"brand_color", "contrast", "alt_text"}:
+            continue  # Separate measured checks; do not disclose them or call them invalid policy.
         try:
             # Source API records also contain dates/actors; disclose only
             # the explicit pack fields before applying strict validation.

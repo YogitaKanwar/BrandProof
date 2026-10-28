@@ -155,6 +155,8 @@ export function createBackendClient(base = '/api/v1') {
     async getReview(campaignId: string, reviewId: string) {
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}`, { headers: auth() }))
     },
+    async altText(campaignId:string){return requestJson<{poster_id:string|null;content_revision:number;text:string}>(`${base}/campaigns/${encodeURIComponent(campaignId)}/alt-text`,{headers:auth(),cache:'no-store'})},
+    async saveAltText(campaignId:string,text:string,revision:number){const record=validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/alt-text`,{method:'PUT',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({text,expected_revision:revision})}));campaigns.set(record.id,record);return result()},
     async poster(campaignId: string, posterId?: string) {
       return requestJson<PosterOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/posters${posterId ? `/${encodeURIComponent(posterId)}` : ''}`, {headers: auth()})
     },

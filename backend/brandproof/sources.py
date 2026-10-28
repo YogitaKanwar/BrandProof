@@ -31,6 +31,12 @@ def canonical_text(rule: dict) -> str:
             return f"Use '{rule['preferred']}' instead of '{rule['term']}'."
         case "required_text":
             return f"Campaign copy must include: {rule['text']}"
+        case "brand_color":
+            return f"Permitted flat poster background: {rule['hex']} within CIE76 Delta-E {rule['tolerance']}."
+        case "contrast":
+            return f"Supported poster text/background samples require contrast of at least {rule['minimum_ratio']}:1."
+        case "alt_text":
+            return "Provide a poster description including the key price/date information. Human assessment of meaning is required."
         case _:
             return rule["guidance"]
 
