@@ -12,6 +12,7 @@ from brandproof.db import make_engine, session_factory
 from brandproof.documents import router as documents_router
 from brandproof.errors import install_errors
 from brandproof.insights import router as insights_router
+from brandproof.legal import router as legal_router
 from brandproof.logos import router as logos_router
 from brandproof.migrations import migrate
 from brandproof.posters import router as posters_router
@@ -53,6 +54,7 @@ def create_app(*, database_url: str | None = None):
     app.include_router(accessibility_router)
     app.include_router(readiness_router)
     app.include_router(insights_router)
+    app.include_router(legal_router)
     app.include_router(removals_router)
     app.state.engine = engine
     app.state.sessions = sessions

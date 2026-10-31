@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from brandproof.approval import current_decisions, latest_request, latest_run, readiness
 from brandproof.auth import actor, db, lock_campaign, scoped_campaign
+from brandproof.legal import legal_current
 from brandproof.models import Actor
 from brandproof.poster_models import PosterAsset
 from brandproof.review_leases import recover_expired
@@ -108,10 +109,11 @@ def workflow_readiness(session, campaign, who):
     if (
         run.content_revision != campaign.content_revision
         or run.source_revision != campaign.source_revision
+        or not legal_current(run)
     ):
         add(
             "review_stale",
-            "Content or references changed. Run a new review before requesting approval.",
+            "Content, references or advertising pack changed. Run a new review before requesting approval.",
             "creator",
             "content-heading",
         )
@@ -186,6 +188,7 @@ def workflow_readiness(session, campaign, who):
     required = (
         ["exact_text", "contextual"]
         + (["claim_risk"] if "claim_risk" in run.checks else [])
+        + (["advertising_risk"] if "advertising_risk" in run.checks else [])
         + (["poster"] if run.checks.get("poster", {}).get("details", {}).get("asset_id") else [])
     )
     result["manual_checks"] = [

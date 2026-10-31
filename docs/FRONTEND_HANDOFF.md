@@ -117,3 +117,10 @@ See [LOGO_COMPARISON_REVIEW.md](LOGO_COMPARISON_REVIEW.md) for actual new routes
 ## Local claim-risk screening — 28 October
 
 New runs add `checks.claim_risk`; caption and OCR-based poster findings use category `claim_risk`, warning severity and `needs_clarification`, with no invented source evidence or replacement. This works with no approved facts and AI disabled. Partial claim coverage requires dedicated reviewer notes in addition to explicit finding disposition. Existing runs without this check remain unchanged. See [CLAIM_RISK_SCREENING.md](CLAIM_RISK_SCREENING.md) for supported patterns, limits and the judge demonstration. Saved OpenAPI includes the new manual-check key.
+
+
+## Current Round 3 advertising integration — 31 October 2026
+
+New owner PUT/GET `/api/v1/campaigns/{id}/advertising-profile` selects jurisdiction, sector and language with both expected revisions. Saving increments source revision. New runs add `checks.advertising_risk` and optional finding `regulatory_evidence`; brand evidence stays separate. `not_applicable` is an additive check status and still requires manual notes for unsupported jurisdictions. `advertising_risk` is an exact required manual-note key when incomplete. Receipts expose each approval's `advertising_snapshot`. Installed-pack changes can make `is_current` false without a numeric content/source change; honour server currentness. Old and new frontend/API versions must be released together.
+
+The profile UI preserves dirty selections on refresh/conflict, uses owner writes and stays memory-only. Results show source/pack scope and legal evidence separately. A sample PDF is downloadable from the import panel. Insights includes reviewed snapshot counts and regulation identity. This local slice is type/build/lint/API-tested; fresh browser/public acceptance remains outstanding. See ADVERTISING_RISK.md and ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md. Older sections above describe historical milestones and are superseded where they conflict.

@@ -15,7 +15,7 @@ Selected patterns include guaranteed outcomes (including placement/admission/cur
 ## Human decision and persistence
 
 - Findings use category `claim_risk`, severity `warning`, exact code-point spans and immutable review revisions. They never auto-approve or auto-rewrite the content.
-- New runs include `checks.claim_risk` with screening version `claim-risk-v1`, per-asset coverage, scan size, match count and limits. Historical runs without this check keep their original contract; they are not retrospectively presented as screened.
+- New runs include `checks.claim_risk` with screening version `claim-risk-v2`, per-asset coverage, scan size, match count and limits. Historical runs without this check keep their original contract; they are not retrospectively presented as screened.
 - A run with a flagged promise has partial claim coverage. Approval requires an explicit finding disposition plus actual reviewer notes under `manual_checks.claim_risk`, alongside the existing required checks. Notes alone cannot bypass an unresolved finding. Approved sources and the existing role, revision and current-request requirements still apply.
 - Local screening needs no provider key, consent or network call. Optional contextual AI keeps its existing explicit-consent requirements.
 
@@ -26,3 +26,5 @@ This is a bounded English regex screen, not general language understanding or an
 Only a small explicit set of immediately preceding denials and hedges is suppressed. Quotation, complex negation, indirect promises, multilingual copy and unseen paraphrases can produce misses or false alarms. `Red Bull gives you wings` is outside this screen's patterns; its absence from findings does not establish brand approval or truth. Ordinary durations, cotton percentages and money-back terms in the test examples do not match, but that is not a claim that every such statement is valid.
 
 Broader semantic claim recognition, linking evidence to individual promises and validating whether evidence actually supports a claim remain future work. Do not describe this feature as detecting every unsupported claim.
+
+Version 2 adds selected selection-guarantee wording. A selected India advertising profile can attach the frozen CCPA 12(a) evidence to the same prompt; it does not duplicate it or establish a legal breach. See ADVERTISING_RISK.md.

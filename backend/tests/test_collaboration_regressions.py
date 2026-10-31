@@ -117,7 +117,12 @@ def test_manual_coverage_requires_exact_incomplete_keys(client, demo, owner, cam
     response = client.post(
         url,
         headers=headers(demo, "reviewer"),
-        json={**payload, "manual_checks": {key: notes for key in ["exact_text", "contextual"]}},
+        json={
+            **payload,
+            "manual_checks": {
+                key: notes for key in ["exact_text", "contextual", "advertising_risk"]
+            },
+        },
     )
     assert response.status_code == 201, response.text
     receipt = client.get(base + "/receipt", headers=owner).json()
@@ -382,7 +387,7 @@ def test_expired_source_cannot_be_manually_promoted(client, demo, owner, campaig
             "request_id": request["id"],
             "manual_checks": {
                 key: "A manual check must not promote an expired approved source."
-                for key in ["exact_text", "contextual"]
+                for key in ["exact_text", "contextual", "advertising_risk"]
             },
         },
     )

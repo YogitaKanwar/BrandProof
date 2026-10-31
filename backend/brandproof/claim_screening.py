@@ -8,10 +8,10 @@ import re
 
 from brandproof.models import new_id
 
-VERSION = "claim-risk-v1"
+VERSION = "claim-risk-v2"
 MAX_CHARS = 20000
 MAX_FINDINGS = 20
-OUTCOME = r"(?:results?|outcomes?|success|profits?|returns?|earnings?|sales|revenue|recovery|weight\s+loss|placements?|jobs?|employment|admissions?|cures?)"
+OUTCOME = r"(?:results?|outcomes?|success|profits?|returns?|earnings?|sales|revenue|recovery|weight\s+loss|placements?|selections?|jobs?|employment|admissions?|cures?)"
 NUMBER = r"(?:\d{1,4}|a|an|one|two|three|four|five|six|seven|eight|nine|ten|thirty|sixty|ninety)"
 TIME = rf"(?:in|within|after|under)\s+(?:just\s+)?{NUMBER}\s+(?:hours?|days?|weeks?|months?|years?)"
 PATTERNS = [

@@ -2117,6 +2117,127 @@
         ]
       }
     },
+    "/api/v1/advertising-risk-pack": {
+      "get": {
+        "tags": [
+          "advertising risk"
+        ],
+        "summary": "Get Pack",
+        "operationId": "get_pack_api_v1_advertising_risk_pack_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/advertising-profile": {
+      "get": {
+        "tags": [
+          "advertising risk"
+        ],
+        "summary": "Get Profile",
+        "operationId": "get_profile_api_v1_campaigns__campaign_id__advertising_profile_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "advertising risk"
+        ],
+        "summary": "Set Profile",
+        "operationId": "set_profile_api_v1_campaigns__campaign_id__advertising_profile_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/campaigns/{campaign_id}/restore": {
       "post": {
         "tags": [
@@ -2311,7 +2432,8 @@
                 "exact_text",
                 "contextual",
                 "poster",
-                "claim_risk"
+                "claim_risk",
+                "advertising_risk"
               ]
             },
             "type": "object",
@@ -2393,6 +2515,11 @@
           "is_current": {
             "type": "boolean",
             "title": "Is Current"
+          },
+          "advertising_snapshot": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Advertising Snapshot"
           }
         },
         "type": "object",
@@ -2618,7 +2745,8 @@
               "completed",
               "partial",
               "unavailable",
-              "not_assessed"
+              "not_assessed",
+              "not_applicable"
             ],
             "title": "Status"
           },
@@ -3094,6 +3222,18 @@
               }
             ],
             "title": "Unverified Draft Suggestion"
+          },
+          "regulatory_evidence": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regulatory Evidence"
           }
         },
         "type": "object",
@@ -3308,6 +3448,22 @@
             "type": "integer",
             "title": "Reviewed"
           },
+          "reviewed_snapshots": {
+            "type": "integer",
+            "title": "Reviewed Snapshots"
+          },
+          "regulatory_reference": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regulatory Reference"
+          },
           "dismissed": {
             "type": "integer",
             "title": "Dismissed"
@@ -3359,6 +3515,7 @@
           "source_version",
           "observations",
           "reviewed",
+          "reviewed_snapshots",
           "dismissed",
           "exceptions",
           "reopened",
@@ -3980,6 +4137,94 @@
           "currency"
         ],
         "title": "PriceRule"
+      },
+      "ProfileInput": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "enum": [
+              "IN",
+              "other",
+              "unknown"
+            ],
+            "title": "Jurisdiction"
+          },
+          "sector": {
+            "type": "string",
+            "enum": [
+              "general",
+              "coaching",
+              "healthcare",
+              "finance",
+              "other",
+              "unknown"
+            ],
+            "title": "Sector"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "other",
+              "unknown"
+            ],
+            "title": "Language"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision",
+          "jurisdiction",
+          "sector",
+          "language"
+        ],
+        "title": "ProfileInput"
+      },
+      "ProfileOut": {
+        "properties": {
+          "profile": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "pack": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pack"
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile",
+          "source_revision",
+          "pack"
+        ],
+        "title": "ProfileOut"
       },
       "ReadinessOut": {
         "properties": {

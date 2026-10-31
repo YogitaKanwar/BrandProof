@@ -20,10 +20,12 @@ router = APIRouter(prefix="/api/v1/campaigns/{campaign_id}", tags=["collaboratio
 
 
 def ensure_current(campaign, run):
+    from brandproof.legal import legal_current
+
     if (run.content_revision, run.source_revision) != (
         campaign.content_revision,
         campaign.source_revision,
-    ):
+    ) or not legal_current(run):
         fail(409, "stale_review", "Review is no longer current")
 
 
@@ -155,11 +157,7 @@ def create_comment(
     require_snapshot(campaign, payload)
     if payload.review_id:
         run = scoped_run(session, campaign_id, payload.review_id)
-        if (run.content_revision, run.source_revision) != (
-            campaign.content_revision,
-            campaign.source_revision,
-        ):
-            fail(409, "stale_review", "Review is no longer current")
+        ensure_current(campaign, run)
     row = Comment(
         campaign_id=campaign_id,
         review_id=payload.review_id,

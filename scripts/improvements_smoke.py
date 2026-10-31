@@ -27,7 +27,7 @@ def pdf_fixture():
     )
     stream = DecodedStreamObject()
     stream.set_data(
-        b"BT /F1 16 Tf 40 750 Td (Campaign price: INR 499) Tj 0 -24 Td (Background colour: #FFFFFF) Tj 0 -24 Td (Alt text: required) Tj ET"
+        b"BT /F1 16 Tf 40 750 Td (Campaign price: INR 499) Tj 0 -24 Td (Background colour: #FFFFFF) Tj 0 -24 Td (Alt text: required) Tj 0 -24 Td (Minimum contrast: 4.5) Tj ET"
     )
     page[NameObject("/Contents")] = writer._add_object(stream)
     output = io.BytesIO()
@@ -81,7 +81,7 @@ def main():
         role="owner",
         expected=201,
     )
-    assert len(document["sources"]) == 3
+    assert len(document["sources"]) == 4
     for source in document["sources"]:
         assert source["status"] == "pending"
         citation = source["document_evidence"]
@@ -98,6 +98,19 @@ def main():
             role="owner",
         )
         assert approved["document_evidence"] == citation
+    current = call("GET", base)
+    call(
+        "PUT",
+        base + "/advertising-profile",
+        {
+            "expected_content_revision": current["content_revision"],
+            "expected_source_revision": current["source_revision"],
+            "jurisdiction": "IN",
+            "sector": "general",
+            "language": "en",
+        },
+        role="owner",
+    )
     call(
         "PUT",
         base + "/caption",
@@ -127,6 +140,10 @@ def main():
         )
 
     run = review()
+    assert run["checks"]["advertising_risk"]["status"] == "partial"
+    assert any(f.get("regulatory_evidence") for f in run["findings"])
+    measured = run["checks"]["poster"]["details"]["measured_checks"]["contrast"]
+    assert measured["measurements"] and measured["measurements"][0]["minimum_ratio"] == 4.5
     assert any(f["category"] == "alt_text" for f in run["findings"])
     assert any(
         f["category"] == "claim_risk"
@@ -173,7 +190,7 @@ def main():
                 expected=201,
             )
     request = call("POST", base + "/reviews/" + run["id"] + "/requests", snapshot, expected=201)
-    required = ["exact_text", "contextual", "claim_risk", "poster"]
+    required = ["exact_text", "contextual", "claim_risk", "poster", "advertising_risk"]
     notes = {
         name: "Scripted workflow attestation for "
         + name
@@ -210,6 +227,8 @@ def main():
                 "poster_claim_boxes": "passed",
                 "unverified_drafts": "passed",
                 "measured_background": "passed",
+                "measured_contrast": "passed",
+                "cited_advertising_risk": "passed",
                 "alt_text_revisions": "passed",
                 "readiness_and_governance": "passed",
                 "sources_content_findings_human_review": "passed",

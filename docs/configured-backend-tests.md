@@ -121,3 +121,22 @@ Full combined backend suite: **367 passed, 0 failed/errors/skipped**, 167.57s (.
 Configured runtime: FastAPI and built UI on 127.0.0.1:8001, isolated manual-qa-oct28 SQLite database, real local Tesseract; external AI disabled/provider none. Fictional “Claim-risk demo” campaign: source revision 0, no approved facts. Browser saved and reviewed “Guaranteed results in 30 days.”: one needs-clarification warning with the actual caption span, contextual unavailable, claim screening partial and readiness not approved. Revised to “The workshop lasts 30 days.”: zero findings, pattern scan complete, readiness still not approved, earlier result historical. Uploaded a generated 1200×220 PNG of the promise: actual OCR completed, one poster risk finding with real word highlights and 91% OCR confidence; source evidence absent as expected. Reload retained the run, image and warning. Final runtime restarted with the same database and updated code/UI.
 
 Fresh automated checks: 497 backend tests/49 frontend tests pass; build, lint, format and diff checks pass. Tests include guarantees, time promises, placement/admission/cure, absolute/quantified claims, selected denials/hedges, overlap/Unicode, scan limits, real OCR, no-source persistence and human approval enforcement. No fresh external model request or public-deployment verification; no representative precision/recall claim.
+
+
+## Feature-branch local acceptance — 30 October
+
+Fresh isolated SQLite/Tesseract :8001 runtime on ca6dd8c, external provider disabled: 513 backend tests pass, 3 contrast-rendering tests fail; 54 frontend tests/build/lint pass. All seven genuine frontend HTTP suites and the improvements HTTP smoke pass. Browser confirms PDF evidence/confirmation, background and alt-text flows, explicit draft/save gates, governance evidence links and session/review recovery after restart. Real HTTP contrast reproduction on black Noto TEST over white yields completed OCR but partial contrast/zero measurements because the exact-ink guard rejects antialiasing. No production/PostgreSQL/model acceptance is claimed. Preserved local approval edit fails formatting/whitespace checks. Detailed findings: LOCAL_RETEST_2026-10-30.md.
+
+### 30 October 2026 — visual refresh acceptance
+
+Restarted the existing isolated SQLite retest runtime on 127.0.0.1:8001 with the rebuilt frontend, same database, external AI disabled. Browser session restored its original campaign. The redesigned example entry created campaign `deb456a2-a86b-44f7-92f7-99f63225cb1b`; Run review returned eight actual findings and kept the pending policy excluded, partial coverage visible and readiness not approved. No approvals or provider calls were made. This frontend acceptance does not supersede the earlier backend report's three contrast failures.
+
+
+## 31 October 2026 — contrast repair local verification
+
+Latest local suite after T00/T01: 542 backend tests pass, 54 frontend tests pass, lint/build/Ruff/whitespace pass. Real Tesseract HTTP uploads measure black and grey text and retain finding source versions/boxes. Mostly antialiased small text and uncertain images still abstain. Browser security policy prevented manual UI acceptance; public/PostgreSQL acceptance remains unverified. See T00_T01_RETEST_2026-10-31.md.
+
+
+## 31 October — Round 3 current local acceptance
+
+574 backend tests and 56 frontend tests pass; frontend build/lint, Ruff format/lint, whitespace and saved/live OpenAPI parity pass. Seven real-HTTP frontend suites and expanded PDF/contrast/advertising/approval smoke pass on an isolated SQLite/Tesseract runtime with external AI disabled. Actual server restart preserved eight table digests including profiles, documents, decisions and receipts. Wheel contains and imports the frozen legal pack and migration metadata. Manual browser and PostgreSQL/container execution remain unverified. User selected local-only release. Detailed evidence and limits: ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md.

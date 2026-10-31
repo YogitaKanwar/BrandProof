@@ -117,13 +117,43 @@ def word_colours(image, word):
     background, count = Counter(ring).most_common(1)[0]
     if count / len(ring) < 0.95:
         return None
-    colors = Counter(image.crop((x, y, x + w, y + h)).getdata())
+    crop = image.crop((x, y, x + w, y + h))
+    colors = Counter(crop.getdata())
     ink = {color: count for color, count in colors.items() if math.dist(color, background) > 15}
     if not ink:
         return None
     foreground, count = max(ink.items(), key=lambda pair: pair[1])
-    if count < 3 or count / sum(ink.values()) < 0.8:
+    # A solid core must dominate. Remaining shades may be antialiased edges,
+    # but must not be a second foreground, interior shading or arbitrary noise.
+    if count < 3 or count / sum(ink.values()) < 0.5:
         return None
+    direction = tuple(f - b for f, b in zip(foreground, background, strict=True))
+    length_squared = sum(v * v for v in direction)
+    edges = set()
+    for color in ink:
+        if color == foreground:
+            continue
+        projection = (
+            sum((c - b) * d for c, b, d in zip(color, background, direction, strict=True))
+            / length_squared
+        )
+        blend = tuple(b + projection * d for b, d in zip(background, direction, strict=True))
+        # Two RGB units allow integer rounding of a single colour blend, not
+        # compression artefacts or unrelated colours. Do not extrapolate ink.
+        if not 0 < projection < 1 or math.dist(color, blend) > 2:
+            return None
+        edges.add(color)
+    # Antialias shades belong at a glyph boundary. A solid grey region/shadow
+    # cannot be treated as a black glyph's antialiasing simply by being collinear.
+    pixels = outer.load()
+    for a in range(w):
+        for b in range(h):
+            if pixels[a + 2, b + 2] in edges and not any(
+                math.dist(pixels[a + 2 + dx, b + 2 + dy], background) <= 15
+                for dx in (-1, 0, 1)
+                for dy in (-1, 0, 1)
+            ):
+                return None
     return foreground, background
 
 
@@ -157,6 +187,7 @@ def evaluate_visuals(asset, campaign, active, alt_text):
                 measurements=[
                     {
                         "source_id": source["id"],
+                        "target_hex": source["rule"]["hex"],
                         "delta_e": round(distance, 4),
                         "tolerance": source["rule"]["tolerance"],
                     }
@@ -178,6 +209,7 @@ def evaluate_visuals(asset, campaign, active, alt_text):
     measurements = []
     words = asset.ocr["words"][:100]
     uncertain = 0
+    strictest = max(rules, key=lambda source: source["rule"]["minimum_ratio"]) if rules else None
     for word in words if rules else []:
         colors = word_colours(image, word)
         if not colors:
@@ -190,10 +222,11 @@ def evaluate_visuals(asset, campaign, active, alt_text):
                 "ratio": round(ratio, 4),
                 "foreground": colors[0],
                 "background": colors[1],
+                "minimum_ratio": strictest["rule"]["minimum_ratio"],
+                "source_id": strictest["id"],
                 "box": {k: word[k] for k in ("x", "y", "width", "height")},
             }
         )
-        strictest = max(rules, key=lambda source: source["rule"]["minimum_ratio"])
         if ratio < strictest["rule"]["minimum_ratio"]:
             findings.append(
                 flag(

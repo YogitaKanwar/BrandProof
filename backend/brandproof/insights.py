@@ -39,6 +39,8 @@ class GuidelineInsight(BaseModel):
     source_version: int | None
     observations: int
     reviewed: int
+    reviewed_snapshots: int
+    regulatory_reference: dict | None = None
     dismissed: int
     exceptions: int
     reopened: int
@@ -70,7 +72,9 @@ def summarize(session, workspace_id):
         select(ReviewRun, Campaign)
         .join(Campaign, Campaign.id == ReviewRun.campaign_id)
         .where(
-            Campaign.workspace_id == workspace_id, ReviewRun.status != "running", active_campaigns()
+            Campaign.workspace_id == workspace_id,
+            ReviewRun.status.in_(["completed", "partial"]),
+            active_campaigns(),
         )
         .order_by(ReviewRun.created_at.desc(), ReviewRun.id.desc())
         .limit(MAX_RUNS + 1)
@@ -80,7 +84,13 @@ def summarize(session, workspace_id):
     snapshots = {}
     for run, campaign in rows:
         snapshots.setdefault(
-            (run.campaign_id, run.content_revision, run.source_revision), (run, campaign)
+            (
+                run.campaign_id,
+                run.content_revision,
+                run.source_revision,
+                run.checks.get("advertising_risk", {}).get("details", {}).get("pack_digest"),
+            ),
+            (run, campaign),
         )
     run_ids = [run.id for run, _ in snapshots.values()]
     decisions = (
@@ -113,7 +123,13 @@ def summarize(session, workspace_id):
             count["observations"] += 1
             count["campaigns"].add(campaign.id)
             evidence = finding.get("evidence") or {}
-            key = (category, evidence.get("source_version_id"))
+            regulation = finding.get("regulatory_evidence")
+            regulatory_key = (
+                (regulation["pack_id"], regulation["pack_version"], regulation["id"])
+                if regulation
+                else None
+            )
+            key = (category, evidence.get("source_version_id"), regulatory_key)
             group = groups.setdefault(
                 key,
                 {
@@ -123,6 +139,7 @@ def summarize(session, workspace_id):
                     "source_version": evidence.get("source_version"),
                     "observations": 0,
                     "reviewed": 0,
+                    "regulatory_reference": regulation,
                     "dismissed": 0,
                     "exceptions": 0,
                     "reopened": 0,
@@ -159,9 +176,9 @@ def summarize(session, workspace_id):
                 )
     output = []
     for group in groups.values():
+        group["reviewed_snapshots"] = len(group.pop("content_revisions"))
         sufficient = (
-            group["reviewed"] >= MIN_REVIEWED
-            and len(group.pop("content_revisions")) >= MIN_REVIEWED
+            group["reviewed"] >= MIN_REVIEWED and group["reviewed_snapshots"] >= MIN_REVIEWED
         )
         rate = (
             (group["dismissed"] + group["exceptions"]) / group["reviewed"]
@@ -170,7 +187,12 @@ def summarize(session, workspace_id):
         )
         group.update(
             decision_rate=rate if sufficient else None,
-            potentially_ambiguous=bool(sufficient and group["source_version_id"] and rate > 0.5),
+            potentially_ambiguous=bool(
+                sufficient
+                and group["source_version_id"]
+                and not group["regulatory_reference"]
+                and rate > 0.5
+            ),
             sample_status="sufficient_for_triage_only"
             if sufficient
             else "insufficient_reviewed_revisions",
@@ -199,7 +221,7 @@ def summarize(session, workspace_id):
         "snapshots_considered": len(snapshots),
         "truncated": truncated,
         "minimum_reviewed_sample": MIN_REVIEWED,
-        "notice": "Finding observations are not confirmed truth violations or measured accuracy. Only the latest completed/partial run per content/source snapshot is counted. Rates use latest explicit dispositions, including reopen, and require five reviewed content revisions. A high dismissal/exception rate is an owner triage hint, not proof a rule is ambiguous. Demo roles are synthetic, not independent real reviewers. At most 500 runs/5000 decisions are summarized; inspect links and reasons.",
+        "notice": "Finding observations are not confirmed truth violations or measured accuracy. Only the latest completed/partial run per content/source/installed-pack snapshot is counted. Rerunning the same snapshot replaces its observations here; older-run decisions are not carried forward. Rates divide latest dismissals plus exceptions by all reviewed observations, including reopen, and require five distinct campaign/content revisions. Source versions remain separate. Regulation dispositions never suggest weakening a regulation. Demo roles are synthetic. At most 500 runs/5000 decisions are summarized; inspect links and reasons.",
     }
 
 

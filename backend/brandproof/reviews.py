@@ -12,6 +12,7 @@ from brandproof.contextual import (
 )
 from brandproof.errors import fail
 from brandproof.finding_groups import finding_groups
+from brandproof.legal import evaluate_advertising, legal_current
 from brandproof.logos import review_logo
 from brandproof.models import Actor, Campaign
 from brandproof.poster_models import PosterAsset
@@ -113,7 +114,8 @@ def render_run(run: ReviewRun, campaign: Campaign, session=None):
         "caption": run.caption,
         "status": run.status,
         "is_current": run.content_revision == campaign.content_revision
-        and run.source_revision == campaign.source_revision,
+        and run.source_revision == campaign.source_revision
+        and legal_current(run),
         "readiness": readiness(session, campaign, run.id) if session else "not_approved",
         "checks": run.checks,
         "sources_used": run.sources_used,
@@ -228,6 +230,9 @@ def start_review(
     risk_check = combined_coverage(
         caption_risk_check, poster_check.get("details", {}).get("claim_risk")
     )
+    all_findings, advertising_check = evaluate_advertising(
+        session, campaign, [*findings, *risk_findings, *poster_findings], poster_check
+    )
     run = ReviewRun(
         campaign_id=campaign_id,
         content_revision=campaign.content_revision,
@@ -250,10 +255,11 @@ def start_review(
             },
             "poster": poster_check,
             "claim_risk": risk_check,
+            "advertising_risk": advertising_check,
         },
         sources_used=sources,
         excluded_sources=excluded,
-        findings=[*findings, *risk_findings, *poster_findings],
+        findings=all_findings,
     )
     # Recheck immutable snapshot identity rather than presenting a mixed-version run.
     latest = session.execute(
@@ -371,6 +377,7 @@ def start_review(
         if exact_status == "completed"
         and result.status == "completed"
         and risk_check["status"] == "completed"
+        and advertising_check["status"] == "completed"
         and not has_poster
         else "partial"
     )

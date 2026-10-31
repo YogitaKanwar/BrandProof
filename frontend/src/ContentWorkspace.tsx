@@ -6,6 +6,7 @@ import { MAX_CAPTION_LENGTH, readCaption, saveCaption, validatePoster } from './
 import SourcePreparation from './SourcePreparation'
 import LiveSources from './LiveSources'
 import BrandLogo from './BrandLogo'
+import AdvertisingProfile from './AdvertisingProfile'
 import type { BackendClient, CampaignOut } from './api/backend'
 import type { ReviewResult } from './api/reviews'
 import LiveCaption from './LiveCaption'
@@ -78,6 +79,7 @@ export default function ContentWorkspace({ review, campaign, sourceClient, onCam
       {review.brief && <details className="review-brief"><summary>Campaign brief</summary><p className="description">{review.brief}</p></details>}
     </section>
     {sourceClient&&review.backendCampaign&&<WorkflowReadiness api={sourceClient} campaign={review.backendCampaign} epoch={readinessEpoch} dirty={contentDirty}/>}
+    {sourceClient&&review.backendCampaign&&onCampaignChange&&<AdvertisingProfile key={review.backendCampaign.id} api={sourceClient} campaign={review.backendCampaign} onChanged={onCampaignChange}/>}
     <ol className="workspace-stages" aria-label="Review stages"><li><a href="#brand-information" onClick={event => { event.preventDefault(); document.getElementById('sources-heading')?.focus(); document.getElementById('brand-information')?.scrollIntoView() }}>1. References</a></li><li><a href="#marketing-content" onClick={event => { event.preventDefault(); document.getElementById('content-heading')?.focus(); document.getElementById('marketing-content')?.scrollIntoView() }}>2. Content</a></li><li>{hasResults ? <a href="#review-results" onClick={event => { event.preventDefault(); document.getElementById('results-heading')?.focus(); document.getElementById('review-results')?.scrollIntoView() }}>3. Results</a> : <span aria-disabled="true">3. Results</span>}</li></ol>
     {review.backendCampaign && <details className="campaign-revisions"><summary>Review details</summary><p className="form-help">Campaign saved on server · Publication {review.backendCampaign.publication_date} · Content revision {review.backendCampaign.content_revision} · Source revision {review.backendCampaign.source_revision}.</p></details>}
     <div id="brand-information">{sourceClient && review.backendCampaign && onCampaignChange ? <><LiveSources api={sourceClient} campaignId={review.campaignId} publicationDate={review.backendCampaign.publication_date} onCampaignChange={onCampaignChange} /><BrandLogo api={sourceClient} campaignId={review.campaignId} onCampaignChange={onCampaignChange}/></> : <SourcePreparation reviewId={review.id} />}</div>

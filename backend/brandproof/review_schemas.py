@@ -68,6 +68,7 @@ class Finding(BaseModel):
     evidence: Evidence | None
     suggested_replacement: str | None = None
     unverified_draft_suggestion: str | None = None
+    regulatory_evidence: dict | None = None
 
 
 class RuleCoverage(BaseModel):
@@ -79,7 +80,7 @@ class RuleCoverage(BaseModel):
 
 
 class CheckStatus(BaseModel):
-    status: Literal["completed", "partial", "unavailable", "not_assessed"]
+    status: Literal["completed", "partial", "unavailable", "not_assessed", "not_applicable"]
     reason: str | None = None
     rules: list[RuleCoverage] = Field(default_factory=list)
     details: dict = Field(default_factory=dict)

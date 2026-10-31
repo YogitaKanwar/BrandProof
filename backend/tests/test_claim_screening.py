@@ -107,7 +107,7 @@ def test_real_api_flags_and_persists_claims_with_ai_off_and_no_sources(client, o
     assert run["checks"]["contextual"]["status"] == "unavailable"
     assert run["checks"]["exact_text"]["status"] == "not_assessed"
     assert run["checks"]["claim_risk"]["status"] == "partial"
-    assert run["checks"]["claim_risk"]["details"]["version"] == "claim-risk-v1"
+    assert run["checks"]["claim_risk"]["details"]["version"] == "claim-risk-v2"
     assert run["sources_used"] == []
     assert len(run["findings"]) == 1 and run["readiness"] == "not_approved"
     base = f"/api/v1/campaigns/{campaign['id']}"
@@ -175,6 +175,7 @@ def test_claim_flag_requires_human_disposition_and_dedicated_manual_notes(
         "decision": "approve",
         "reason": "Synthetic workflow test; not real campaign authorisation.",
         "manual_checks": {
+            "advertising_risk": "Synthetic test reviewer manually assessed the unconfigured advertising scope.",
             "exact_text": "No exact facts were supplied; manually inspected the caption.",
             "contextual": "No AI inference used; manually compared the supplied policy.",
         },

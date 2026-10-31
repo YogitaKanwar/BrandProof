@@ -25,6 +25,7 @@ def steps():
         ("0003_guideline_documents", ["guideline_documents", "document_evidence"]),
         ("0004_alt_text", ["alt_text_versions"]),
         ("0005_review_removal", ["campaign_removals"]),
+        ("0006_advertising_profile", ["legal_profile_versions"]),
     ]
 
 

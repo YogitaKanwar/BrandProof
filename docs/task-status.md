@@ -277,3 +277,46 @@ Validation: 451 full backend tests passed in 40.62s; seven focused audit regress
 User explicitly requested fixing the missed “Guaranteed results in 30 days” case. Added bounded local English promise screening independent of approved sources and external AI. New caption/OCR poster findings are warnings requiring clarification, with real spans/boxes and no invented evidence or factual replacement. Coverage records the screening version, per-asset counts and limits; incomplete OCR remains partial. New partial claim coverage requires explicit finding disposition and dedicated reviewer notes before approval. Historical runs without claim screening remain compatible. UI distinguishes potential promises from cited contradictions, preserves no-findings/not-approved behavior and accommodates four coverage cards. OpenAPI/API handoff updated; scope and judge demo are in CLAIM_RISK_SCREENING.md.
 
 Fresh final checks: **497 backend tests passed in 44.48s**, **49 frontend tests passed**, frontend build/lint, backend Ruff lint/format and git diff whitespace checks passed. Browser acceptance on the isolated local QA database confirmed no-source/no-AI promise detection, ordinary-duration negative case, stale historical result after correction, real poster OCR/highlights and persisted results across reload. Automated API tests verify unresolved-finding and dedicated-manual-note approval guards. These are synthetic functional checks, not representative detection accuracy. No external provider call, push, main merge or production deployment. Runtime :8001 serves the updated UI/API with external AI disabled.
+
+
+## Latest feature-branch local retest — 2026-10-30
+
+User requested restart and testing of ca6dd8c. Synced frozen dependencies, built UI, started isolated SQLite runtime at :8001 with real Tesseract and external AI disabled. Frontend 54 tests/build/lint pass; real feature HTTP smoke and all seven frontend HTTP suites pass. Manual browser confirms PDF pending page evidence/confirmation, actual findings, background measurement, alt-text save/staleness/review, explicit unverified draft save gate, governance sample guard/exact evidence links and same-session recovery after process restart. All 17 saved review snapshots were unchanged across restart.
+
+Full backend result: **513 passed, 3 failed** in 47.99s. Confirmed contrast detector rejects ordinary antialiased Noto text; exact dominant ink fraction 76.61% is below its 80% guard. Actual HTTP upload/Tesseract/rule/review reproduction also yields partial contrast with no measurement. No false pass was returned. Ruff lint passes; formatting/diff checks fail on the preserved pre-existing approval.py edit. No application/test fix, push, merge, public deployment or live model call. See LOCAL_RETEST_2026-10-30.md for evidence and limits.
+
+## Visual refresh — 30 October 2026
+
+User-authorized frontend beautification on `feat/brandproof-improvements-20261028`: navy navigation with inline vector icons, a larger two-tone overview heading, explanatory numbered workflow, dedicated fictional-example entry, calmer campaign rows, and consistent reference/finding/readiness/insights surfaces. Mobile rules support narrow screens and preserve visible focus and reduced-motion preferences. No dependency or backend changes.
+
+Validation: production build and lint passed; all 54 frontend unit tests passed. Manual CUA checks against the built frontend on port 8001 covered overview, new-review navigation/date validation/cancel, existing review navigation, source/content/results anchors, insights data, example campaign creation and a genuine review returning eight findings. Pending policy exclusion and incomplete coverage remained visible. Tested 390px and 320px layouts; fixed inherited body minimum-width overflow and verified final 305px client/scroll width equality at a 320px viewport. Keyboard Tab reached New Review with a visible outline. Screenshots: `/home/KARMA/Documents/Codex/2026-10-24/i/outputs/brandproof-design/`. Local only; not committed, pushed or deployed. Earlier contrast-sampling defect and unrelated approval.py edit are unchanged.
+
+### Visual direction refinement — 30 October 2026
+
+Following the user's request for a simpler, less templated appearance, removed the oversized marketing headline, uppercase taglines, shield decorations and dark navigation. Replaced them with a compact BrandProof monogram, white sidebar, plain “Your reviews” heading, restrained separators, less rounding/shadow and a short example invitation. Existing workflow controls and evidence semantics are unchanged. Build and lint passed again. Desktop screenshot inspected; manual responsive verification recorded in this turn. Not pushed or deployed.
+
+### Colour refinement — 30 October 2026
+
+User requested more distinctive colours while retaining the simple layout. Updated the visual-system palette to ink-blue text, ivory canvas, pale-blue navigation and evidence surfaces, with terracotta/coral primary actions and monogram. Warning/error and confirmed-source status colours retain their semantic roles. Production build, lint and scoped diff whitespace check passed. Inspected the actual built overview in CUA and saved `outputs/brandproof-design/colour-overview.png` in the Codex workspace. Measured white-on-primary contrast: 4.95:1; main text on ivory: 11.43:1. This is a palette check, not a full accessibility audit. Local changes only.
+
+### User-supplied palette selection — 30 October 2026
+
+Selected reference image 2: Desert Sun `#dc9750` and Dark Blue `#1e2640`. Applied orange primary actions and monogram with navy text (not white), navy headings, warm neutral canvas and a pale orange example invitation. Kept the simplified layout and semantic finding colours. Build/lint passed; inspected the rebuilt overview in CUA. Local only.
+
+### Palette correction — 31 October 2026
+
+Corrected the pale interpretation after user feedback: the sidebar now uses exact Dark Blue `#1e2640`, with exact Desert Sun `#dc9750` for the active navigation and primary actions. Light sidebar text and Desert Sun keyboard focus preserve readability; the example action uses navy with light text. Built and linted successfully. CUA computed styles confirmed RGB(30,38,64) sidebar and primary text, and RGB(220,151,80) active navigation/primary background. Inspected and saved `outputs/brandproof-design/corrected-desert-sun.png`. Changes remain local.
+
+### Top-bar refinement — 31 October 2026
+
+User requested navbar adjustment. Connected the header visually to the navy sidebar, reduced desktop height to 66px, aligned the breadcrumb with content, and replaced the greenish status pill with a navy session dropdown, Desert Sun indicator/focus and explicit expand chevron. The readable white dropdown retains existing actions. Build/lint passed. Manually opened/closed the session dropdown and checked at 390px: page client/scroll widths both 375px, dropdown right edge 355px. Saved `outputs/brandproof-design/topbar.png`. Local only.
+
+
+## 31 October 2026 — T00/T01 contrast repair
+
+Reproduced and repaired the three contrast failures with solid-core, blend-colour and glyph-edge guards. Added real-OCR HTTP, font/size, uncertainty and threshold regressions; measurement details/UI now include sampled colours and target ratio. Removed the pre-existing unreachable approval tail after preserving a local backup. Full backend: 542 passed; frontend: 54 passed, lint/build passed; Ruff and whitespace checks pass. Manual UI acceptance blocked by browser security policy. No public deployment or legal implementation claimed. Evidence: T00_T01_RETEST_2026-10-31.md.
+
+
+## 31 October — Round 3 local candidate
+
+Completed local PDF/visual/Insights acceptance and the curated India advertising-risk profile/evidence/approval path. All 574 backend and 56 frontend tests pass; seven real-HTTP suites and the expanded smoke pass. Verified six-step SQLite migrations, wheel contents/import and actual process restart with eight unchanged table digests. Added the six-page report, downloadable fictional guidelines, legal scope and release/submission handoffs. Preserve the earlier styling work. Manual UI and PostgreSQL/container checks are unverified because browser/Docker access was denied. Public homepage metadata found via GitHub; API returned 429. User requested local-only release after hosting ownership was unclear. No push/merge/deploy/submit. Current source: ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md.

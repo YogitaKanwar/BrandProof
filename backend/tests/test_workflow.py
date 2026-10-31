@@ -94,7 +94,8 @@ def test_approval_requires_explicit_manual_coverage_and_becomes_stale_after_edit
     url = f"{base}/reviews/{run['id']}/approvals"
     assert client.post(url, headers=headers(demo, "reviewer"), json=payload).status_code == 409
     payload["manual_checks"] = {
-        "contextual": "Manually checked tone and objective claims against the approved reference pack."
+        "advertising_risk": "Synthetic test reviewer manually assessed the unconfigured advertising scope.",
+        "contextual": "Manually checked tone and objective claims against the approved reference pack.",
     }
     response = client.post(url, headers=headers(demo, "reviewer"), json=payload)
     assert response.status_code == 201, response.text

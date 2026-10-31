@@ -44,9 +44,12 @@ def main():
                 connection.scalar(text("SELECT id FROM workspaces WHERE id='preserve-ci'"))
                 == "preserve-ci"
             )
-        assert {"document_evidence", "alt_text_versions", "review_leases"} <= set(
-            inspect(engine).get_table_names()
-        )
+        assert {
+            "document_evidence",
+            "alt_text_versions",
+            "review_leases",
+            "legal_profile_versions",
+        } <= set(inspect(engine).get_table_names())
         print(
             json.dumps(
                 {
