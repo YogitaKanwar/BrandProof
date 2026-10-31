@@ -167,3 +167,44 @@ Upstream feature CI [41211193409](https://github.com/YogitaKanwar/BrandProof/act
 Local installed-wheel checks found valid packaged `legal_pack.json` and `migration_baseline.json`, with no environment/database artifacts. Actual local API OpenAPI equals the saved contract; local `migrations --check` reports no pending steps and no application. These local/ephemeral-CI checks are not production migration or backup evidence.
 
 Vercel READY preview `dpl_C8ux1u81waHyheQzqrg4zvzW6u8R` was built from the same commit. It was not promoted and still targets the older production API. Connector rechecks confirm public alias `brand-proof-tau.vercel.app` remains assigned to `dpl_Grf42dLLAjyMswKTR5h9RJ4v3fXp` and Render remains live at `dep-dbh3fa0473hc7384ju10`, both application source `639fe5f`. User-required hold: no production update until a current restorable PostgreSQL backup/restore procedure is available. No new public Round 3 workflow/manual-browser acceptance is claimed.
+
+## Production release - 31 October 2026
+
+User explicitly authorized production deployment without a verified database backup, accepted the recovery risk, prohibited destructive changes/data deletion and selected the existing committed navy/Desert Sun design. The earlier backup hold is superseded. Fresh Git fetch found upstream main `1cf0ddc`, feature `b8acc3c` and integration `7cb8fb3`; the integration release contains both upstream heads and the tested CI-only layout fix. No committed Emerald theme was found or invented.
+
+| Production item | Verified result |
+| --- | --- |
+| Exact deployed source, both providers | `7cb8fb3169b0dcd1f171a2765232089cbd4e2578`, `integration/round2-backend-pr1` |
+| Backend | https://brandproof-api-slz9.onrender.com - Render `dep-dbj0dklg1s2s73eeh3vg`, live |
+| Frontend | https://brand-proof-tau.vercel.app/ - Vercel `dpl_Gc7pQV4JdNBpLGdscYM3Dy9mB2Bu`, READY production |
+| Actual alias | `brand-proof-tau.vercel.app` points to the new production deployment, not the former release/preview |
+| Public build | `index-DxK5a0Ox.js` SHA256 `b82f472d44bb0d73584ef22886a15a7a82fd4b867c87d3566561493df65ba075`; `index-Dj64Y8K8.css` SHA256 `30ba6b944e7ad476fecf6dfbdfafcacf9c1183e2569c961b805e4152494bba45`, byte-identical to verified local build |
+| Sample PDF / palette | Public sample PDF byte-identical to committed fixture; actual CSS contains navy `#1e2640` and Desert Sun `#dc9750` |
+| Health / contract | Direct Render and Vercel-proxied database health HTTP 200; actual deployed OpenAPI equals `docs/openapi.json` |
+| Hosting / effective config | Existing Free Docker service, one worker, same persistent database and Vercel proxy retained; secure same-origin cookie recovery works; external AI consent probe truthfully unavailable |
+
+### Ordered migration execution and bounds
+
+The existing production Docker command starts `brandproof.serve`; application lifespan calls the committed migration runner. It validates every existing legacy/additive table and unknown migration versions before writes, acquires a PostgreSQL advisory transaction lock, then applies the following ordered steps, committing only after all succeed. Any exception rolls back and prevents application startup. Render logs record `Application startup complete` at 2026-10-31T15:19:41.732838114Z; deployment then became live. No schema-drift/migration exception was observed.
+
+1. `0001_legacy`: validated/adopted existing legacy tables; no row rewrite or deletion.
+2. `0002_review_leases`: additive lease table; actual production reviews exercised the new lifecycle.
+3. `0003_guideline_documents`: additive document/evidence tables; public PDF upload, exact page quotes and pending-to-confirmed source provenance passed.
+4. `0004_alt_text`: additive description versions; actual save, fresh review and staleness passed.
+5. `0005_review_removal`: validated/adopted the pre-existing removal table; no production campaign was removed in this release/test.
+6. `0006_advertising_profile`: additive profile versions; owner-scoped save, cited findings and approval snapshots passed.
+
+There are no per-step production log lines or independent SQL version-table readback: connector SQL/export is blocked by the unchanged empty external IP allowlist. Completion is evidenced by the fail-closed startup transaction and exercised APIs, not a claimed separate manual `--check`/`--apply` command. No direct SQL repair, network relaxation, reset, destructive downgrade or backup/export was performed. The current-application Docker/PostgreSQL upgrade/idempotence CI pass remains separately linked above.
+
+### Actual public acceptance
+
+- Seven repository HTTP suites passed against the actual Render API: session/campaign persistence/roles/isolation, typed-source versions/confirmation, caption/review conflicts/history, private poster upload and historical retrieval, collaboration/corrections/reviewer decisions, creator request/manual-note approval/receipt staleness, and consent behavior. The consented probe returned unavailable because external contextual review is not enabled/configured; no provider credential was read/copied or provider call accepted.
+- Committed `scripts/improvements_smoke.py` passed through https://brand-proof-tau.vercel.app using the intended Noto fixture: raw PDF extraction with exact immutable page evidence and explicit confirmation, actual PNG/Tesseract claim boxes, unverified draft boundaries, measured white background and supported contrast, cited advertising risk, description revisions, readiness/governance, scripted reviewer decisions, manual notes, approval receipt and staleness after edit. All inputs and decisions were fictional functional tests, not independent human/brand/legal verification.
+- Browser acceptance used a separate headless incognito test browser. Actual UI controls created the example with real content/sources/poster; confirmed the pending policy; saved IN/general/en scope; ran reviews and rendered findings; explicitly copied/saved a draft; uploaded the PDF and confirmed three actual page-backed candidates; saved poster description; rendered measurements; recorded actual reasoned finding dispositions and a scripted manual-supplement approval. Inspected screenshots show current coverage and `approved with manual checks` without relabelling automation complete.
+- Governance displayed actual category/source/regulation groups, reviewer reasons and insufficient-sample guards. Exact historical links selected/focused the recorded finding/source version. 390px and 320px layouts passed no-horizontal-overflow checks. Refresh retained the historical route and same workspace; the overview retained its saved campaign. Storage checks found no access-token material. No test campaign was deleted; personal Chrome tabs were untouched and the dedicated browser was closed.
+- Browser run limitations: immediate profile editing after source confirmation hit the actual 409 guard with draft preservation; a same-session reload resolved stale revisions. The old test expected obsolete PDF wording although real upload had succeeded; continuation asserted actual pending candidate counts instead. One headless renderer stalled on navigation after approval; the same test cookie/workspace was resumed in a fresh isolated incognito context, then governance/history/mobile/reload checks passed. Evidence is staged, not a claimed uninterrupted original full browser suite. No product response or finding was substituted/fabricated.
+- Pre-upgrade retention probe held tokens and cookie only in process memory. After actual Render replacement, the same cookie resumed the same workspace; campaign, approved source, two review snapshots and canonical poster/confirmed-logo bytes had identical digests. Only additive null response fields (`unverified_draft_suggestion`, `regulatory_evidence`, `document_evidence`) were omitted in normalization. This proves exercised pre-upgrade record continuity; every other workspace was not independently audited.
+
+Evidence: `.cache/oct31-production/persistence-result.json` contains only safe pass/fail summaries; screenshot files under `.cache/oct31-production/screenshots/` include `demo-readiness-desktop`, `production-results-desktop`, `production-scripted-approval`, `governance-desktop` and `historical-finding-mobile`. Test source/evidence caches contain no copied bearer token or cookie values.
+
+Remaining incomplete: verified backup/restore, actual enabled-provider acceptance, representative OCR/model/legal accuracy, complete WCAG/usability acceptance and unsupported visual/logo cases. Existing Free PostgreSQL expiry is 27 November 2026. A Render log request briefly returned 503; subsequent startup-log retrieval succeeded. No remaining deployment, schema or contract error was observed. Documentation-only follow-up commits do not change this deployed application tree.
