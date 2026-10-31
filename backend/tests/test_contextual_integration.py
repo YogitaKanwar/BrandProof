@@ -123,7 +123,8 @@ def test_contextual_result_is_integrated_and_requires_explicit_request_consent(
     ).json()
     assert stored["findings"] == run["findings"]
     assert stored["checks"] == run["checks"]
-    assert run["status"] == "completed"
+    assert run["status"] == "partial"
+    assert run["checks"]["advertising_risk"]["status"] == "not_assessed"
 
 
 @pytest.mark.parametrize("exclusion", ["pending", "expired", "future"])

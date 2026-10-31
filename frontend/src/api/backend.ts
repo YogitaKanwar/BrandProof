@@ -161,10 +161,17 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
       return result()
     },
     async runReview(campaignId: string, contentRevision: number, sourceRevision: number, externalConsent = false) {
+
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews`, {
         method: 'POST', signal: AbortSignal.timeout(120000), headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_content_revision: contentRevision, expected_source_revision: sourceRevision, external_ai_consent: externalConsent }),
       }))
     },
+    async documents(campaignId:string){return requestJson<import('./documents').GuidelineDocument[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/guideline-documents`,{headers:auth(),cache:'no-store'})},
+    async advertisingProfile(campaignId:string){return requestJson<import('./legal').AdvertisingProfileOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/advertising-profile`,{headers:auth(),cache:'no-store'})},
+    async saveAdvertisingProfile(campaignId:string,profile:import('./legal').AdvertisingProfile,snapshot:Snapshot){return requestJson<import('./legal').AdvertisingProfileOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/advertising-profile`,{method:'PUT',headers:{...auth('owner'),'Content-Type':'application/json'},body:JSON.stringify({...snapshot,...profile})})},
+    async importDocument(campaignId:string,file:File,revision:number){return requestJson<{document:import('./documents').GuidelineDocument;sources:SourceOut[];notice:string}>(`${base}/campaigns/${encodeURIComponent(campaignId)}/guideline-documents?expected_source_revision=${revision}`,{method:'POST',headers:{...auth('owner'),'Content-Type':'application/pdf','X-BrandProof-Filename':encodeURIComponent(file.name)},body:file,signal:AbortSignal.timeout(30000)})},
+    async readiness(campaignId:string,role:DemoRole='reviewer'){return requestJson<import('../WorkflowReadiness').ReadinessGuide>(`${base}/campaigns/${encodeURIComponent(campaignId)}/readiness`,{headers:auth(role),cache:'no-store'})},
+    async insights(){return requestJson<import('../GovernanceInsights').Insights>(`${base}/governance-insights`,{headers:auth(),cache:'no-store'})},
     async listReviews(campaignId: string) {
       const records = await requestJson<ReviewOut[]>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews`, { headers: auth() })
       if (!Array.isArray(records)) throw invalid()
@@ -173,6 +180,8 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
     async getReview(campaignId: string, reviewId: string) {
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews/${encodeURIComponent(reviewId)}`, { headers: auth() }))
     },
+    async altText(campaignId:string){return requestJson<{poster_id:string|null;content_revision:number;text:string}>(`${base}/campaigns/${encodeURIComponent(campaignId)}/alt-text`,{headers:auth(),cache:'no-store'})},
+    async saveAltText(campaignId:string,text:string,revision:number){const record=validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/alt-text`,{method:'PUT',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify({text,expected_revision:revision})}));campaigns.set(record.id,record);return result()},
     async poster(campaignId: string, posterId?: string) {
       return requestJson<PosterOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/posters${posterId ? `/${encodeURIComponent(posterId)}` : ''}`, {headers: auth()})
     },

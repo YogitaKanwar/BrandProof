@@ -34,6 +34,7 @@ def test_delete_hides_access_but_undo_preserves_versions_findings_and_other_camp
     response = client.request("DELETE", base, headers=owner, json=expected)
     assert response.status_code == 200
     removed = response.json()
+    assert client.get("/api/v1/governance-insights", headers=owner).json()["categories"] == []
     assert removed["deleted"] and removed["retained_history"]
     assert [row["id"] for row in client.get("/api/v1/campaigns", headers=owner).json()] == [
         other["id"]
@@ -122,6 +123,12 @@ def test_additive_startup_preserves_legacy_tables_and_saved_rows(client, owner, 
     engine = client.app.state.engine
     # This disposable fixture database now represents the deployed legacy schema.
     CampaignRemoval.__table__.drop(engine)
+    # Simulate a schema predating the removal migration, not a missing table
+    # whose migration has already been recorded as applied.
+    with engine.begin() as connection:
+        connection.execute(
+            text("DELETE FROM schema_migrations WHERE version='0005_review_removal'")
+        )
     names = inspect(engine).get_table_names()
 
     def snapshot():
@@ -138,6 +145,7 @@ def test_additive_startup_preserves_legacy_tables_and_saved_rows(client, owner, 
                     ),
                 )
                 for name in names
+                if name != "schema_migrations"
             }
 
     before = snapshot()

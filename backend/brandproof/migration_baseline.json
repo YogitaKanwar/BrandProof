@@ -1,0 +1,596 @@
+{
+  "actors": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "workspace_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "role": {
+      "type": "String",
+      "nullable": false,
+      "length": 20
+    },
+    "token_hash": {
+      "type": "String",
+      "nullable": false,
+      "length": 64
+    },
+    "expires_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "ai_admissions": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "workspace_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "review_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "ai_quota_guard": {
+    "id": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "approvals": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "review_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "request_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "reviewer_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "content_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "source_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "decision": {
+      "type": "String",
+      "nullable": false,
+      "length": 30
+    },
+    "reason": {
+      "type": "String",
+      "nullable": false,
+      "length": null
+    },
+    "coverage_mode": {
+      "type": "String",
+      "nullable": false,
+      "length": 30
+    },
+    "manual_checks": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "decision_snapshot": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "brand_logos": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "version": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "status": {
+      "type": "String",
+      "nullable": false,
+      "length": 20
+    },
+    "normalized_bytes": {
+      "type": "_Binary",
+      "nullable": false,
+      "length": null
+    },
+    "sha256": {
+      "type": "String",
+      "nullable": false,
+      "length": 64
+    },
+    "width": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "height": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "confirmed_by": {
+      "type": "String",
+      "nullable": true,
+      "length": 36
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "campaigns": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "workspace_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "name": {
+      "type": "String",
+      "nullable": false,
+      "length": 160
+    },
+    "publication_date": {
+      "type": "Date",
+      "nullable": false,
+      "length": null
+    },
+    "caption": {
+      "type": "String",
+      "nullable": false,
+      "length": null
+    },
+    "content_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "source_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "comments": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "review_id": {
+      "type": "String",
+      "nullable": true,
+      "length": 36
+    },
+    "actor_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "actor_role": {
+      "type": "String",
+      "nullable": false,
+      "length": 20
+    },
+    "content_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "source_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "text": {
+      "type": "String",
+      "nullable": false,
+      "length": null
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "content_versions": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "caption": {
+      "type": "String",
+      "nullable": false,
+      "length": null
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "demo_browser_sessions": {
+    "workspace_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "token_hash": {
+      "type": "String",
+      "nullable": false,
+      "length": 64
+    },
+    "expires_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "finding_decisions": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "review_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "finding_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "version": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "actor_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "decision": {
+      "type": "String",
+      "nullable": false,
+      "length": 20
+    },
+    "reason": {
+      "type": "String",
+      "nullable": false,
+      "length": null
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "poster_assets": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "content_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "normalized_bytes": {
+      "type": "_Binary",
+      "nullable": false,
+      "length": null
+    },
+    "mime": {
+      "type": "String",
+      "nullable": false,
+      "length": 32
+    },
+    "sha256": {
+      "type": "String",
+      "nullable": false,
+      "length": 64
+    },
+    "width": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "height": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "ocr": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "review_requests": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "review_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "requested_by": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "review_runs": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "content_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "source_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "caption": {
+      "type": "String",
+      "nullable": false,
+      "length": null
+    },
+    "status": {
+      "type": "String",
+      "nullable": false,
+      "length": 20
+    },
+    "checks": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "sources_used": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "excluded_sources": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "findings": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "revision_authors": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "content_revision": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "actor_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    }
+  },
+  "source_versions": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "source_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "version": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    },
+    "title": {
+      "type": "String",
+      "nullable": false,
+      "length": 160
+    },
+    "status": {
+      "type": "String",
+      "nullable": false,
+      "length": 20
+    },
+    "rule": {
+      "type": "JSON",
+      "nullable": false,
+      "length": null
+    },
+    "text": {
+      "type": "String",
+      "nullable": false,
+      "length": null
+    },
+    "valid_from": {
+      "type": "Date",
+      "nullable": true,
+      "length": null
+    },
+    "valid_until": {
+      "type": "Date",
+      "nullable": true,
+      "length": null
+    },
+    "confirmed_by": {
+      "type": "String",
+      "nullable": true,
+      "length": 36
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "sources": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "campaign_id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "current_version": {
+      "type": "Integer",
+      "nullable": false,
+      "length": null
+    }
+  },
+  "workspaces": {
+    "id": {
+      "type": "String",
+      "nullable": false,
+      "length": 36
+    },
+    "created_at": {
+      "type": "DateTime",
+      "nullable": false,
+      "length": null
+    }
+  }
+}

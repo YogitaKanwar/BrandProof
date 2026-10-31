@@ -20,7 +20,8 @@ def setup_request(client, demo, owner, campaign, caption="Join our workshop. Ter
         "decision": "approve",
         "reason": "Reviewed the current campaign and approved references.",
         "manual_checks": {
-            "contextual": "Personally checked tone and claim support against the current reference pack."
+            "advertising_risk": "Synthetic test reviewer manually assessed the unconfigured advertising scope.",
+            "contextual": "Personally checked tone and claim support against the current reference pack.",
         },
     }
     return source, run, base, payload

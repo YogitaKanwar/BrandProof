@@ -1,0 +1,38 @@
+{
+  "actual_process_restart": "passed",
+  "tables": {
+    "guideline_documents": {
+      "rows": 2,
+      "sha256": "a6e379f6cbe12cc9cfebea23b8f73b98a727ee2d1901cd43082b67add271ce11"
+    },
+    "document_evidence": {
+      "rows": 14,
+      "sha256": "1c049c0cdad16b7a034eb976d00905f9e8dee8797a49311ea042649d10c3d8cf"
+    },
+    "source_versions": {
+      "rows": 34,
+      "sha256": "9d930d3d7d4a17bc37aa8d3925277c2141bc7bcb7ec143cc5c13b8764a5a1b00"
+    },
+    "review_runs": {
+      "rows": 15,
+      "sha256": "e66f35234152dc27537f67b79c7c2fbdc6ab37833e584c7bb59087230cf61c9e"
+    },
+    "approvals": {
+      "rows": 6,
+      "sha256": "632e1a5bbd61c42be55947bb4168a92a0a39e08c035dd0644bb20b31bb9e83fa"
+    },
+    "finding_decisions": {
+      "rows": 10,
+      "sha256": "997986c7d458ecdbad64360789d6e6172c4eaac15c8be7b215884bda6aed6585"
+    },
+    "alt_text_versions": {
+      "rows": 2,
+      "sha256": "ae6a122e15a614e67de95a546656f16bcc3edf5f7a24fef3d942bf5b51eec12a"
+    },
+    "legal_profile_versions": {
+      "rows": 1,
+      "sha256": "90bc862643c0437f3ff0317137545ce8c6924db9dfe0cd8d793318cdeccea4b9"
+    }
+  },
+  "credentials_written": false
+}

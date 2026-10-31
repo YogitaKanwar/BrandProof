@@ -8,18 +8,34 @@ import type { BackendClient, CampaignOut } from './api/backend'
 import { ApiError, describeError } from './api/client'
 import { UnsavedChangesContext, useDraftGuard } from './unsavedChanges'
 import CampaignStatus from './CampaignStatus'
+import GovernanceInsights from './GovernanceInsights'
 import { loadInitialWorkspace } from './workspaceStartup'
 import { exampleDetails, prepareExampleCampaign } from './exampleCampaign'
 
-type Page = 'home' | 'new' | 'draft'
+type Page = 'home' | 'new' | 'draft' | 'insights'
 function currentRoute(): { page: Page; id: string; local?: boolean } {
   const hash = window.location.hash
+  if(hash==='#/insights')return {page:'insights',id:''}
   if (hash === '#/new') return { page: 'new', id: '' }
   if (hash === '#/local-new') return {page:'new',id:'',local:true}
-  if (hash.startsWith('#/review/')) return { page: 'draft', id: hash.slice(9) }
+  if (hash.startsWith('#/review/')) { const id=hash.slice(9).split('?')[0];try{return {page:'draft',id:decodeURIComponent(id)}}catch{return {page:'draft',id}} }
   return { page: 'home', id: '' }
 }
-const steps = ['Sources', 'Content', 'Review']
+const steps = [
+  { name: 'Sources', description: 'Define what your brand stands behind.' },
+  { name: 'Content', description: 'Bring your caption and creative together.' },
+  { name: 'Review', description: 'Inspect the evidence. Make the decision.' },
+]
+
+function WorkspaceIcon({ kind }: { kind: 'overview' | 'new' | 'insights' | 'proof' }) {
+  const paths = {
+    overview: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',
+    new: 'M12 5v14 M5 12h14',
+    insights: 'M4 20V10 M12 20V4 M20 20v-7',
+    proof: 'M12 3 3 7v6c0 4 5 7 9 9 4-2 9-5 9-9V7z M8 12l3 3 5-6',
+  }
+  return <svg className="workspace-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[kind]} /></svg>
+}
 
 export default function ReviewWorkspace() {
   const [route, setRoute] = useState(currentRoute)
@@ -149,7 +165,7 @@ export default function ReviewWorkspace() {
       const prepared = await prepareExampleCampaign(client, campaign)
       setResult(prepared)
       goTo(`/review/${campaign.id}`)
-      setNotice('Fictional example ready: confirmed sample rules and editable content are saved. Run review to generate findings, then choose a correction or human decision.')
+      setNotice('Fictional example ready: four confirmed sample rules, one pending policy, a deliberately flawed caption and a sample poster are saved. Run review to generate findings, then choose a correction or human decision.')
     } catch (error) {
       if (created) {
         try { setResult(await client.get(created.data.reviews[0].id)) } catch { /* Preserve the last acknowledged result. */ }
@@ -220,29 +236,30 @@ export default function ReviewWorkspace() {
   }
   const draft = result?.data.reviews.find(review => review.id === route.id)
   const campaign = result?.data.campaigns.find(item => item.id === draft?.campaignId)
-  const pageName = route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
-  return <UnsavedChangesContext.Provider value={register}><div className="app-shell">
+  const pageName = route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
+  return <UnsavedChangesContext.Provider value={register}><div className={`app-shell page-${route.page}`}>
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main')?.focus() }}>Skip to content</a>
     <aside className="sidebar">
-      <a className="wordmark" href="#/"><span aria-hidden="true">B</span> BrandProof</a>
+      <a className="wordmark" href="#/"><span aria-hidden="true">b.</span> BrandProof</a>
       <p className="sidebar-label">WORKSPACE</p>
       <nav aria-label="Main navigation" className="main-nav">
-        <a href="#/" aria-current={route.page === 'home' ? 'page' : undefined}>Overview</a>
-        <a href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-current={route.page === 'new' ? 'page' : undefined}>New review</a>
+        <a href="#/" aria-current={route.page === 'home' ? 'page' : undefined}><WorkspaceIcon kind="overview" />Overview</a>
+        <a href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-current={route.page === 'new' ? 'page' : undefined}><WorkspaceIcon kind="new" />New review</a>
+        <a href="#/insights" aria-current={route.page==='insights'?'page':undefined}><WorkspaceIcon kind="insights" />Governance Insights</a>
       </nav>
-      <p className="sidebar-note">Brand governance</p>
+      <p className="sidebar-note">Brand review workspace</p>
     </aside>
     <div className="workspace">
-      <header className="topbar"><span>{pageName}</span><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Saved work can be restored in this browser for up to 24 hours. A new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. A protected browser cookie restores the demo; role tokens stay in memory. Owner deletion hides reviews while retaining audit history. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={loading || connecting || saving || deleting} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving || deleting} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving || deleting} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p>}</div></details></header>
+      <header className="topbar"><div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{pageName}</strong></div><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Saved work can be restored in this browser for up to 24 hours. A new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. A protected browser cookie restores the demo; role tokens stay in memory. Deleted reviews are hidden while audit history is retained; this is not permanent data erasure. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={loading || connecting || saving || deleting} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving || deleting} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving||deleting} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p>}</div></details></header>
       <main id="main" tabIndex={-1}>
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>
-        <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page === 'home' ? 'Every claim, accounted for.' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page === 'home' ? 'Review marketing content against approved brand information.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}</a>}</div>
-        {route.page === 'home' && <ol aria-label="Review workflow" className="workflow">{steps.map((name, index) => <li key={name}>{index > 0 && <span aria-hidden="true" className="step-divider">→</span>}{name}</li>)}</ol>}
+        <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Your reviews' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page==='insights'?'Trace repeated finding signals to their evidence and human decisions.':route.page === 'home' ? 'Check your content. Keep the evidence. Decide what goes live.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}<WorkspaceIcon kind="new" /></a>}</div>
+        {route.page === 'home' && <ol aria-label="Review workflow" className="workflow">{steps.map((step, index) => <li key={step.name}><span className="step-number">0{index + 1}</span><div><strong>{step.name}</strong><p>{step.description}</p></div>{index < steps.length - 1 && <span aria-hidden="true" className="step-divider">→</span>}</li>)}</ol>}
         {connectionNotice && <p className="form-help" role="status">{connectionNotice}</p>}
-        {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page === 'home' ? <section aria-labelledby="drafts-heading">
+        {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page==='insights'?<GovernanceInsights api={sourceClient}/>: route.page === 'home' ? <section aria-labelledby="drafts-heading">
           <div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span><button type="button" disabled={deleting} onClick={()=>void retry()}>Reload recent reviews</button></div>{removedReview&&result?.mode==='backend'&&<div className="review-undo" role="status"><span>Deleted {removedReview.campaign.name}. Saved audit history is retained.</span><button type="button" disabled={deleting} onClick={()=>void undoDelete()}>Undo delete</button></div>}
-          <p className="form-help">Want to explore first? <button type="button" disabled={loading || connecting || creatingExample || deleting} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button> Creates a fictional workshop campaign. Review findings and approval still require your actions.</p>
-          {!result?.data.reviews.length ? <p className="reviews-empty">No reviews yet</p> : <div className="review-list">{result.data.reviews.map(review => <article className="campaign-card review-row" key={review.id}>
+          <div className="example-invitation"><div className="example-copy"><h3>New to BrandProof?</h3><p>Try a sample campaign with a few deliberate mistakes.</p><small>Fictional content · You run the checks and make the decisions.</small></div><button type="button" disabled={loading || connecting || creatingExample || deleting} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button></div>
+          {!result?.data.reviews.length ? <div className="reviews-empty"><WorkspaceIcon kind="overview" /><h3>No reviews yet</h3><p>Start a review with your own content, or try the sample campaign.</p><button type="button" onClick={()=>void startReview()} disabled={connecting}>New blank campaign</button></div> : <div className="review-list">{result.data.reviews.map(review => <article className="campaign-card review-row" key={review.id}>
             <h2><a href={`#/review/${review.id}`}>{review.title}</a></h2>
             {result.mode === 'backend' && sourceClient ? <CampaignStatus api={sourceClient} campaignId={review.id}/> : <span className="badge">Draft · Not checked</span>}
             <small><time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time></small>

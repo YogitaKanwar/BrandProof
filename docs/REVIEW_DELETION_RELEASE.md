@@ -19,3 +19,15 @@ Rollback retains the additive table and all saved rows. Reverting to a backend w
 Pre-release: 53 frontend unit tests, frontend lint/build, seven real HTTP suites and 26 existing local connected browser groups passed, including actual Tesseract, poster and logo-reference flows. The dedicated deletion browser check passed Cancel without a write, confirmation, same-review Undo, mobile confirmation, deletion persistence after refresh and unchanged workspace. Full backend suite and public acceptance results are recorded in the task/runtime acceptance logs after completion.
 
 External contextual AI remains disabled/unconfigured in these checks. Render Free startup delays, bounded logo checking and the existing Free PostgreSQL retention deadline are unchanged.
+
+## Public acceptance — 2026-10-28
+
+- Application source: 639fe5fb8a4b43d9a46f1bec503e2b8031273f78 on integration/round2-backend-pr1.
+- Render Docker deployment dep-dbh3fa0473hc7384ju10 is live at https://brandproof-api-slz9.onrender.com. Backend/database health is ok; actual contract exposes DELETE campaign and POST restore.
+- Vercel production deployment dpl_Grf42dLLAjyMswKTR5h9RJ4v3fXp is READY with https://brand-proof-tau.vercel.app/ assigned. Public HTML returned 200 and serves index-B4CsNG0r.js / index-N18PP02p.css.
+- Actual public dashboard browser check passed Delete, Cancel with no mutation, confirmation, same-review Undo, mobile confirmation, deletion persistence after full refresh and unchanged session. New Review and refresh restoration passed with two simulated failed health GETs; this is a transient-failure regression, not a controlled hosting sleep benchmark.
+- Actual production PostgreSQL-backed removal/restore API test passed owner-only access, stale revisions, cross-workspace isolation, hidden reads/writes, identical restored campaign/source/review/receipt and stale deletion-generation rejection. Eight real HTTP suites passed (seven existing plus removal).
+- The pre-deployment fictional persistence probe resumed the same workspace after Render replacement and confirmed unchanged campaign, confirmed source, review and identical poster/logo SHA256 bytes. Credentials were held only in process memory.
+- Full local regression: 501 backend tests, 53 frontend tests, seven HTTP suites, 26 existing browser groups plus dedicated cold-start/delete journey passed; Ruff check/format, frontend lint/build and whitespace checks passed.
+
+All public checks used fictional isolated workspaces. Existing PostgreSQL and hosting settings were reused. No provider/AI enablement or paid upgrade, no main merge, and no other Round 3 feature release. Original primary-workspace documentation edits remain intact.

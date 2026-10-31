@@ -4,8 +4,10 @@ export interface Finding {
   location: { asset: 'caption' | 'poster'; poster_id?: string | null; boxes?: {x:number;y:number;width:number;height:number}[]; ocr_confidence?: number | null; content_revision: number; start: number | null; end: number | null; quote: string | null }
   evidence: { source_id: string; source_version_id: string; source_version: number; quote: string } | null
   suggested_replacement?: string | null
+  unverified_draft_suggestion?: string | null
+  regulatory_evidence?: import('./legal').RegulatoryEvidence | null
 }
-export interface CheckStatus { status: 'completed' | 'partial' | 'unavailable' | 'not_assessed'; reason?: string | null; details?: Record<string, unknown>; rules: {source_id: string; source_version: number; kind: string; status: string; reason?: string | null}[] }
+export interface CheckStatus { status: 'completed' | 'partial' | 'unavailable' | 'not_assessed' | 'not_applicable'; reason?: string | null; details?: Record<string, unknown>; rules: {source_id: string; source_version: number; kind: string; status: string; reason?: string | null}[] }
 export interface ReviewOut {
   id: string; campaign_id: string; content_revision: number; source_revision: number; caption: string
   status: 'running' | 'partial' | 'completed' | 'failed'; is_current: boolean; readiness: 'not_approved' | 'approved' | 'approved_with_manual_checks' | 'changes_requested' | 'stale'
@@ -18,7 +20,7 @@ export function isReview(value: ReviewOut): boolean {
     Number.isInteger(value.content_revision) && Number.isInteger(value.source_revision) && typeof value.is_current === 'boolean' &&
     ['running','partial', 'completed', 'failed'].includes(value.status) && ['not_approved','approved','approved_with_manual_checks','changes_requested','stale'].includes(value.readiness) &&
     !!value.checks && typeof value.checks === 'object' && !Array.isArray(value.checks) &&
-    Object.values(value.checks).every(check => check && ['completed','partial','unavailable','not_assessed'].includes(check.status) && (check.rules === undefined || Array.isArray(check.rules))) &&
+    Object.values(value.checks).every(check => check && ['completed','partial','unavailable','not_assessed','not_applicable'].includes(check.status) && (check.rules === undefined || Array.isArray(check.rules))) &&
     Array.isArray(value.findings) && value.findings.every(finding => finding && typeof finding.id === 'string' && typeof finding.category === 'string' && typeof finding.message === 'string' &&
       ['error','warning','info'].includes(finding.severity) && ['contradicted','needs_clarification','insufficient_evidence'].includes(finding.evidence_status) &&
       finding.location && ['caption','poster'].includes(finding.location.asset) && Number.isInteger(finding.location.content_revision) &&

@@ -1,5 +1,20 @@
 # Final tests requiring a fully configured backend
 
+## Connected deletion local acceptance - 28 October 2026
+
+- Feature-branch only: 516 backend tests / 51 frontend tests, lint/format/build, seven HTTP suites, all 26 existing browser groups and new connected delete cancel/confirm/Undo/reload acceptance passed. Data/history preservation, owner/workspace/revision/running-job guards and old-Undo rejection tested. Saved OpenAPI matches running :8014.
+- Added `0005_review_removal` only; no production schema or deployment change. Public provider metadata and HTTP contract still verify `36cb8ae`, with no connected DELETE/PDF import routes. Copy-ready judging answers separate that public release from the review branch.
+- An old browser assertion expected connected deletion to be absent; it now asserts the new Delete button. The new end-to-end test exercises its real API actions, rather than simulating success. No existing user review was deleted during this work; acceptance used isolated fictional data.
+
+## Feature-branch local acceptance - 28 October 2026
+
+This is local feature acceptance, not a deployment of the improvements. Existing production remains `36cb8ae`.
+
+- Branch `feat/brandproof-improvements-20261028`: all authorized implementation slices complete. Backend 514 passed, frontend 50 passed; lint/format/build/dependencies, wheel build/installed-wheel startup, OpenAPI parity, seven actual HTTP suites, 26 existing browser groups and new PDF/draft/description/governance/readiness browser journey passed.
+- Production resource probe used only fictional records, with no settings/code migration: 5,155,064-byte PNG HTTP 200 in 10.32s; logo review 201 in 3.994s with not-assessed/manual time-limit result. Initial health 502, subsequent 200 after direct warmup. Database available, expiry 27 November; provider unavailable and quotas unchanged. These are single samples, not a controlled sleep/load test.
+- New PostgreSQL legacy-upgrade/idempotence and production-container CI are configured; do not infer their result from SQLite or the prior production release. Backup/restore, reviewed migration/app deployment, public new-feature/redeploy acceptance and live consented provider acceptance remain explicit release gates.
+- Complete evidence/limits: [improvements final report](improvements-final-report.md). Local evidence `.cache/improvements-20261028/backend-final.xml`, `production-resources.json`, isolated local/wheel databases, and browser screenshots under `frontend/node_modules/.cache/improvements/`. Scripted fictional decisions are not independent human evaluation.
+
 ## Fresh pre-push release acceptance - 28 October 2026
 
 - Backend: 445 passed in 145.14 seconds, zero failures/skips; .cache/release-20261028.xml. Ruff lint and format pass (70 files).
@@ -106,3 +121,22 @@ Full combined backend suite: **367 passed, 0 failed/errors/skipped**, 167.57s (.
 Configured runtime: FastAPI and built UI on 127.0.0.1:8001, isolated manual-qa-oct28 SQLite database, real local Tesseract; external AI disabled/provider none. Fictional “Claim-risk demo” campaign: source revision 0, no approved facts. Browser saved and reviewed “Guaranteed results in 30 days.”: one needs-clarification warning with the actual caption span, contextual unavailable, claim screening partial and readiness not approved. Revised to “The workshop lasts 30 days.”: zero findings, pattern scan complete, readiness still not approved, earlier result historical. Uploaded a generated 1200×220 PNG of the promise: actual OCR completed, one poster risk finding with real word highlights and 91% OCR confidence; source evidence absent as expected. Reload retained the run, image and warning. Final runtime restarted with the same database and updated code/UI.
 
 Fresh automated checks: 497 backend tests/49 frontend tests pass; build, lint, format and diff checks pass. Tests include guarantees, time promises, placement/admission/cure, absolute/quantified claims, selected denials/hedges, overlap/Unicode, scan limits, real OCR, no-source persistence and human approval enforcement. No fresh external model request or public-deployment verification; no representative precision/recall claim.
+
+
+## Feature-branch local acceptance — 30 October
+
+Fresh isolated SQLite/Tesseract :8001 runtime on ca6dd8c, external provider disabled: 513 backend tests pass, 3 contrast-rendering tests fail; 54 frontend tests/build/lint pass. All seven genuine frontend HTTP suites and the improvements HTTP smoke pass. Browser confirms PDF evidence/confirmation, background and alt-text flows, explicit draft/save gates, governance evidence links and session/review recovery after restart. Real HTTP contrast reproduction on black Noto TEST over white yields completed OCR but partial contrast/zero measurements because the exact-ink guard rejects antialiasing. No production/PostgreSQL/model acceptance is claimed. Preserved local approval edit fails formatting/whitespace checks. Detailed findings: LOCAL_RETEST_2026-10-30.md.
+
+### 30 October 2026 — visual refresh acceptance
+
+Restarted the existing isolated SQLite retest runtime on 127.0.0.1:8001 with the rebuilt frontend, same database, external AI disabled. Browser session restored its original campaign. The redesigned example entry created campaign `deb456a2-a86b-44f7-92f7-99f63225cb1b`; Run review returned eight actual findings and kept the pending policy excluded, partial coverage visible and readiness not approved. No approvals or provider calls were made. This frontend acceptance does not supersede the earlier backend report's three contrast failures.
+
+
+## 31 October 2026 — contrast repair local verification
+
+Latest local suite after T00/T01: 542 backend tests pass, 54 frontend tests pass, lint/build/Ruff/whitespace pass. Real Tesseract HTTP uploads measure black and grey text and retain finding source versions/boxes. Mostly antialiased small text and uncertain images still abstain. Browser security policy prevented manual UI acceptance; public/PostgreSQL acceptance remains unverified. See T00_T01_RETEST_2026-10-31.md.
+
+
+## 31 October — Round 3 current local acceptance
+
+574 backend tests and 56 frontend tests pass; frontend build/lint, Ruff format/lint, whitespace and saved/live OpenAPI parity pass. Seven real-HTTP frontend suites and expanded PDF/contrast/advertising/approval smoke pass on an isolated SQLite/Tesseract runtime with external AI disabled. Actual server restart preserved eight table digests including profiles, documents, decisions and receipts. Wheel contains and imports the frozen legal pack and migration metadata. Manual browser and PostgreSQL/container execution remain unverified. User selected local-only release. Detailed evidence and limits: ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md.

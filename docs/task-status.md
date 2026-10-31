@@ -1,6 +1,21 @@
 # BrandProof task status
 
-Updated: 2026-10-28. Current branch: `integration/round2-backend-pr1`.
+## Recent Reviews deletion and judging answers - 28 October
+
+- Added owner-authorized connected Delete/Cancel/Confirm and Undo on the feature branch, retaining audit records. Lists/insights and ordinary access exclude removed campaigns; running reviews and stale revisions are blocked. Exact deletion IDs guard Undo against later deletions. Local-draft deletion retained.
+- Additive schema step `0005_review_removal`; full backend 516 passed, frontend 51 passed, lint/format/build, seven HTTP suites, 26 existing browser groups and genuine delete/Undo/reload journey passed. API contract updated. Original local documentation additions preserved.
+- Judge-facing answers list only verified public `36cb8ae` features. Exactly three proposed Round 3 deliveries: PDF guideline import/evidence, measured visual/accessibility checks, and governance insights. See [copy-ready answers](judges-submission-2026-10-28.md). Connected deletion is not deployed; prior CI/review/migration/deployment gates remain.
+
+Updated: 2026-10-28. Current branch: `feat/brandproof-improvements-20261028`.
+
+## Authorized improvements completed locally - 28 October
+
+- Feature branch `feat/brandproof-improvements-20261028` from production `36cb8ae`; understandable stage commits, original documentation backups/edits retained. No unreviewed production deployment or main/integration merge.
+- Implemented expanded fictional demo/readiness, contextual caption + high-confidence OCR provenance, unverified draft candidates, bounded PDF pending/page evidence, scoped palette/contrast and poster-specific alt text, governance/sample guards, additive migrations and leased/fenced automatic recovery.
+- Final local checks: 514 backend tests, 50 frontend tests, lint/format/build, seven HTTP suites, 26 existing browser groups and the full new-feature HTTP/browser journey passed. Backend wheel built and independently started with packaged migrations; running/saved OpenAPI equal.
+- Production H probe on unchanged `36cb8ae`: 5,155,064-byte PNG 200/10.32s; logo review 201/3.994s but truthful time-limit/manual result. First proxied health 502 then 200 after warming. Render PostgreSQL remains Free/available, expires 27 November; quotas/provider enablement untouched.
+- Gates: fresh Docker/PostgreSQL CI, reviewed backup/migration/release approval, optional private provider configuration/consented acceptance, cold-start/retention and representative real-user/image evaluation. No larger quota, paid plan or provider switch assumed.
+- Full mapping/tests/release instructions: [final report](improvements-final-report.md), [implementation](improvements-implementation.md), [PR text](improvements-pr.md). User chose manual PR opening; branch/PR text are prepared.
 
 ## Strict-zero-budget deployment execution - 28 October
 
@@ -275,3 +290,53 @@ Validation: 52 frontend tests passed, lint and production build passed. Real pub
 User explicitly requested making the prepared Delete option live. Isolated the tested removal feature on integration/round2-backend-pr1 from production 298c776, retaining the New Review cold-start fix and excluding unrelated improvements. Added owner-only revision-checked removal/restore endpoints, normal-access filtering, Delete/Cancel/Confirm/Undo dashboard controls and mobile-safe confirmation. Existing startup adds only campaign_removals; no existing data/table/column is deleted or altered. Future feature-branch migration 0005 recognizes this table. API handoff and OpenAPI updated.
 
 Validation: 501 backend tests passed in 219.00s, 53 frontend unit tests passed, backend Ruff check/format, frontend lint/build, seven actual HTTP suites and all 26 existing local browser groups passed (including Tesseract, poster and logo reference). Dedicated browser deletion passed cancel/no write, confirmed hiding, same-review Undo, mobile confirmation, deletion persistence after reload and unchanged workspace. Legacy schema/data startup idempotence and PostgreSQL DDL compilation passed; no live PostgreSQL sandbox/backup is claimed. A fictional production persistence probe is held in process memory for post-Render-deploy verification. See REVIEW_DELETION_RELEASE.md for narrow release order, limits and rollback behavior. Main and the broad feature branch are unchanged.
+
+
+## Latest feature-branch local retest — 2026-10-30
+
+User requested restart and testing of ca6dd8c. Synced frozen dependencies, built UI, started isolated SQLite runtime at :8001 with real Tesseract and external AI disabled. Frontend 54 tests/build/lint pass; real feature HTTP smoke and all seven frontend HTTP suites pass. Manual browser confirms PDF pending page evidence/confirmation, actual findings, background measurement, alt-text save/staleness/review, explicit unverified draft save gate, governance sample guard/exact evidence links and same-session recovery after process restart. All 17 saved review snapshots were unchanged across restart.
+
+Full backend result: **513 passed, 3 failed** in 47.99s. Confirmed contrast detector rejects ordinary antialiased Noto text; exact dominant ink fraction 76.61% is below its 80% guard. Actual HTTP upload/Tesseract/rule/review reproduction also yields partial contrast with no measurement. No false pass was returned. Ruff lint passes; formatting/diff checks fail on the preserved pre-existing approval.py edit. No application/test fix, push, merge, public deployment or live model call. See LOCAL_RETEST_2026-10-30.md for evidence and limits.
+
+## Visual refresh — 30 October 2026
+
+User-authorized frontend beautification on `feat/brandproof-improvements-20261028`: navy navigation with inline vector icons, a larger two-tone overview heading, explanatory numbered workflow, dedicated fictional-example entry, calmer campaign rows, and consistent reference/finding/readiness/insights surfaces. Mobile rules support narrow screens and preserve visible focus and reduced-motion preferences. No dependency or backend changes.
+
+Validation: production build and lint passed; all 54 frontend unit tests passed. Manual CUA checks against the built frontend on port 8001 covered overview, new-review navigation/date validation/cancel, existing review navigation, source/content/results anchors, insights data, example campaign creation and a genuine review returning eight findings. Pending policy exclusion and incomplete coverage remained visible. Tested 390px and 320px layouts; fixed inherited body minimum-width overflow and verified final 305px client/scroll width equality at a 320px viewport. Keyboard Tab reached New Review with a visible outline. Screenshots: `/home/KARMA/Documents/Codex/2026-10-24/i/outputs/brandproof-design/`. Local only; not committed, pushed or deployed. Earlier contrast-sampling defect and unrelated approval.py edit are unchanged.
+
+### Visual direction refinement — 30 October 2026
+
+Following the user's request for a simpler, less templated appearance, removed the oversized marketing headline, uppercase taglines, shield decorations and dark navigation. Replaced them with a compact BrandProof monogram, white sidebar, plain “Your reviews” heading, restrained separators, less rounding/shadow and a short example invitation. Existing workflow controls and evidence semantics are unchanged. Build and lint passed again. Desktop screenshot inspected; manual responsive verification recorded in this turn. Not pushed or deployed.
+
+### Colour refinement — 30 October 2026
+
+User requested more distinctive colours while retaining the simple layout. Updated the visual-system palette to ink-blue text, ivory canvas, pale-blue navigation and evidence surfaces, with terracotta/coral primary actions and monogram. Warning/error and confirmed-source status colours retain their semantic roles. Production build, lint and scoped diff whitespace check passed. Inspected the actual built overview in CUA and saved `outputs/brandproof-design/colour-overview.png` in the Codex workspace. Measured white-on-primary contrast: 4.95:1; main text on ivory: 11.43:1. This is a palette check, not a full accessibility audit. Local changes only.
+
+### User-supplied palette selection — 30 October 2026
+
+Selected reference image 2: Desert Sun `#dc9750` and Dark Blue `#1e2640`. Applied orange primary actions and monogram with navy text (not white), navy headings, warm neutral canvas and a pale orange example invitation. Kept the simplified layout and semantic finding colours. Build/lint passed; inspected the rebuilt overview in CUA. Local only.
+
+### Palette correction — 31 October 2026
+
+Corrected the pale interpretation after user feedback: the sidebar now uses exact Dark Blue `#1e2640`, with exact Desert Sun `#dc9750` for the active navigation and primary actions. Light sidebar text and Desert Sun keyboard focus preserve readability; the example action uses navy with light text. Built and linted successfully. CUA computed styles confirmed RGB(30,38,64) sidebar and primary text, and RGB(220,151,80) active navigation/primary background. Inspected and saved `outputs/brandproof-design/corrected-desert-sun.png`. Changes remain local.
+
+### Top-bar refinement — 31 October 2026
+
+User requested navbar adjustment. Connected the header visually to the navy sidebar, reduced desktop height to 66px, aligned the breadcrumb with content, and replaced the greenish status pill with a navy session dropdown, Desert Sun indicator/focus and explicit expand chevron. The readable white dropdown retains existing actions. Build/lint passed. Manually opened/closed the session dropdown and checked at 390px: page client/scroll widths both 375px, dropdown right edge 355px. Saved `outputs/brandproof-design/topbar.png`. Local only.
+
+
+## 31 October 2026 — T00/T01 contrast repair
+
+Reproduced and repaired the three contrast failures with solid-core, blend-colour and glyph-edge guards. Added real-OCR HTTP, font/size, uncertainty and threshold regressions; measurement details/UI now include sampled colours and target ratio. Removed the pre-existing unreachable approval tail after preserving a local backup. Full backend: 542 passed; frontend: 54 passed, lint/build passed; Ruff and whitespace checks pass. Manual UI acceptance blocked by browser security policy. No public deployment or legal implementation claimed. Evidence: T00_T01_RETEST_2026-10-31.md.
+
+
+## 31 October — Round 3 local candidate
+
+Completed local PDF/visual/Insights acceptance and the curated India advertising-risk profile/evidence/approval path. All 574 backend and 56 frontend tests pass; seven real-HTTP suites and the expanded smoke pass. Verified six-step SQLite migrations, wheel contents/import and actual process restart with eight unchanged table digests. Added the six-page report, downloadable fictional guidelines, legal scope and release/submission handoffs. Preserve the earlier styling work. Manual UI and PostgreSQL/container checks are unverified because browser/Docker access was denied. Public homepage metadata found via GitHub; API returned 429. User requested local-only release after hosting ownership was unclear. No push/merge/deploy/submit. Current source: ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md.
+
+
+## 31 October — authorised integration into main
+
+User explicitly requested pushing the completed feature work to main. Merged feature b8acc3c with origin/main 43fc4a5, retaining main's cold-start readiness checks for delete/restore, disabled controls during deletion, deletion browser journey, and two extra backend regressions. Adapted the legacy-removal fixture to the versioned migration history without changing production migration behaviour.
+
+Merged-tree checks: frontend 56 tests, lint/build and backend Ruff lint/format pass. Full backend run passed 575 tests; one assertion was placed before deletion during conflict resolution. Moved it after deletion and reran all four removal tests successfully. No product code changed after that full run. Whitespace and conflict checks pass. This authorises GitHub main publication; it does not establish a deployed/public acceptance result.

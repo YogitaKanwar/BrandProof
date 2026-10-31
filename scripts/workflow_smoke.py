@@ -184,6 +184,7 @@ def main():
     denied = call("POST", approval_path, payload, role="reviewer", expected=409)
     assert denied["error"]["code"] == "checks_incomplete"
     payload["manual_checks"] = {
+        "advertising_risk": "Synthetic smoke reviewer checked the unsupported advertising scope manually.",
         "contextual": "Scripted attestation to exercise manual tone/claim coverage, not a model result.",
         "poster": "Scripted attestation for visual branding, contextual claims and accessibility, not automated completion.",
     }

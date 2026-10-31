@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db, lock_campaign, require_role, scoped_campaign
 from brandproof.errors import fail
+from brandproof.legal import legal_current
 from brandproof.models import Actor
 from brandproof.review_models import ReviewRun
 from brandproof.workflow import decision_rows, ensure_current, require_snapshot, scoped_run
@@ -52,6 +53,7 @@ def approval_current(session, campaign, row):
     run, request = latest_run(session, campaign.id), latest_request(session, campaign.id)
     return bool(
         run
+        and legal_current(run)
         and request
         and run.id == row.review_id
         and request.id == row.request_id
@@ -82,6 +84,18 @@ def readiness(session, campaign, review_id=None):
 def render_approval(session, campaign, row):
     values = {column.name: getattr(row, column.name) for column in row.__table__.columns}
     values["is_current"] = approval_current(session, campaign, row)
+    run = session.get(ReviewRun, row.review_id)
+    values["advertising_snapshot"] = (
+        run.checks.get(
+            "advertising_risk",
+            {
+                "status": "not_assessed",
+                "reason": "This historical run predates advertising-risk screening.",
+            },
+        )
+        if run
+        else {"status": "not_assessed"}
+    )
     return values
 
 
@@ -201,6 +215,8 @@ def approve(
         required = {"exact_text", "contextual"}
         if "claim_risk" in run.checks:
             required.add("claim_risk")
+        if "advertising_risk" in run.checks:
+            required.add("advertising_risk")
         if run.checks.get("poster", {}).get("details", {}).get("asset_id"):
             required.add("poster")
         incomplete = {

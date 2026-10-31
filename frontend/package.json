@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node tests/browser-smoke.mjs",
+    "test:improvements": "node tests/improvements-browser.mjs",
     "test:api": "node tests/backend-live.mjs",
     "test:sources": "node tests/sources-live.mjs",
     "test:reviews": "node tests/reviews-live.mjs",
