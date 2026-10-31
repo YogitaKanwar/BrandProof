@@ -1,5 +1,15 @@
 # Round 3 local release handoff
 
+## 31 October integration update
+
+The latest upstream feature and main heads are now included in pushed integration commit `9d6d227a530ee1aa7fd752579460cab48fdd687b`. Application source matches upstream main `1cf0ddc`; integration retains its extra removal HTTP suite and fixes the container regression-test layout. The primary checkout's uncommitted documentation and local main are preserved.
+
+The user explicitly selected **keep production unchanged until a restorable database backup is available**. No backup/export is claimed. The Render database's empty external IP allowlist blocks connector SQL/export; no networking rule was changed. Before any production release, establish the actual backup and restore procedure, stop old workers/admission, run migration preflight, and release the API and frontend together. Keep existing Free hosting and external-AI settings.
+
+Fresh local evidence: 558 backend tests passed with 18 optional font skips; 56 frontend tests, lint/build, Ruff, eight HTTP suites, expanded feature smoke, live/saved OpenAPI parity, packaged legal/migration JSON and local migration preflight passed. The intended Noto font passed real OCR/contrast; Arial conservatively abstained. No application behavior was modified to force a measurement. Final integration CI: [run 41213208584](https://github.com/YogitaKanwar/BrandProof/actions/runs/41213208584); **both jobs passed**, including Docker/PostgreSQL upgrade and actual workflows, 558 backend tests (18 optional font skips), and 56 frontend tests/lint/build. Full evidence is recorded in `configured-backend-tests.md`.
+
+Vercel produced READY **preview** `dpl_C8ux1u81waHyheQzqrg4zvzW6u8R`. It is not public Round 3 acceptance: the API is still the prior release. The public alias and Render remain on `639fe5f`. The historical local-only account uncertainty below has been resolved for the existing team-owned resources; its local test limitations remain historical evidence.
+
 31 October 2026. User explicitly requested a local release after the discovered Render workspace could not be identified as theirs. Do not deploy into that workspace or the previously rejected Vercel account `adarshnarwankar`. No push, merge, deployment or submission was performed.
 
 ## Candidate

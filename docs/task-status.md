@@ -1,5 +1,7 @@
 # BrandProof task status
 
+Current release state ? 31 October 2026: latest upstream heads are integrated and pushed on `integration/round2-backend-pr1` at application/CI commit `9d6d227`. [Final CI 41213208584](https://github.com/YogitaKanwar/BrandProof/actions/runs/41213208584) passed both jobs: Docker build, PostgreSQL migration/workflow smoke, 558 backend tests (18 optional font skips), and 56 frontend tests/lint/build. Production remains `639fe5f`: the user explicitly requires a restorable database backup before release. No production change or resumed browser control. Primary-checkout local edits and local main are preserved.
+
 ## Recent Reviews deletion and judging answers - 28 October
 
 - Added owner-authorized connected Delete/Cancel/Confirm and Undo on the feature branch, retaining audit records. Lists/insights and ordinary access exclude removed campaigns; running reviews and stale revisions are blocked. Exact deletion IDs guard Undo against later deletions. Local-draft deletion retained.
