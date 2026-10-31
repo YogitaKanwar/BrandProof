@@ -5,13 +5,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
+from brandproof.accessibility import router as accessibility_router
 from brandproof.approval import router as approval_router
 from brandproof.config import Settings
-from brandproof.db import Base, make_engine, session_factory
+from brandproof.db import make_engine, session_factory
+from brandproof.documents import router as documents_router
 from brandproof.errors import install_errors
+from brandproof.insights import router as insights_router
+from brandproof.legal import router as legal_router
 from brandproof.logos import router as logos_router
+from brandproof.migrations import migrate
 from brandproof.posters import router as posters_router
+from brandproof.readiness import router as readiness_router
 from brandproof.removals import router as removals_router
+from brandproof.review_leases import recover_expired, recovery_loop
 from brandproof.reviews import router as reviews_router
 from brandproof.routes import router
 from brandproof.sources import router as sources_router
@@ -26,8 +33,11 @@ def create_app(*, database_url: str | None = None):
 
     @asynccontextmanager
     async def lifespan(_app):
-        Base.metadata.create_all(engine)
-        yield
+        migrate(engine)
+        with sessions.begin() as recovery_session:
+            recover_expired(recovery_session)
+        with recovery_loop(sessions):
+            yield
         engine.dispose()
 
     app = FastAPI(title="BrandProof API", version="0.1.0", lifespan=lifespan)
@@ -40,6 +50,11 @@ def create_app(*, database_url: str | None = None):
     app.include_router(suggestions_router)
     app.include_router(posters_router)
     app.include_router(logos_router)
+    app.include_router(documents_router)
+    app.include_router(accessibility_router)
+    app.include_router(readiness_router)
+    app.include_router(insights_router)
+    app.include_router(legal_router)
     app.include_router(removals_router)
     app.state.engine = engine
     app.state.sessions = sessions
@@ -49,7 +64,12 @@ def create_app(*, database_url: str | None = None):
         allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE"],
-        allow_headers=["Authorization", "Content-Type", "X-BrandProof-Session"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-BrandProof-Session",
+            "X-BrandProof-Filename",
+        ],
     )
 
     @app.middleware("http")

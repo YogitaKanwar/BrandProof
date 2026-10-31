@@ -4,14 +4,21 @@ from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db, lock_campaign, require_role, scoped_campaign
 from brandproof.claim_screening import combined_coverage, screen_claims
-from brandproof.contextual import ContextualConfig, ContextualResult, analyze_context
+from brandproof.contextual import (
+    ContextualConfig,
+    ContextualResult,
+    analyze_context,
+    poster_context,
+)
 from brandproof.errors import fail
 from brandproof.finding_groups import finding_groups
+from brandproof.legal import evaluate_advertising, legal_current
 from brandproof.logos import review_logo
 from brandproof.models import Actor, Campaign
 from brandproof.poster_models import PosterAsset
 from brandproof.poster_review import review_poster
 from brandproof.quota import reserve_provider_call
+from brandproof.review_leases import acquire, fence, heartbeat, recover_expired
 from brandproof.review_models import ContentVersion, ReviewRun
 from brandproof.review_schemas import CaptionRevision, CaptionUpdate, ReviewOut, ReviewStart
 from brandproof.rules import exact_checks
@@ -107,7 +114,8 @@ def render_run(run: ReviewRun, campaign: Campaign, session=None):
         "caption": run.caption,
         "status": run.status,
         "is_current": run.content_revision == campaign.content_revision
-        and run.source_revision == campaign.source_revision,
+        and run.source_revision == campaign.source_revision
+        and legal_current(run),
         "readiness": readiness(session, campaign, run.id) if session else "not_approved",
         "checks": run.checks,
         "sources_used": run.sources_used,
@@ -148,7 +156,7 @@ def start_review(
         .where(Source.campaign_id == campaign_id)
     ).all()
     active = [
-        render_source(s, v)
+        render_source(s, v, session)
         for s, v in rows
         if v.status == "approved"
         and (not v.valid_from or v.valid_from <= campaign.publication_date)
@@ -222,6 +230,9 @@ def start_review(
     risk_check = combined_coverage(
         caption_risk_check, poster_check.get("details", {}).get("claim_risk")
     )
+    all_findings, advertising_check = evaluate_advertising(
+        session, campaign, [*findings, *risk_findings, *poster_findings], poster_check
+    )
     run = ReviewRun(
         campaign_id=campaign_id,
         content_revision=campaign.content_revision,
@@ -244,10 +255,11 @@ def start_review(
             },
             "poster": poster_check,
             "claim_risk": risk_check,
+            "advertising_risk": advertising_check,
         },
         sources_used=sources,
         excluded_sources=excluded,
-        findings=[*findings, *risk_findings, *poster_findings],
+        findings=all_findings,
     )
     # Recheck immutable snapshot identity rather than presenting a mixed-version run.
     latest = session.execute(
@@ -265,6 +277,11 @@ def start_review(
             "Campaign changed during review; retry on the latest version",
         )
     caption_snapshot = campaign.caption
+    contextual_poster = (
+        poster_context(session.get(PosterAsset, poster_check["details"]["asset_id"]))
+        if has_poster
+        else None
+    )
     settings = request.app.state.settings
     session.add(run)
     configured_external = (
@@ -273,7 +290,7 @@ def start_review(
         and settings.ai_provider != "none"
         and settings.ai_model.strip()
         and settings.ai_api_key.get_secret_value().strip()
-        and has_caption
+        and (has_caption or bool(contextual_poster and contextual_poster["text"].strip()))
     )
     if configured_external:
         session.flush()  # Reserve against an existing run ID only for provider admission.
@@ -282,27 +299,31 @@ def start_review(
         if configured_external
         else None
     )
+    owner = acquire(session, run)
+    run_id = run.id
     session.commit()
 
     # Do not read ORM attributes here: with expire_on_commit=True even a read
     # would reopen a database transaction across the external provider call.
     settings = request.app.state.settings
-    result = (
-        ContextualResult("unavailable", quota_reason, metadata={"admission": "denied"})
-        if quota_reason
-        else analyze_context(
-            caption_snapshot,
-            payload.expected_content_revision,
-            active,
-            ContextualConfig(
-                provider=settings.ai_provider,
-                model=settings.ai_model,
-                api_key=settings.ai_api_key.get_secret_value(),
-                allow_external=settings.external_ai_enabled and payload.external_ai_consent,
-            ),
-            transport=getattr(request.app.state, "contextual_transport", None),
+    with heartbeat(request.app.state.sessions, run_id, owner):
+        result = (
+            ContextualResult("unavailable", quota_reason, metadata={"admission": "denied"})
+            if quota_reason
+            else analyze_context(
+                caption_snapshot,
+                payload.expected_content_revision,
+                active,
+                ContextualConfig(
+                    provider=settings.ai_provider,
+                    model=settings.ai_model,
+                    api_key=settings.ai_api_key.get_secret_value(),
+                    allow_external=settings.external_ai_enabled and payload.external_ai_consent,
+                ),
+                transport=getattr(request.app.state, "contextual_transport", None),
+                poster=contextual_poster,
+            )
         )
-    )
     excluded_policy_ids = sorted(
         source["source_id"] for source in excluded if source["kind"] in {"tone", "claim_policy"}
     )
@@ -320,6 +341,11 @@ def start_review(
             result.status = "partial"
             result.reason = "Some contextual policies are unapproved or not valid for publication."
     lock_campaign(session, campaign)
+    if not fence(session, run_id, owner):
+        session.rollback()
+        session.refresh(run)
+        session.refresh(campaign)
+        return render_run(run, campaign, session)
     run.checks = {
         **run.checks,
         "contextual": {
@@ -328,12 +354,30 @@ def start_review(
             "details": result.metadata,
         },
     }
+    if has_poster:
+        run.checks = {
+            **run.checks,
+            "poster": {
+                **run.checks["poster"],
+                "details": {
+                    **run.checks["poster"].get("details", {}),
+                    "contextual_claims": {
+                        "status": result.status
+                        if contextual_poster and contextual_poster["text"].strip()
+                        else "not_assessed",
+                        "reason": result.reason,
+                        "scope": "high_confidence_ocr_only",
+                    },
+                },
+            },
+        }
     run.findings = [*run.findings, *result.findings]
     run.status = (
         "completed"
         if exact_status == "completed"
         and result.status == "completed"
         and risk_check["status"] == "completed"
+        and advertising_check["status"] == "completed"
         and not has_poster
         else "partial"
     )
@@ -346,6 +390,8 @@ def start_review(
 @router.get("/reviews", response_model=list[ReviewOut])
 def list_reviews(campaign_id: str, who: Actor = Depends(actor), session: Session = Depends(db)):
     campaign = scoped_campaign(session, campaign_id, who)
+    if recover_expired(session, campaign_id):
+        session.commit()
     return [
         render_run(run, campaign, session)
         for run in session.scalars(
@@ -364,6 +410,8 @@ def get_review(
     session: Session = Depends(db),
 ):
     campaign = scoped_campaign(session, campaign_id, who)
+    if recover_expired(session, campaign_id):
+        session.commit()
     run = session.scalar(
         select(ReviewRun).where(ReviewRun.id == review_id, ReviewRun.campaign_id == campaign_id)
     )

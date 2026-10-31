@@ -165,6 +165,7 @@ def test_clear_caption_keeps_poster_history_and_stales_approval(client, demo, ow
             "decision": "approve",
             "reason": "Synthetic QA of the displayed caption and poster.",
             "manual_checks": {
+                "advertising_risk": "Synthetic test reviewer manually assessed the unconfigured advertising scope.",
                 "contextual": "Read the fictional campaign against the approved source.",
                 "poster": "Read the simple fictional image and compared its price.",
             },

@@ -37,8 +37,32 @@ class ToneRule(StrictModel):
     guidance: str = Field(min_length=1, max_length=5000)
 
 
+class BrandColorRule(StrictModel):
+    kind: Literal["brand_color"]
+    hex: str = Field(pattern=r"^#[0-9A-Fa-f]{6}$")
+    tolerance: float = Field(default=10, ge=0, le=30)
+    scope: Literal["flat_background"] = "flat_background"
+
+
+class ContrastRule(StrictModel):
+    kind: Literal["contrast"]
+    minimum_ratio: float = Field(default=4.5, ge=1, le=21)
+
+
+class AltTextRule(StrictModel):
+    kind: Literal["alt_text"]
+    required: Literal[True] = True
+
+
 Rule = Annotated[
-    PriceRule | DateRule | TerminologyRule | RequiredRule | ToneRule,
+    PriceRule
+    | DateRule
+    | TerminologyRule
+    | RequiredRule
+    | ToneRule
+    | BrandColorRule
+    | ContrastRule
+    | AltTextRule,
     Field(discriminator="kind"),
 ]
 
@@ -64,6 +88,16 @@ class VersionRequest(StrictModel):
     expected_version: int = Field(ge=1, le=MAX_INCREMENT_EXPECTATION)
 
 
+class DocumentCitation(BaseModel):
+    document_id: str
+    filename: str
+    sha256: str
+    page_number: int
+    start: int
+    end: int
+    quote: str
+
+
 class SourceOut(BaseModel):
     id: str
     version_id: str
@@ -76,3 +110,4 @@ class SourceOut(BaseModel):
     valid_until: date | None
     confirmed_by: str | None
     created_at: UTCDateTime
+    document_evidence: DocumentCitation | None = None

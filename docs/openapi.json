@@ -1835,6 +1835,409 @@
         }
       }
     },
+    "/api/v1/campaigns/{campaign_id}/guideline-documents": {
+      "post": {
+        "tags": [
+          "guideline documents"
+        ],
+        "summary": "Import Document",
+        "operationId": "import_document_api_v1_campaigns__campaign_id__guideline_documents_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "expected_source_revision",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 2147483646,
+              "minimum": 0,
+              "title": "Expected Source Revision"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "guideline documents"
+        ],
+        "summary": "List Documents",
+        "operationId": "list_documents_api_v1_campaigns__campaign_id__guideline_documents_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentOut"
+                  },
+                  "title": "Response List Documents Api V1 Campaigns  Campaign Id  Guideline Documents Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/alt-text": {
+      "get": {
+        "tags": [
+          "accessibility"
+        ],
+        "summary": "Get Alt Text",
+        "operationId": "get_alt_text_api_v1_campaigns__campaign_id__alt_text_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltTextOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "accessibility"
+        ],
+        "summary": "Save Alt Text",
+        "operationId": "save_alt_text_api_v1_campaigns__campaign_id__alt_text_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AltTextUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/readiness": {
+      "get": {
+        "tags": [
+          "workflow guidance"
+        ],
+        "summary": "Get Readiness",
+        "operationId": "get_readiness_api_v1_campaigns__campaign_id__readiness_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/governance-insights": {
+      "get": {
+        "tags": [
+          "governance"
+        ],
+        "summary": "Governance Insights",
+        "operationId": "governance_insights_api_v1_governance_insights_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsightsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/advertising-risk-pack": {
+      "get": {
+        "tags": [
+          "advertising risk"
+        ],
+        "summary": "Get Pack",
+        "operationId": "get_pack_api_v1_advertising_risk_pack_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaign_id}/advertising-profile": {
+      "get": {
+        "tags": [
+          "advertising risk"
+        ],
+        "summary": "Get Profile",
+        "operationId": "get_profile_api_v1_campaigns__campaign_id__advertising_profile_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "advertising risk"
+        ],
+        "summary": "Set Profile",
+        "operationId": "set_profile_api_v1_campaigns__campaign_id__advertising_profile_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/campaigns/{campaign_id}/restore": {
       "post": {
         "tags": [
@@ -1911,6 +2314,79 @@
   },
   "components": {
     "schemas": {
+      "AltTextOut": {
+        "properties": {
+          "poster_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Poster Id"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "poster_id",
+          "content_revision",
+          "text"
+        ],
+        "title": "AltTextOut"
+      },
+      "AltTextRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "alt_text",
+            "title": "Kind"
+          },
+          "required": {
+            "type": "boolean",
+            "const": true,
+            "title": "Required",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "AltTextRule"
+      },
+      "AltTextUpdate": {
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "maximum": 2147483646.0,
+            "minimum": 1.0,
+            "title": "Expected Revision"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_revision",
+          "text"
+        ],
+        "title": "AltTextUpdate"
+      },
       "ApprovalCreate": {
         "properties": {
           "expected_content_revision": {
@@ -1956,7 +2432,8 @@
                 "exact_text",
                 "contextual",
                 "poster",
-                "claim_risk"
+                "claim_risk",
+                "advertising_risk"
               ]
             },
             "type": "object",
@@ -2038,6 +2515,11 @@
           "is_current": {
             "type": "boolean",
             "title": "Is Current"
+          },
+          "advertising_snapshot": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Advertising Snapshot"
           }
         },
         "type": "object",
@@ -2086,6 +2568,40 @@
           "height"
         ],
         "title": "Box"
+      },
+      "BrandColorRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "brand_color",
+            "title": "Kind"
+          },
+          "hex": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "title": "Hex"
+          },
+          "tolerance": {
+            "type": "number",
+            "maximum": 30.0,
+            "minimum": 0.0,
+            "title": "Tolerance",
+            "default": 10
+          },
+          "scope": {
+            "type": "string",
+            "const": "flat_background",
+            "title": "Scope",
+            "default": "flat_background"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "hex"
+        ],
+        "title": "BrandColorRule"
       },
       "CampaignCreate": {
         "properties": {
@@ -2198,6 +2714,29 @@
         ],
         "title": "CaptionUpdate"
       },
+      "CategoryInsight": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "observations": {
+            "type": "integer",
+            "title": "Observations"
+          },
+          "campaigns": {
+            "type": "integer",
+            "title": "Campaigns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "observations",
+          "campaigns"
+        ],
+        "title": "CategoryInsight"
+      },
       "CheckStatus": {
         "properties": {
           "status": {
@@ -2206,7 +2745,8 @@
               "completed",
               "partial",
               "unavailable",
-              "not_assessed"
+              "not_assessed",
+              "not_applicable"
             ],
             "title": "Status"
           },
@@ -2343,6 +2883,28 @@
         ],
         "title": "CommentOut"
       },
+      "ContrastRule": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "contrast",
+            "title": "Kind"
+          },
+          "minimum_ratio": {
+            "type": "number",
+            "maximum": 21.0,
+            "minimum": 1.0,
+            "title": "Minimum Ratio",
+            "default": 4.5
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "ContrastRule"
+      },
       "DateRule": {
         "properties": {
           "kind": {
@@ -2431,6 +2993,141 @@
         ],
         "title": "DemoSessionOut"
       },
+      "DocumentCitation": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "page_number": {
+            "type": "integer",
+            "title": "Page Number"
+          },
+          "start": {
+            "type": "integer",
+            "title": "Start"
+          },
+          "end": {
+            "type": "integer",
+            "title": "End"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_id",
+          "filename",
+          "sha256",
+          "page_number",
+          "start",
+          "end",
+          "quote"
+        ],
+        "title": "DocumentCitation"
+      },
+      "DocumentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentPage"
+            },
+            "type": "array",
+            "title": "Pages"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "candidate_limit_reached": {
+            "type": "boolean",
+            "title": "Candidate Limit Reached"
+          },
+          "candidate_count": {
+            "type": "integer",
+            "title": "Candidate Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "filename",
+          "sha256",
+          "created_at",
+          "status",
+          "pages",
+          "scope",
+          "candidate_limit_reached",
+          "candidate_count"
+        ],
+        "title": "DocumentOut"
+      },
+      "DocumentPage": {
+        "properties": {
+          "page_number": {
+            "type": "integer",
+            "title": "Page Number"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page_number",
+          "text",
+          "status",
+          "reason"
+        ],
+        "title": "DocumentPage"
+      },
       "Evidence": {
         "properties": {
           "source_id": {
@@ -2514,6 +3211,29 @@
               }
             ],
             "title": "Suggested Replacement"
+          },
+          "unverified_draft_suggestion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unverified Draft Suggestion"
+          },
+          "regulatory_evidence": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regulatory Evidence"
           }
         },
         "type": "object",
@@ -2681,6 +3401,132 @@
         ],
         "title": "FindingGroup"
       },
+      "GuidelineInsight": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version Id"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "observations": {
+            "type": "integer",
+            "title": "Observations"
+          },
+          "reviewed": {
+            "type": "integer",
+            "title": "Reviewed"
+          },
+          "reviewed_snapshots": {
+            "type": "integer",
+            "title": "Reviewed Snapshots"
+          },
+          "regulatory_reference": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regulatory Reference"
+          },
+          "dismissed": {
+            "type": "integer",
+            "title": "Dismissed"
+          },
+          "exceptions": {
+            "type": "integer",
+            "title": "Exceptions"
+          },
+          "reopened": {
+            "type": "integer",
+            "title": "Reopened"
+          },
+          "decision_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Rate"
+          },
+          "potentially_ambiguous": {
+            "type": "boolean",
+            "title": "Potentially Ambiguous"
+          },
+          "sample_status": {
+            "type": "string",
+            "title": "Sample Status"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/InsightEvidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "evidence_truncated": {
+            "type": "boolean",
+            "title": "Evidence Truncated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "source_id",
+          "source_version_id",
+          "source_version",
+          "observations",
+          "reviewed",
+          "reviewed_snapshots",
+          "dismissed",
+          "exceptions",
+          "reopened",
+          "decision_rate",
+          "potentially_ambiguous",
+          "sample_status",
+          "evidence",
+          "evidence_truncated"
+        ],
+        "title": "GuidelineInsight"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -2693,6 +3539,195 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ImportOut": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/DocumentOut"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceOut"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document",
+          "sources",
+          "notice"
+        ],
+        "title": "ImportOut"
+      },
+      "InsightEvidence": {
+        "properties": {
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "campaign_name": {
+            "type": "string",
+            "title": "Campaign Name"
+          },
+          "review_id": {
+            "type": "string",
+            "title": "Review Id"
+          },
+          "finding_id": {
+            "type": "string",
+            "title": "Finding Id"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version Id"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "evidence_status": {
+            "type": "string",
+            "title": "Evidence Status"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campaign_id",
+          "campaign_name",
+          "review_id",
+          "finding_id",
+          "content_revision",
+          "source_version_id",
+          "source_id",
+          "source_version",
+          "quote",
+          "message",
+          "evidence_status",
+          "decision",
+          "reason"
+        ],
+        "title": "InsightEvidence"
+      },
+      "InsightsOut": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryInsight"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "guidelines": {
+            "items": {
+              "$ref": "#/components/schemas/GuidelineInsight"
+            },
+            "type": "array",
+            "title": "Guidelines"
+          },
+          "runs_considered": {
+            "type": "integer",
+            "title": "Runs Considered"
+          },
+          "snapshots_considered": {
+            "type": "integer",
+            "title": "Snapshots Considered"
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated"
+          },
+          "minimum_reviewed_sample": {
+            "type": "integer",
+            "title": "Minimum Reviewed Sample"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "categories",
+          "guidelines",
+          "runs_considered",
+          "snapshots_considered",
+          "truncated",
+          "minimum_reviewed_sample",
+          "notice"
+        ],
+        "title": "InsightsOut"
       },
       "Location": {
         "properties": {
@@ -3103,6 +4138,143 @@
         ],
         "title": "PriceRule"
       },
+      "ProfileInput": {
+        "properties": {
+          "expected_content_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Expected Content Revision"
+          },
+          "expected_source_revision": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Expected Source Revision"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "enum": [
+              "IN",
+              "other",
+              "unknown"
+            ],
+            "title": "Jurisdiction"
+          },
+          "sector": {
+            "type": "string",
+            "enum": [
+              "general",
+              "coaching",
+              "healthcare",
+              "finance",
+              "other",
+              "unknown"
+            ],
+            "title": "Sector"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "other",
+              "unknown"
+            ],
+            "title": "Language"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_content_revision",
+          "expected_source_revision",
+          "jurisdiction",
+          "sector",
+          "language"
+        ],
+        "title": "ProfileInput"
+      },
+      "ProfileOut": {
+        "properties": {
+          "profile": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "pack": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pack"
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile",
+          "source_revision",
+          "pack"
+        ],
+        "title": "ProfileOut"
+      },
+      "ReadinessOut": {
+        "properties": {
+          "readiness": {
+            "type": "string",
+            "title": "Readiness"
+          },
+          "content_revision": {
+            "type": "integer",
+            "title": "Content Revision"
+          },
+          "source_revision": {
+            "type": "integer",
+            "title": "Source Revision"
+          },
+          "actor_role": {
+            "type": "string",
+            "title": "Actor Role"
+          },
+          "blockers": {
+            "items": {
+              "$ref": "#/components/schemas/RequiredAction"
+            },
+            "type": "array",
+            "title": "Blockers"
+          },
+          "manual_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Manual Checks"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "readiness",
+          "content_revision",
+          "source_revision",
+          "actor_role",
+          "blockers",
+          "manual_checks",
+          "notice"
+        ],
+        "title": "ReadinessOut"
+      },
       "RemovalOut": {
         "properties": {
           "campaign_id": {
@@ -3130,6 +4302,45 @@
           "retained_history"
         ],
         "title": "RemovalOut"
+      },
+      "RequiredAction": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "finding_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finding Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "role",
+          "target"
+        ],
+        "title": "RequiredAction"
       },
       "RequiredRule": {
         "properties": {
@@ -3468,13 +4679,25 @@
               },
               {
                 "$ref": "#/components/schemas/ToneRule"
+              },
+              {
+                "$ref": "#/components/schemas/BrandColorRule"
+              },
+              {
+                "$ref": "#/components/schemas/ContrastRule"
+              },
+              {
+                "$ref": "#/components/schemas/AltTextRule"
               }
             ],
             "title": "Rule",
             "discriminator": {
               "propertyName": "kind",
               "mapping": {
+                "alt_text": "#/components/schemas/AltTextRule",
+                "brand_color": "#/components/schemas/BrandColorRule",
                 "claim_policy": "#/components/schemas/ToneRule",
+                "contrast": "#/components/schemas/ContrastRule",
                 "date": "#/components/schemas/DateRule",
                 "price": "#/components/schemas/PriceRule-Input",
                 "required_text": "#/components/schemas/RequiredRule",
@@ -3558,13 +4781,25 @@
               },
               {
                 "$ref": "#/components/schemas/ToneRule"
+              },
+              {
+                "$ref": "#/components/schemas/BrandColorRule"
+              },
+              {
+                "$ref": "#/components/schemas/ContrastRule"
+              },
+              {
+                "$ref": "#/components/schemas/AltTextRule"
               }
             ],
             "title": "Rule",
             "discriminator": {
               "propertyName": "kind",
               "mapping": {
+                "alt_text": "#/components/schemas/AltTextRule",
+                "brand_color": "#/components/schemas/BrandColorRule",
                 "claim_policy": "#/components/schemas/ToneRule",
+                "contrast": "#/components/schemas/ContrastRule",
                 "date": "#/components/schemas/DateRule",
                 "price": "#/components/schemas/PriceRule-Output",
                 "required_text": "#/components/schemas/RequiredRule",
@@ -3616,6 +4851,16 @@
             "type": "string",
             "format": "date-time",
             "title": "Created At"
+          },
+          "document_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DocumentCitation"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -3658,13 +4903,25 @@
               },
               {
                 "$ref": "#/components/schemas/ToneRule"
+              },
+              {
+                "$ref": "#/components/schemas/BrandColorRule"
+              },
+              {
+                "$ref": "#/components/schemas/ContrastRule"
+              },
+              {
+                "$ref": "#/components/schemas/AltTextRule"
               }
             ],
             "title": "Rule",
             "discriminator": {
               "propertyName": "kind",
               "mapping": {
+                "alt_text": "#/components/schemas/AltTextRule",
+                "brand_color": "#/components/schemas/BrandColorRule",
                 "claim_policy": "#/components/schemas/ToneRule",
+                "contrast": "#/components/schemas/ContrastRule",
                 "date": "#/components/schemas/DateRule",
                 "price": "#/components/schemas/PriceRule-Input",
                 "required_text": "#/components/schemas/RequiredRule",

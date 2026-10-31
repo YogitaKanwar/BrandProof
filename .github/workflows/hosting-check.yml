@@ -1,9 +1,9 @@
 name: Hosting package
 on:
   push:
-    branches: [fix/demo-session-resume]
+    branches: [fix/demo-session-resume, feat/brandproof-improvements-20261028]
   pull_request:
-    branches: [main]
+    branches: [main, integration/round2-backend-pr1]
   workflow_dispatch:
 
 permissions:
@@ -59,6 +59,33 @@ jobs:
           docker exec brandproof python /tmp/smoke.py --base-url http://127.0.0.1:8001 --output /tmp/review.json
           docker exec brandproof python /tmp/parser_smoke.py --base-url http://127.0.0.1:8001 --output /tmp/parser.json
           docker exec -e BRANDPROOF_TEST_FONT=/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf brandproof python /tmp/workflow_smoke.py --base-url http://127.0.0.1:8001 --output /tmp/workflow.json
+      - name: Verify additive PostgreSQL upgrade and new feature workflow
+        run: |
+          docker cp scripts/postgres_migration_probe.py brandproof:/tmp/postgres_migration_probe.py
+          docker cp scripts/improvements_smoke.py brandproof:/tmp/improvements_smoke.py
+          docker exec -e BRANDPROOF_EPHEMERAL_CI=1 brandproof python /tmp/postgres_migration_probe.py
+          docker exec brandproof python /tmp/improvements_smoke.py --base-url http://127.0.0.1:8001
+      - name: Run the complete offline backend regression suite in the image
+        run: |
+          docker cp scripts brandproof:/app/scripts
+          docker exec brandproof uv run --locked --extra dev python -m pytest backend/tests -q --tb=short -p no:cacheprovider
       - name: Stop test app
         if: always()
         run: docker rm --force brandproof || true
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build

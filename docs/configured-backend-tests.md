@@ -1,5 +1,20 @@
 # Final tests requiring a fully configured backend
 
+## Connected deletion local acceptance - 28 October 2026
+
+- Feature-branch only: 516 backend tests / 51 frontend tests, lint/format/build, seven HTTP suites, all 26 existing browser groups and new connected delete cancel/confirm/Undo/reload acceptance passed. Data/history preservation, owner/workspace/revision/running-job guards and old-Undo rejection tested. Saved OpenAPI matches running :8014.
+- Added `0005_review_removal` only; no production schema or deployment change. Public provider metadata and HTTP contract still verify `36cb8ae`, with no connected DELETE/PDF import routes. Copy-ready judging answers separate that public release from the review branch.
+- An old browser assertion expected connected deletion to be absent; it now asserts the new Delete button. The new end-to-end test exercises its real API actions, rather than simulating success. No existing user review was deleted during this work; acceptance used isolated fictional data.
+
+## Feature-branch local acceptance - 28 October 2026
+
+This is local feature acceptance, not a deployment of the improvements. Existing production remains `36cb8ae`.
+
+- Branch `feat/brandproof-improvements-20261028`: all authorized implementation slices complete. Backend 514 passed, frontend 50 passed; lint/format/build/dependencies, wheel build/installed-wheel startup, OpenAPI parity, seven actual HTTP suites, 26 existing browser groups and new PDF/draft/description/governance/readiness browser journey passed.
+- Production resource probe used only fictional records, with no settings/code migration: 5,155,064-byte PNG HTTP 200 in 10.32s; logo review 201 in 3.994s with not-assessed/manual time-limit result. Initial health 502, subsequent 200 after direct warmup. Database available, expiry 27 November; provider unavailable and quotas unchanged. These are single samples, not a controlled sleep/load test.
+- New PostgreSQL legacy-upgrade/idempotence and production-container CI are configured; do not infer their result from SQLite or the prior production release. Backup/restore, reviewed migration/app deployment, public new-feature/redeploy acceptance and live consented provider acceptance remain explicit release gates.
+- Complete evidence/limits: [improvements final report](improvements-final-report.md). Local evidence `.cache/improvements-20261028/backend-final.xml`, `production-resources.json`, isolated local/wheel databases, and browser screenshots under `frontend/node_modules/.cache/improvements/`. Scripted fictional decisions are not independent human evaluation.
+
 ## Fresh pre-push release acceptance - 28 October 2026
 
 - Backend: 445 passed in 145.14 seconds, zero failures/skips; .cache/release-20261028.xml. Ruff lint and format pass (70 files).
@@ -118,3 +133,29 @@ Fresh automated checks: 497 backend tests/49 frontend tests pass; build, lint, f
 - Full local regression: 501 backend tests, 53 frontend tests, seven HTTP suites, 26 existing browser groups plus dedicated cold-start/delete journey passed; Ruff check/format, frontend lint/build and whitespace checks passed.
 
 All public checks used fictional isolated workspaces. Existing PostgreSQL and hosting settings were reused. No provider/AI enablement or paid upgrade, no main merge, and no other Round 3 feature release. Original primary-workspace documentation edits remain intact.
+
+## Feature-branch local acceptance — 30 October
+
+Fresh isolated SQLite/Tesseract :8001 runtime on ca6dd8c, external provider disabled: 513 backend tests pass, 3 contrast-rendering tests fail; 54 frontend tests/build/lint pass. All seven genuine frontend HTTP suites and the improvements HTTP smoke pass. Browser confirms PDF evidence/confirmation, background and alt-text flows, explicit draft/save gates, governance evidence links and session/review recovery after restart. Real HTTP contrast reproduction on black Noto TEST over white yields completed OCR but partial contrast/zero measurements because the exact-ink guard rejects antialiasing. No production/PostgreSQL/model acceptance is claimed. Preserved local approval edit fails formatting/whitespace checks. Detailed findings: LOCAL_RETEST_2026-10-30.md.
+
+### 30 October 2026 — visual refresh acceptance
+
+Restarted the existing isolated SQLite retest runtime on 127.0.0.1:8001 with the rebuilt frontend, same database, external AI disabled. Browser session restored its original campaign. The redesigned example entry created campaign `deb456a2-a86b-44f7-92f7-99f63225cb1b`; Run review returned eight actual findings and kept the pending policy excluded, partial coverage visible and readiness not approved. No approvals or provider calls were made. This frontend acceptance does not supersede the earlier backend report's three contrast failures.
+
+
+## 31 October 2026 — contrast repair local verification
+
+Latest local suite after T00/T01: 542 backend tests pass, 54 frontend tests pass, lint/build/Ruff/whitespace pass. Real Tesseract HTTP uploads measure black and grey text and retain finding source versions/boxes. Mostly antialiased small text and uncertain images still abstain. Browser security policy prevented manual UI acceptance; public/PostgreSQL acceptance remains unverified. See T00_T01_RETEST_2026-10-31.md.
+
+
+## 31 October — Round 3 current local acceptance
+
+574 backend tests and 56 frontend tests pass; frontend build/lint, Ruff format/lint, whitespace and saved/live OpenAPI parity pass. Seven real-HTTP frontend suites and expanded PDF/contrast/advertising/approval smoke pass on an isolated SQLite/Tesseract runtime with external AI disabled. Actual server restart preserved eight table digests including profiles, documents, decisions and receipts. Wheel contains and imports the frozen legal pack and migration metadata. Manual browser and PostgreSQL/container execution remain unverified. User selected local-only release. Detailed evidence and limits: ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md.
+
+## 31 October 2026 ? integration release preparation, no production update
+
+Existing team-owned resources were reidentified through connectors: Vercel project `prj_GEGiIsaOoEp0mww0FY5LIkOZKyf6` and public alias `brand-proof-tau.vercel.app`, current READY deployment `dpl_Grf42dLLAjyMswKTR5h9RJ4v3fXp`; Render service `srv-dbgtr7nb9u1s73981s70`, live deployment `dep-dbh3fa0473hc7384ju10`, both at source `639fe5f`. Render reports PostgreSQL `dpg-dbgtpn5g1s2s73c9tg60-a` available on Free, expiring 27 November 2026; its empty external IP allowlist prevents connector SQL/export access. No access rule was relaxed and no backup is claimed.
+
+The user explicitly requested production remain unchanged until a restorable backup is available. The latest Round 3 tree is prepared on integration only. Fresh isolated SQLite/Tesseract runtime at 127.0.0.1:8014 passed eight frontend HTTP suites and expanded PDF/OCR/contrast/advertising-risk/approval/readiness/governance smoke, external AI disabled. Arial produced truthful contrast abstention; Noto test-font rerun passed supported measured contrast. Credentials remained in process memory. Local backend: 558 passed, 18 optional font skips; frontend: 56 passed, lint/build passed; Ruff passed. No fresh public Round 3 acceptance or manual browser result is claimed.
+
+Upstream feature CI [41211193409](https://github.com/YogitaKanwar/BrandProof/actions/runs/41211193409) passed Docker build, PostgreSQL health, real workflows, additive migration upgrade/idempotence and feature smoke. The overall run failed its offline evaluation test because tests were copied to `/tmp/backend-tests`, making a repository-relative script resolve to `/scripts/evaluate_live.py`. The prepared CI fix retains `/app/backend/tests` and copies `/app/scripts`; the final integration result follows when available. This test-harness fix does not modify application behavior.

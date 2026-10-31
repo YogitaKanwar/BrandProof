@@ -12,7 +12,7 @@ class ApprovalCreate(ReviewCreate):
     decision: Literal["approve", "request_changes"]
     reason: str = Field(min_length=10, max_length=2000)
     manual_checks: dict[
-        Literal["exact_text", "contextual", "poster", "claim_risk"],
+        Literal["exact_text", "contextual", "poster", "claim_risk", "advertising_risk"],
         Annotated[str, Field(min_length=20, max_length=2000)],
     ] = Field(default_factory=dict)
 
@@ -32,6 +32,7 @@ class ApprovalOut(BaseModel):
     decision_snapshot: dict[str, str]
     created_at: UTCDateTime
     is_current: bool
+    advertising_snapshot: dict = Field(default_factory=dict)
 
 
 class ReviewRequestOut(BaseModel):

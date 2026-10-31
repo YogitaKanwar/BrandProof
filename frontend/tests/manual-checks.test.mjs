@@ -11,3 +11,11 @@ test('reviewer notes cover exactly the incomplete required checks',()=>{
   assert.deepEqual(incompleteChecks({checks:{exact_text:{status:'completed'},contextual:{status:'unavailable'},poster:{status:'not_assessed'}}}),['contextual'])
   assert.deepEqual(incompleteChecks({checks:{exact_text:{status:'partial'},contextual:{status:'completed'},poster:{status:'partial',details:{asset_id:'real-poster'}}}}),['exact_text','poster'])
 })
+test('advertising scopes require a human note for absent assessment and inapplicable packs, while old runs retain their scope',()=>{
+  const checks={exact_text:{status:'completed'},contextual:{status:'completed'}}
+  for(const status of ['not_assessed','not_applicable','partial','unavailable']) {
+    assert.deepEqual(incompleteChecks({checks:{...checks,advertising_risk:{status}}}),['advertising_risk'])
+  }
+  assert.deepEqual(incompleteChecks({checks:{...checks,advertising_risk:{status:'completed'}}}),[])
+  assert.deepEqual(incompleteChecks({checks}),[])
+})

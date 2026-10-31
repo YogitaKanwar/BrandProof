@@ -4,7 +4,7 @@ import type { Box, PosterOut } from './api/posters'
 import { overlayBox } from './api/posters'
 import { describeError } from './api/client'
 
-export default function PrivatePoster({api,campaignId,posterId,boxes=[]}: {api:BackendClient;campaignId:string;posterId:string;boxes?:Box[]}) {
+export default function PrivatePoster({api,campaignId,posterId,boxes=[],description}: {api:BackendClient;campaignId:string;posterId:string;boxes?:Box[];description?:string}) {
   const [loaded,setLoaded]=useState<{poster:PosterOut;url:string}|null>(null)
   const [error,setError]=useState('')
   useEffect(()=> {
@@ -17,5 +17,5 @@ export default function PrivatePoster({api,campaignId,posterId,boxes=[]}: {api:B
   },[api,campaignId,posterId])
   if(error)return <p role="alert" className="error">Private poster could not be loaded. {error}</p>
   if(!loaded || loaded.poster.id!==posterId)return <p role="status">Loading private poster…</p>
-  return <figure className="private-poster"><div className="poster-canvas"><img src={loaded.url} width={loaded.poster.width} height={loaded.poster.height} alt="Canonical poster associated with this saved record" />{boxes.map((box,index)=>{const style=overlayBox(box,loaded.poster.width,loaded.poster.height);return style?<span key={index} className="ocr-box" style={style} aria-hidden="true"/>:null})}</div><figcaption>OCR extraction: {loaded.poster.ocr.status}{loaded.poster.ocr.reason ? ` · ${loaded.poster.ocr.reason.replaceAll('_',' ')}`:''} · {loaded.poster.width} × {loaded.poster.height}. Text may be missed even when extraction completes. Inspect the image; highlights locate only returned text.</figcaption></figure>
+  return <figure className="private-poster"><div className="poster-canvas"><img src={loaded.url} width={loaded.poster.width} height={loaded.poster.height} alt={description?.trim()||"Canonical poster associated with this saved record"} />{boxes.map((box,index)=>{const style=overlayBox(box,loaded.poster.width,loaded.poster.height);return style?<span key={index} className="ocr-box" style={style} aria-hidden="true"/>:null})}</div><figcaption>OCR extraction: {loaded.poster.ocr.status}{loaded.poster.ocr.reason ? ` · ${loaded.poster.ocr.reason.replaceAll('_',' ')}`:''} · {loaded.poster.width} × {loaded.poster.height}. Text may be missed even when extraction completes. Inspect the image; highlights locate only returned text.</figcaption></figure>
 }

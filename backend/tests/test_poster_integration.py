@@ -151,7 +151,8 @@ def test_poster_manual_coverage_is_explicit_and_new_upload_stales_approval(
         "decision": "approve",
         "reason": "Synthetic API regression decision, not an actual user study.",
         "manual_checks": {
-            "contextual": "Synthetic reviewer attestation for tone and claim checking."
+            "advertising_risk": "Synthetic test reviewer manually assessed the unconfigured advertising scope.",
+            "contextual": "Synthetic reviewer attestation for tone and claim checking.",
         },
     }
     url = base + f"/reviews/{run['id']}/approvals"

@@ -2,9 +2,11 @@
 
 from sqlalchemy import select
 
+from brandproof.accessibility import alt_text_for
 from brandproof.claim_screening import screen_claims
 from brandproof.poster_models import PosterAsset
 from brandproof.rules import exact_checks
+from brandproof.visual_checks import evaluate_visuals
 
 
 def review_poster(session, campaign, active, excluded):
@@ -20,6 +22,10 @@ def review_poster(session, campaign, active, excluded):
     if not asset:
         return [], {"status": "not_assessed", "reason": "No poster attached.", "details": {}}
     extraction = asset.ocr
+    alt_version = alt_text_for(session, campaign, asset)
+    visual_findings, visual_details = evaluate_visuals(
+        asset, campaign, active, alt_version.text if alt_version else ""
+    )
     risk_findings, risk_check = screen_claims(extraction["text"], campaign.content_revision)
     if extraction["status"] != "completed":
         risk_check["status"] = "partial"
@@ -37,10 +43,16 @@ def review_poster(session, campaign, active, excluded):
         "accessibility": "not_assessed",
         "contextual_claims": "not_assessed",
         "claim_risk": risk_check,
+        "measured_checks": visual_details,
+        "alt_text_snapshot": {
+            "text": alt_version.text if alt_version else "",
+            "revision": alt_version.content_revision if alt_version else None,
+            "poster_id": asset.id,
+        },
     }
     if not extraction["text"]:
         details["exact_text_status"] = extraction["status"]
-        return [], {
+        return visual_findings, {
             "status": extraction["status"],
             "reason": "Poster text extraction is incomplete; inspect the image manually.",
             "details": details,
@@ -108,6 +120,7 @@ def review_poster(session, campaign, active, excluded):
     details["exact_text_status"] = (
         "partial" if exact_incomplete else ("completed" if rules else "not_assessed")
     )
+    findings.extend(visual_findings)
     return findings, {
         "status": "partial",  # OCR is not visual brand, accessibility or contextual review.
         "reason": "OCR-based exact rules and local claim-risk patterns were checked. Visual branding, accessibility and contextual poster claims require manual review.",

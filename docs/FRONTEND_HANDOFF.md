@@ -1,5 +1,9 @@
 # Yogita's frontend integration handoff
 
+Recent Reviews follow-up (feature branch only): owner DELETE `/api/v1/campaigns/{id}` requires both expected revisions and returns `{campaign_id,deletion_id,deleted:true,retained_history:true}`. This is reversible removal, not data erasure. Removed campaigns are excluded from lists/insights and ordinary resource access. Running reviews return 409; stale/cross-workspace/role guards remain authoritative. Owner POST `/campaigns/{id}/restore` requires both expected revisions plus `expected_deletion_id`; an older Undo cannot restore a later deletion. The UI requires explicit confirmation and keeps Undo metadata only in memory. Schema step `0005_review_removal` is additive. Public release `36cb8ae` does not have these routes yet.
+
+Feature-branch update (28 October): see `improvements-implementation.md`. Additive findings may include `unverified_draft_suggestion`; never send it to the verified apply endpoint. Copy only through explicit draft acceptance, save as a new revision, and re-review. Contextual consent now discloses high-confidence extracted poster text as well as caption/selected sources. Poster contextual findings retain their own poster IDs, code-point offsets and real OCR boxes. These feature-branch changes are not deployed to production yet.
+
 ## Manual-audit fixes — 28 October 2026
 
 `POST /api/v1/campaigns/{campaign_id}/caption/clear` accepts `{ "expected_revision": n }` and returns CampaignOut. It requires an owner/creator, an existing saved poster and the current content revision. It records an empty-caption revision, retains the poster/history and invalidates previous review/approval currency. Ordinary PUT /caption still rejects empty text. The UI asks for explicit confirmation through Remove saved caption. See the regenerated OpenAPI contract.
@@ -117,3 +121,10 @@ New runs add `checks.claim_risk`; caption and OCR-based poster findings use cate
 ## Connected Recent Reviews deletion
 
 The dashboard now offers owner deletion with explicit confirmation and in-page Undo. DELETE /api/v1/campaigns/{id} accepts expected_content_revision and expected_source_revision; response includes campaign_id, deletion_id, deleted=true and retained_history=true. POST /api/v1/campaigns/{id}/restore requires both revisions plus expected_deletion_id and returns the restored CampaignOut. A running review or stale revision returns 409; cross-workspace/removed resources return 404; creator/reviewer mutation returns 403. Normal list/read/write routes exclude removed campaigns. Sources, images, review runs and approval history are retained. Undo handle is memory-only and is lost on full reload/workspace switch. See openapi.json and REVIEW_DELETION_RELEASE.md.
+
+
+## Current Round 3 advertising integration — 31 October 2026
+
+New owner PUT/GET `/api/v1/campaigns/{id}/advertising-profile` selects jurisdiction, sector and language with both expected revisions. Saving increments source revision. New runs add `checks.advertising_risk` and optional finding `regulatory_evidence`; brand evidence stays separate. `not_applicable` is an additive check status and still requires manual notes for unsupported jurisdictions. `advertising_risk` is an exact required manual-note key when incomplete. Receipts expose each approval's `advertising_snapshot`. Installed-pack changes can make `is_current` false without a numeric content/source change; honour server currentness. Old and new frontend/API versions must be released together.
+
+The profile UI preserves dirty selections on refresh/conflict, uses owner writes and stays memory-only. Results show source/pack scope and legal evidence separately. A sample PDF is downloadable from the import panel. Insights includes reviewed snapshot counts and regulation identity. This local slice is type/build/lint/API-tested; fresh browser/public acceptance remains outstanding. See ADVERTISING_RISK.md and ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md. Older sections above describe historical milestones and are superseded where they conflict.

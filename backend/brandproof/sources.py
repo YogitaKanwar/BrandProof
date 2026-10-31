@@ -5,6 +5,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db, lock_campaign, require_role, scoped_campaign
+from brandproof.document_models import DocumentEvidence, evidence_for
 from brandproof.errors import fail
 from brandproof.models import Actor, Campaign
 from brandproof.schemas import MAX_DB_INTEGER
@@ -30,11 +31,17 @@ def canonical_text(rule: dict) -> str:
             return f"Use '{rule['preferred']}' instead of '{rule['term']}'."
         case "required_text":
             return f"Campaign copy must include: {rule['text']}"
+        case "brand_color":
+            return f"Permitted flat poster background: {rule['hex']} within CIE76 Delta-E {rule['tolerance']}."
+        case "contrast":
+            return f"Supported poster text/background samples require contrast of at least {rule['minimum_ratio']}:1."
+        case "alt_text":
+            return "Provide a poster description including the key price/date information. Human assessment of meaning is required."
         case _:
             return rule["guidance"]
 
 
-def render_source(source: Source, version: SourceVersion) -> dict:
+def render_source(source: Source, version: SourceVersion, session=None) -> dict:
     return {
         "id": source.id,
         "version_id": version.id,
@@ -47,6 +54,7 @@ def render_source(source: Source, version: SourceVersion) -> dict:
         "valid_until": version.valid_until,
         "confirmed_by": version.confirmed_by,
         "created_at": version.created_at,
+        "document_evidence": evidence_for(session, version.id) if session is not None else None,
     }
 
 
@@ -117,7 +125,7 @@ def create_source(
     session.add(version)
     bump_source_snapshot(session, campaign_id)
     session.commit()
-    return render_source(source, version)
+    return render_source(source, version, session)
 
 
 @router.get("", response_model=list[SourceOut])
@@ -133,7 +141,7 @@ def list_sources(campaign_id: str, who: Actor = Depends(actor), session: Session
         .where(Source.campaign_id == campaign_id)
         .order_by(Source.id)
     ).all()
-    return [render_source(source, version) for source, version in rows]
+    return [render_source(source, version, session) for source, version in rows]
 
 
 @router.get("/{source_id}/versions", response_model=list[SourceOut])
@@ -146,7 +154,7 @@ def versions(
     scoped_campaign(session, campaign_id, who)
     source = get_source(session, campaign_id, source_id)
     return [
-        render_source(source, version)
+        render_source(source, version, session)
         for version in session.scalars(
             select(SourceVersion)
             .where(SourceVersion.source_id == source.id)
@@ -182,7 +190,7 @@ def revise(
     session.add(version)
     bump_source_snapshot(session, campaign_id)
     session.commit()
-    return render_source(source, version)
+    return render_source(source, version, session)
 
 
 @router.post("/{source_id}/confirm", response_model=SourceOut)
@@ -215,6 +223,19 @@ def confirm(
         confirmed_by=who.id,
     )
     session.add(version)
+    session.flush()
+    inherited = session.get(DocumentEvidence, previous.id)
+    if inherited:
+        session.add(
+            DocumentEvidence(
+                source_version_id=version.id,
+                document_id=inherited.document_id,
+                page_number=inherited.page_number,
+                start=inherited.start,
+                end=inherited.end,
+                quote=inherited.quote,
+            )
+        )
     bump_source_snapshot(session, campaign_id)
     session.commit()
-    return render_source(source, version)
+    return render_source(source, version, session)

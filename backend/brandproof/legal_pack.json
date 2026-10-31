@@ -1,0 +1,26 @@
+{
+  "id": "in-advertising-risk",
+  "version": "2026-10-31.1",
+  "jurisdiction": "IN",
+  "retrieved_at": "2026-10-31",
+  "review_due": "2026-12-01",
+  "effective_from": "2022-06-09",
+  "effective_until": null,
+  "source_title": "CCPA Guidelines for Prevention of Misleading Advertisements and Endorsements for Misleading Advertisements, 2022",
+  "instrument_type": "CCPA guidelines under section 18 of the Consumer Protection Act, 2019",
+  "source_url": "https://consumeraffairs.gov.in/public/upload/files/CCPA_Notification_1732707665.pdf",
+  "source_sha256": "d97e8ab663ebdab8b3e2139465013da14f65dead4fa3e3aa8023df8617fe32f1",
+  "update_check": "Official Department of Consumer Affairs Acts index and CCPA guideline listings checked on retrieval date. This is a frozen limited reference, not a continuously updated law service.",
+  "supported_scope": "Selected English outcome, time-bound and absolute-performance advertising claims; general substantiation review only.",
+  "unsupported_scope": "Sector-specific regulation (including coaching, healthcare and finance), other jurisdictions/languages, general truth, metaphor, disclaimer typography, all consumer law and legal certification.",
+  "disabled_packs": [{"id": "in-coaching-2024", "reason": "Final instrument linked by PIB could not be retrieved from the official document host. No unverified clause is activated. General 2022 substantiation review remains available with partial sector coverage."}],
+  "rules": [{
+    "id": "IN-CCPA-2022-12A",
+    "clause": "12(a)",
+    "page": 10,
+    "quote": "shall be capable of substantiation",
+    "interpretation": "Objectively testable advertising claims need supporting evidence. A matched promise requests review; it does not prove falsity or a legal breach.",
+    "review_action": "Record the evidence reference, applicable audience, outcome definition, conditions and time period. Edit unsupported promises and rerun. A generic disclaimer does not automatically resolve the concern.",
+    "signals": ["guaranteed outcome", "time-bound outcome", "certain outcome", "absolute performance or safety", "universal performance", "quantified outcome"]
+  }]
+}
