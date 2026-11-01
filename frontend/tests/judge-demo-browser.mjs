@@ -30,6 +30,14 @@ try{
   await screenshot(a,'login-mobile')
   await a.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false})
   await click(a,`document.querySelector('.demo-cta')`);await wait(a,`!!document.querySelector('.demo-mode-bar')&&!!document.querySelector('.reviews-empty')`)
+  await evaluate(a,`(async()=>{window.__entryWorkspace=(await (${access})()).workspace_id;location.hash='/demo'})()`)
+  await wait(a,`!!document.querySelector('.demo-entry')&&document.querySelector('.demo-cta').textContent.includes('Continue Demo')`)
+  assert.equal(await evaluate(a,`!document.querySelector('.demo-sample')&&!document.querySelector('.demo-evidence')`),true)
+  await reload(a);await wait(a,`!!document.querySelector('.demo-entry')&&document.querySelector('.demo-cta').textContent.includes('Continue Demo')`)
+  await screenshot(a,'direct-demo-entry')
+  await evaluate(a,`(async()=>{window.__entryWorkspace=(await (${access})()).workspace_id})()`)
+  await click(a,`document.querySelector('.demo-cta')`);await wait(a,`!!document.querySelector('.demo-mode-bar')&&!!document.querySelector('.reviews-empty')`)
+  assert.equal(await evaluate(a,`(async()=>{return(await (${access})()).workspace_id===window.__entryWorkspace})()`),true)
   assert.equal(await evaluate(a,`localStorage.length===0&&sessionStorage.length===0`),true)
   await click(a,`document.querySelector('a[href="#/new"]')`);await wait(a,`!!document.querySelector('#publication-date')`)
   await click(a,button('Continue'));assert.equal(await evaluate(a,`!!document.querySelector('#publication-error')`),true)
@@ -58,7 +66,7 @@ try{
   await click(a,`document.querySelector('.live-sources .document-import > summary')`);await click(a,button('Load fictional workshop guidelines'));await click(a,button('Import as pending candidates'))
   await wait(a,`document.querySelectorAll('.server-source').length===8&&document.querySelector('.live-sources .document-import').textContent.includes('3 imported candidates')`)
   assert.equal(await evaluate(a,`document.querySelectorAll('.confirm-source').length`),4)
-  await b.send('Page.navigate',{url:origin});await wait(b,`!!document.querySelector('.demo-cta')&&!document.querySelector('.demo-cta').disabled`);await click(b,`document.querySelector('.demo-cta')`);await wait(b,`!!document.querySelector('.reviews-empty')`)
+  await b.send('Page.navigate',{url:new URL('#/demo',origin).href});await wait(b,`!!document.querySelector('.demo-cta')&&!document.querySelector('.demo-cta').disabled`);await click(b,`document.querySelector('.demo-cta')`);await wait(b,`!!document.querySelector('.reviews-empty')`)
   const permissions=await evaluate(b,`(async()=>{const identity=await (${access})();const bad=await fetch('/api/v1/campaigns',{headers:{Authorization:'Bearer invalid-public-credentials'}});const foreign=await fetch('/api/v1/campaigns/'+${JSON.stringify(campaignId)},{headers:{Authorization:'Bearer '+identity.actors.creator.access_token}});const forbidden=await fetch('/api/v1/campaigns',{method:'POST',headers:{Authorization:'Bearer '+identity.actors.reviewer.access_token,'Content-Type':'application/json'},body:JSON.stringify({name:'Forbidden',publication_date:'2026-11-12'})});return[bad.status,foreign.status,forbidden.status]})()`)
   assert.deepEqual(permissions,[401,404,403])
   await evaluate(a,`(async()=>{window.__testDemo=await (${access})()})()`)
@@ -80,7 +88,7 @@ try{
     await screenshot(pdf,'fictional-guidelines')
   }finally{await control('Target.disposeBrowserContext',{browserContextId:pdf.browserContextId});pdf.socket.close()}
   // Save only sanitized evidence; do not serialize session credentials or workspace identifiers.
-  await writeFile('../docs/evidence/judge-demo/browser-results.json',JSON.stringify({passed:true,sample:sampleChecks,permissions,checks:['passwordless entry','keyboard and mobile layout','one-click sandbox','required field validation','custom campaign and refresh','real sample caption and poster contradictions','explicit human request and reviewer changes decision','PDF pending extraction','separate judge cookies and workspace isolation','reset cancellation and revocation','stale tab recovery','logout and reload','direct sample entry','no browser credential storage']},null,2)+'\n')
+  await writeFile('../docs/evidence/judge-demo/browser-results.json',JSON.stringify({passed:true,sample:sampleChecks,permissions,checks:['explicit demo route with restored session','simple demo screen without sample prompts','continue preserves current sandbox','passwordless entry','keyboard and mobile layout','one-click sandbox','required field validation','custom campaign and refresh','real sample caption and poster contradictions','explicit human request and reviewer changes decision','PDF pending extraction','separate judge cookies and workspace isolation','reset cancellation and revocation','stale tab recovery','logout and reload','direct sample entry','no browser credential storage']},null,2)+'\n')
   assert.equal(a.errors.length+b.errors.length,0)
   console.log('PASS judge demo: real UI, OCR/evidence, human workflow, PDF, permissions, isolation, refresh, reset/revocation, expired/revoked recovery and logout. No credentials persisted.')
 } catch(error) { await screenshot(a,'failure');console.error(await evaluate(a,`document.querySelector('.live-sources .document-import')?.innerText||document.querySelector('main')?.innerText.slice(0,500)`));throw error }

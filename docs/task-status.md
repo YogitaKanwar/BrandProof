@@ -1,3 +1,7 @@
+## Direct demo entry follow-up - 1 November 2026
+
+Added `/#/demo` so a saved session cannot bypass the demo screen. This direct entry omits the sample preview/action; Continue Demo validates and reuses the current workspace without creating another session. Ordinary review refresh remains intact. Frontend build/lint, all 59 unit tests and genuine browser tests pass for fresh/direct entry, restored-session reload and continuation. Local link: http://127.0.0.1:8017/#/demo . No backend or deployment changes.
+
 ## Judge demo slice - 1 November 2026
 
 Completed on `feat/judge-demo-login-20261101`, preserving latest feature baseline `b8acc3c`: Emerald guest entry, explicit synthetic Creator/Reviewer identities, real INR 899/599 Workshop sample with OCR, PDF selection, four-stage guidance, server-side logout/reset revocation, expiry recovery, bounded single-worker admission and operator dry-run retention cleanup. No new demo schema migration or production change.

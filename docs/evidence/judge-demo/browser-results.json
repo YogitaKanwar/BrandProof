@@ -12,6 +12,9 @@
     403
   ],
   "checks": [
+    "explicit demo route with restored session",
+    "simple demo screen without sample prompts",
+    "continue preserves current sandbox",
     "passwordless entry",
     "keyboard and mobile layout",
     "one-click sandbox",

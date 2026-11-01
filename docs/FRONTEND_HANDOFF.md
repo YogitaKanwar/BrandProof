@@ -1,3 +1,5 @@
+Direct demo entry: `/#/demo` always shows the simple entry screen, including with a restored session. It omits sample preview/actions. Continue Demo checks the current server session and preserves its workspace. Ordinary deep-link refresh still restores saved work.
+
 # Judge guest entry and revocation ? 1 November 2026
 
 See JUDGE_DEMO_2026-11-01.md for audit/evidence. Passwordless public sandbox roles remain synthetic, never verified human accounts. The Emerald entry offers empty demo access or explicit sample setup; findings still require Run review. The Workshop sample has an actual Owner-confirmed price source v2 INR 899 and INR 599 caption/poster. Source confirmation is not content approval.

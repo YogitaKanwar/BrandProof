@@ -1,3 +1,7 @@
+## Direct demo entry acceptance - 1 November 2026
+
+Same isolated local preview: `/#/demo` stays on the demo screen with a valid recovery cookie, including after a real reload. Sample preview/action are absent on this route. Continue Demo performs a real server read and retains the workspace; a separate fresh browser context can also enter through this route. All 59 frontend tests, lint/build and the expanded genuine demo browser suite pass. Evidence: `evidence/judge-demo/direct-demo-entry.png`; sanitized browser checks updated. No production or backend changes.
+
 ## Judge demo configured-runtime acceptance - 1 November 2026
 
 Local only: FastAPI plus built frontend at `http://127.0.0.1:8017`, isolated `.cache/judge-demo-20261101.db`, actual installed Tesseract, external AI disabled. Repeated-test runtime session limit 100; the default 20-session limit was verified independently. No provider token or workspace credential was saved in evidence.

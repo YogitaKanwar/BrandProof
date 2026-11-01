@@ -1,6 +1,6 @@
 # Judge demo implementation and audit — 1 November 2026
 
-Implemented on `feat/judge-demo-login-20261101`. Testable local preview: **http://127.0.0.1:8017/**. This is a local URL, not a public deployment. No production migration, deployment, main merge, reset, force-push or provider call was performed.
+Implemented on `feat/judge-demo-login-20261101`. Direct demo entry: **http://127.0.0.1:8017/#/demo**. This route always shows the simple demo screen, even with a saved session, and omits sample prompts. Continue Demo validates and reuses the existing workspace; it does not create another one. Fresh and restored-browser entry/reload/continuation passed genuine browser verification. Testable local preview: **http://127.0.0.1:8017/**. This is a local URL, not a public deployment. No production migration, deployment, main merge, reset, force-push or provider call was performed.
 
 ## Repository and authentication audit
 

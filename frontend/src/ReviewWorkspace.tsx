@@ -13,9 +13,10 @@ import { loadInitialWorkspace } from './workspaceStartup'
 import { exampleDetails, prepareExampleCampaign } from './exampleCampaign'
 import DemoEntry from './DemoEntry'
 
-type Page = 'home' | 'new' | 'draft' | 'insights'
+type Page = 'home' | 'new' | 'draft' | 'insights' | 'demo'
 function currentRoute(): { page: Page; id: string; local?: boolean } {
   const hash = window.location.hash
+  if(hash==='#/demo')return {page:'demo',id:''}
   if(hash==='#/insights')return {page:'insights',id:''}
   if (hash === '#/new') return { page: 'new', id: '' }
   if (hash === '#/local-new') return {page:'new',id:'',local:true}
@@ -139,6 +140,16 @@ export default function ReviewWorkspace() {
     }
     catch (error) { if (version === workspaceLoadVersion.current) setLoadError(describeError(error)) }
     finally { if (version === workspaceLoadVersion.current) setLoading(false) }
+  }
+  async function enterDemo() {
+    if (!sourceClient || sessionExpired) { await connectDemo(); return }
+    if (loading || deleting || connectionInFlight.current) return
+    connectionInFlight.current = true; setConnecting(true); setNotice('')
+    try {
+      setResult(await sourceClient.list())
+      setEntryOpen(false); goTo('/')
+    } catch (error) { setNotice(describeError(error)) }
+    finally { connectionInFlight.current = false; setConnecting(false) }
   }
   async function connectDemo(destination='/') {
     if (loading || deleting || connectionInFlight.current || !confirmLeave()) return
@@ -271,7 +282,7 @@ export default function ReviewWorkspace() {
   const draft = result?.data.reviews.find(review => review.id === route.id)
   const campaign = result?.data.campaigns.find(item => item.id === draft?.campaignId)
   const pageName = route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
-  if(entryOpen&&!sourceClient)return <DemoEntry busy={loading||connecting||creatingExample} restoring={loading} error={loadError||notice} status={connectionNotice} onTry={()=>void connectDemo()} onSample={()=>void startExample()} onLocal={()=>void openLocalDrafts()} onRetry={()=>void retry()}/>
+  if(route.page==='demo'||(entryOpen&&!sourceClient))return <DemoEntry simple={route.page==='demo'} hasSession={!!sourceClient&&!sessionExpired} busy={loading||connecting||creatingExample} restoring={loading} error={loadError||notice} status={connectionNotice} onTry={()=>void enterDemo()} onSample={()=>void startExample()} onLocal={()=>void openLocalDrafts()} onRetry={()=>void retry()}/>
   return <UnsavedChangesContext.Provider value={register}><div className={`app-shell page-${route.page}`}>
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main')?.focus() }}>Skip to content</a>
     <aside className="sidebar">
