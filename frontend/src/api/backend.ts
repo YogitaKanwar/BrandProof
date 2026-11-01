@@ -118,12 +118,14 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
       return result()
     },
     async removeReview(id:string,snapshot:Snapshot){
+      await ensureReady()
       const deletion=await requestJson<ReviewRemoval>(`${base}/campaigns/${encodeURIComponent(id)}`,{method:'DELETE',headers:{...auth('owner'),'Content-Type':'application/json'},body:JSON.stringify(snapshot)})
       if(deletion.campaign_id!==id||deletion.deleted!==true||deletion.retained_history!==true||typeof deletion.deletion_id!=='string')throw invalid()
       campaigns.delete(id)
       return {...result(),deletion}
     },
     async restoreReview(campaign:CampaignOut,deletionId:string){
+      await ensureReady()
       const restored=validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(campaign.id)}/restore`,{method:'POST',headers:{...auth('owner'),'Content-Type':'application/json'},body:JSON.stringify({expected_content_revision:campaign.content_revision,expected_source_revision:campaign.source_revision,expected_deletion_id:deletionId})}))
       if(restored.id!==campaign.id)throw invalid()
       campaigns.set(restored.id,restored)
@@ -181,7 +183,7 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
       return result()
     },
     async runReview(campaignId: string, contentRevision: number, sourceRevision: number, externalConsent = false) {
-      
+
       return checkedReview(await requestJson<ReviewOut>(`${base}/campaigns/${encodeURIComponent(campaignId)}/reviews`, {
         method: 'POST', signal: AbortSignal.timeout(120000), headers: { ...auth(), 'Content-Type': 'application/json' }, body: JSON.stringify({ expected_content_revision: contentRevision, expected_source_revision: sourceRevision, external_ai_consent: externalConsent }),
       }))

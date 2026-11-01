@@ -34,6 +34,7 @@ def test_delete_hides_access_but_undo_preserves_versions_findings_and_other_camp
     response = client.request("DELETE", base, headers=owner, json=expected)
     assert response.status_code == 200
     removed = response.json()
+    assert client.get("/api/v1/governance-insights", headers=owner).json()["categories"] == []
     assert removed["deleted"] and removed["retained_history"]
     assert [row["id"] for row in client.get("/api/v1/campaigns", headers=owner).json()] == [
         other["id"]
@@ -48,7 +49,6 @@ def test_delete_hides_access_but_undo_preserves_versions_findings_and_other_camp
         ).status_code
         == 404
     )
-    assert client.get("/api/v1/governance-insights", headers=owner).json()["categories"] == []
     with client.app.state.sessions() as session:
         assert session.get(Campaign, campaign["id"]) is not None
         assert session.scalar(select(func.count()).select_from(ContentVersion)) == 2
@@ -109,3 +109,74 @@ def test_delete_permissions_stale_snapshot_running_guard_and_restore_generation(
         ).status_code
         == 200
     )
+
+
+def test_additive_startup_preserves_legacy_tables_and_saved_rows(client, owner, campaign):
+    from brandproof.db import Base
+    from brandproof.main import create_app
+    from brandproof.removal_models import CampaignRemoval
+    from fastapi.testclient import TestClient
+    from sqlalchemy import inspect, text
+
+    add_source(client, owner, campaign, {"kind": "price", "amount": "499", "currency": "INR"})
+    review_copy(client, owner, campaign, "Book for INR 599.")
+    engine = client.app.state.engine
+    # This disposable fixture database now represents the deployed legacy schema.
+    CampaignRemoval.__table__.drop(engine)
+    # Simulate a schema predating the removal migration, not a missing table
+    # whose migration has already been recorded as applied.
+    with engine.begin() as connection:
+        connection.execute(
+            text("DELETE FROM schema_migrations WHERE version='0005_review_removal'")
+        )
+    names = inspect(engine).get_table_names()
+
+    def snapshot():
+        with engine.connect() as connection:
+            return {
+                name: (
+                    [
+                        (column["name"], str(column["type"]), column["nullable"])
+                        for column in inspect(connection).get_columns(name)
+                    ],
+                    sorted(
+                        repr(tuple(row))
+                        for row in connection.execute(text(f'SELECT * FROM "{name}"'))
+                    ),
+                )
+                for name in names
+                if name != "schema_migrations"
+            }
+
+    before = snapshot()
+    with TestClient(create_app(database_url=str(engine.url))) as restarted:
+        assert restarted.get("/api/v1/health").status_code == 200
+        assert set(inspect(engine).get_table_names()) - set(names) == {"campaign_removals"}
+        assert snapshot() == before
+        assert (
+            restarted.get(f"/api/v1/campaigns/{campaign['id']}", headers=owner).status_code == 200
+        )
+    with TestClient(create_app(database_url=str(engine.url))):
+        assert snapshot() == before
+    assert "campaign_removals" in Base.metadata.tables
+
+
+def test_postgres_upgrade_ddl_creates_only_the_additive_removal_table():
+    from brandproof.db import Base
+    from brandproof.removal_models import CampaignRemoval
+    from sqlalchemy import create_mock_engine
+    from sqlalchemy.dialects import postgresql
+
+    statements = []
+    engine = create_mock_engine(
+        "postgresql+psycopg://",
+        lambda sql, *args, **kwargs: statements.append(
+            str(sql.compile(dialect=postgresql.dialect()))
+        ),
+    )
+    Base.metadata.create_all(engine, tables=[CampaignRemoval.__table__], checkfirst=False)
+    assert len(statements) == 1
+    assert "CREATE TABLE campaign_removals" in statements[0]
+    assert "FOREIGN KEY(campaign_id) REFERENCES campaigns (id)" in statements[0]
+    assert "FOREIGN KEY(removed_by) REFERENCES actors (id)" in statements[0]
+    assert not any(word in statements[0] for word in ["DROP TABLE", "ALTER TABLE", "DELETE FROM"])
