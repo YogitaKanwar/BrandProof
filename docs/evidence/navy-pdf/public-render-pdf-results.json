@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "pdfs": [
+    {
+      "asset": "/demo/workshop-guidelines.pdf",
+      "candidates": 3,
+      "reference_price": "INR 899",
+      "pending_before_confirmation": true,
+      "page_quotes_verified": true,
+      "conflicting_copy_detected": true,
+      "aligned_supported_caption_rules_match": true,
+      "automatic_approval": false
+    },
+    {
+      "asset": "/fictional-guidelines.pdf",
+      "candidates": 7,
+      "reference_price": "INR 899",
+      "pending_before_confirmation": true,
+      "page_quotes_verified": true,
+      "conflicting_copy_detected": true,
+      "aligned_supported_caption_rules_match": true,
+      "automatic_approval": false
+    }
+  ],
+  "scope": "Supported text directives and caption checks; not complete brand compliance or document authenticity."
+}

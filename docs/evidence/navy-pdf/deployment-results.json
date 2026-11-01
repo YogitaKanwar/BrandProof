@@ -1,0 +1,28 @@
+{
+  "source_commit": "e01f52b6ee02b6c85c480619cfc82cc486a56123",
+  "render": {
+    "deployment": "dep-dbjn8b7f3r2c73cjfti0",
+    "status": "live",
+    "origin": "https://brandproof-api-slz9.onrender.com"
+  },
+  "vercel": {
+    "deployment": "dpl_C15g8rCKBDCfFtwHfmuasXycyb3P",
+    "status": "READY",
+    "origin": "https://brand-proof-tau.vercel.app",
+    "fresh_user_approval": true
+  },
+  "github_ci": [
+    {
+      "run": 41330615524,
+      "conclusion": "success"
+    },
+    {
+      "run": 41330615411,
+      "conclusion": "success"
+    }
+  ],
+  "public_judge_browser_both_origins": true,
+  "public_real_pdf_http_both_origins": true,
+  "assets_match_tested_build_both_origins": true,
+  "new_migrations": false
+}
