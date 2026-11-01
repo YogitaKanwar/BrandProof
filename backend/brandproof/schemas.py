@@ -42,3 +42,7 @@ class DemoSessionOut(BaseModel):
     notice: str
     expires_at: UTCDateTime
     actors: dict[str, DemoActor]
+
+
+class DemoLogoutOut(BaseModel):
+    logged_out: Literal[True]

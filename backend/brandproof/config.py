@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     ai_workspace_concurrency_limit: int = Field(default=1, ge=1, le=16)
     ai_global_concurrency_limit: int = Field(default=2, ge=1, le=16)
     demo_cookie_secure: bool = True
+    demo_sessions_hourly_limit: int = Field(default=20, ge=1, le=1000)
+    demo_operations_hourly_limit: int = Field(default=300, ge=1, le=10000)
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
     @field_validator("public_origin")

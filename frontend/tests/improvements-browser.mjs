@@ -10,7 +10,7 @@ let sequence=0;const pending=new Map(),errors=[]
 socket.addEventListener('message',event=>{const data=JSON.parse(event.data);if(data.method==='Runtime.exceptionThrown')errors.push(data.params.exceptionDetails.text);const handler=pending.get(data.id);if(handler){pending.delete(data.id);if(data.error){handler.reject(new Error(data.error.message))}else{handler.resolve(data.result)}}})
 function send(method,params={}){return new Promise((resolve,reject)=>{const id=++sequence;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}))})}
 async function evaluate(expression){const data=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(data.exceptionDetails)throw new Error(data.exceptionDetails.text);return data.result.value}
-async function wait(expression){for(let i=0;i<600;i++){try{if(await evaluate(expression))return}catch(error){if(!/navigated|context|Cannot find/.test(error.message))throw error}await new Promise(r=>setTimeout(r,50))}throw new Error('Timed out: '+expression)}
+async function wait(expression){for(const deadline=Date.now()+45000;Date.now()<deadline;){try{if(await evaluate(expression))return}catch(error){if(!/navigated|context|Cannot find/.test(error.message))throw error}await new Promise(r=>setTimeout(r,50))}throw new Error('Timed out: '+expression)}
 async function click(expression){await wait(`!!(${expression})&&!(${expression}).disabled`);const point=await evaluate(`(()=>{const element=${expression};element.scrollIntoView({block:'center'});const r=element.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);await send('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1})}
 const button=text=>`Array.from(document.querySelectorAll('button')).find(b=>b.textContent===${JSON.stringify(text)})`
 async function snapshot(name){if(!process.env.BRANDPROOF_SCREENSHOTS)return;const dir='node_modules/.cache/improvements';await mkdir(dir,{recursive:true});const data=await send('Page.captureScreenshot',{format:'png'});await writeFile(`${dir}/${name}.png`,Buffer.from(data.data,'base64'))}
@@ -18,7 +18,7 @@ try{
   await send('Page.enable');await send('Runtime.enable');await send('Network.enable');await send('Network.clearBrowserCookies')
   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false})
   await send('Page.navigate',{url:origin});await wait(`!!document.querySelector('h1')`)
-  await evaluate(`localStorage.clear()`);await send('Page.reload');await wait(`document.querySelector('.reviews-empty')?.textContent==='No reviews yet'`)
+  await evaluate(`localStorage.clear()`);await wait(`!!document.querySelector('.demo-cta')&&!document.querySelector('.demo-cta').disabled`);await click(`document.querySelector('.demo-cta')`);await wait(`document.querySelector('.reviews-empty h3')?.textContent==='No reviews yet'`)
   await click(button('Try an editable example'))
   await wait(`document.querySelectorAll('.server-source').length===5&&!!document.querySelector('.live-poster img')&&!document.querySelector('.run-caption button').disabled`)
   assert.equal(await evaluate(`Array.from(document.querySelectorAll('.server-source .fact-status')).filter(n=>n.textContent==='Confirmed').length`),4)
@@ -40,10 +40,10 @@ try{
   await wait(`document.querySelector('.live-review-status').textContent.includes('revision 4')`)
   await click(`document.querySelector('.run-caption button')`)
   await wait(`document.querySelectorAll('#review-history option').length===2&&!document.querySelector('.run-caption button').disabled`)
-  await click(`document.querySelector('.document-import > summary')`)
-  await evaluate(`(()=>{const bytes=Uint8Array.from(atob(${JSON.stringify(pdf)}),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([bytes],'acceptance-guidelines.pdf',{type:'application/pdf'}));const input=document.querySelector('.document-import input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}))})()`)
+  await click(`document.querySelector('.live-sources .document-import > summary')`)
+  await evaluate(`(()=>{const bytes=Uint8Array.from(atob(${JSON.stringify(pdf)}),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([bytes],'acceptance-guidelines.pdf',{type:'application/pdf'}));const input=document.querySelector('.live-sources .document-import input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}))})()`)
   await click(button('Import as pending candidates'))
-  await wait(`document.querySelectorAll('.server-source').length===8&&document.querySelector('.document-import').textContent.includes('3 candidates')`)
+  await wait(`document.querySelectorAll('.server-source').length===8&&document.querySelector('.live-sources .document-import').textContent.includes('3 imported candidates')`)
   assert.match(await evaluate(`document.querySelector('.document-citation').textContent`),/page 1/)
   for(let remaining=3;remaining>0;remaining--){await click(`document.querySelector('.confirm-source')`);await wait(`document.querySelectorAll('.confirm-source').length===${remaining-1}`)}
   await click(`document.querySelector('.alt-text-editor > summary')`)
@@ -85,7 +85,7 @@ try{
   await click(`document.querySelector('.review-delete > button')`)
   await click(`document.querySelector('.review-delete [role=group] button')`)
   await wait(`document.querySelectorAll('.review-row').length===0`)
-  await send('Page.reload');await wait(`document.querySelector('.reviews-empty')?.textContent==='No reviews yet'`)
+  await send('Page.reload');await wait(`document.querySelector('.reviews-empty h3')?.textContent==='No reviews yet'`)
   assert.deepEqual(errors,[])
   console.log('PASS expanded demo/poster/readiness, explicit drafts/save/review, PDF import/confirmation, alt-text/measurements, governance/sample guards and historical links, responsive/session recovery; connected delete cancel/confirm, Undo and deletion persistence after reload. No credentials persisted.')
-}finally{await fetch('http://127.0.0.1:9223/json/close/'+target.id);socket.close()}
+}catch(error){await snapshot('failure');console.error(await evaluate(`document.body.innerText.slice(0,1600)`));throw error}finally{await fetch('http://127.0.0.1:9223/json/close/'+target.id);socket.close()}

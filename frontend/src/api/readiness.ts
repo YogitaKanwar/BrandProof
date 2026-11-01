@@ -1,6 +1,7 @@
 import { ApiError } from './client.ts'
 
 export interface ReadinessOptions {
+  onSessionExpired?: () => void
   onStatus?: (message: string) => void
   timeoutMs?: number
   retryMs?: number

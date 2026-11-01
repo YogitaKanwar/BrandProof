@@ -7,7 +7,7 @@ import secrets
 from datetime import UTC, datetime, timedelta
 
 from fastapi import Request, Response
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from brandproof.auth import token_hash
@@ -99,6 +99,61 @@ def create_browser_session(request: Request, response: Response, session: Sessio
         samesite="strict",
     )
     return session_payload(workspace.id, expires, tokens)
+
+
+def revoke_browser_session(request: Request, response: Response, session: Session):
+    """Revoke all synthetic roles, retaining actor IDs and their audit history.
+
+    A bearer fallback supports browsers which blocked the recovery cookie. Neither
+    a forged cookie nor a foreign bearer may revoke a different workspace.
+    """
+    check_browser_context(request, resume=True)
+    secret = request.cookies.get(COOKIE_NAME, "")
+    found = (
+        session.scalar(
+            select(DemoBrowserSession).where(DemoBrowserSession.token_hash == token_hash(secret))
+        )
+        if re.fullmatch(r"[A-Za-z0-9_-]{43}", secret)
+        else None
+    )
+    authorization = request.headers.get("authorization", "")
+    who = (
+        session.scalar(select(Actor).where(Actor.token_hash == token_hash(authorization[7:])))
+        if authorization.startswith("Bearer ")
+        else None
+    )
+    if found and who and found.workspace_id != who.workspace_id:
+        fail(403, "forbidden", "Browser session and demo role do not match")
+    workspace_id = found.workspace_id if found else who.workspace_id if who else None
+    if workspace_id:
+        now = datetime.now(UTC)
+        session.execute(
+            update(Actor).where(Actor.workspace_id == workspace_id).values(expires_at=now)
+        )
+        session.execute(
+            update(DemoBrowserSession)
+            .where(DemoBrowserSession.workspace_id == workspace_id)
+            .values(expires_at=now)
+        )
+    response.delete_cookie(
+        COOKIE_NAME,
+        path=COOKIE_PATH,
+        secure=request.app.state.settings.demo_cookie_secure,
+        httponly=True,
+        samesite="strict",
+    )
+    # The caller commits, or atomically replaces this workspace in the same transaction.
+
+
+def logout_browser_session(request: Request, response: Response, session: Session):
+    revoke_browser_session(request, response, session)
+    session.commit()
+    return {"logged_out": True}
+
+
+def reset_browser_session(request: Request, response: Response, session: Session):
+    revoke_browser_session(request, response, session)
+    return create_browser_session(request, response, session)
 
 
 def resume_browser_session(request: Request, session: Session):

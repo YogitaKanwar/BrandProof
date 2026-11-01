@@ -3,10 +3,15 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from brandproof.auth import actor, db, require_role, scoped_campaign
-from brandproof.demo_sessions import create_browser_session, resume_browser_session
+from brandproof.demo_sessions import (
+    create_browser_session,
+    logout_browser_session,
+    reset_browser_session,
+    resume_browser_session,
+)
 from brandproof.models import Actor, Campaign
 from brandproof.removal_models import active_campaigns
-from brandproof.schemas import CampaignCreate, CampaignOut, DemoSessionOut
+from brandproof.schemas import CampaignCreate, CampaignOut, DemoLogoutOut, DemoSessionOut
 
 router = APIRouter(prefix="/api/v1")
 
@@ -19,6 +24,16 @@ def create_demo(request: Request, response: Response, session: Session = Depends
 @router.post("/demo-sessions/resume", response_model=DemoSessionOut, tags=["demo"])
 def resume_demo(request: Request, session: Session = Depends(db)):
     return resume_browser_session(request, session)
+
+
+@router.post("/demo-sessions/logout", response_model=DemoLogoutOut, tags=["demo"])
+def logout_demo(request: Request, response: Response, session: Session = Depends(db)):
+    return logout_browser_session(request, response, session)
+
+
+@router.post("/demo-sessions/reset", status_code=201, response_model=DemoSessionOut, tags=["demo"])
+def reset_demo(request: Request, response: Response, session: Session = Depends(db)):
+    return reset_browser_session(request, response, session)
 
 
 @router.post("/campaigns", status_code=201, response_model=CampaignOut, tags=["campaigns"])

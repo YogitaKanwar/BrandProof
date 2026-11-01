@@ -1,4 +1,4 @@
-import { ApiError, requestJson, requestResponse } from './client.ts'
+import { ApiError, requestJson as transportJson, requestResponse } from './client.ts'
 import { createReadinessCheck } from './readiness.ts'
 import type { ReadinessOptions } from './readiness.ts'
 import type { PosterOut } from './posters.ts'
@@ -23,6 +23,13 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
   let session: DemoSessionOut | null = null
   let connecting: Promise<DemoSessionOut> | null = null
   const campaigns = new Map<string, CampaignOut>()
+  const requestJson: typeof transportJson = async (url, options) => {
+    try { return await transportJson(url, options) }
+    catch (error) {
+      if (error instanceof ApiError && error.status === 401 && !url.includes('/demo-sessions')) readiness?.onSessionExpired?.()
+      throw error
+    }
+  }
   const invalid = () => new ApiError('The API returned an unexpected response.', 502, 'invalid_response')
   function validateSession(data: DemoSessionOut): DemoSessionOut {
     if (!data || data.mode !== 'synthetic_demo' || typeof data.workspace_id !== 'string' || typeof data.notice !== 'string' || !Number.isFinite(Date.parse(data.expires_at)) ||
@@ -53,6 +60,21 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
   const checkedSource = (value: SourceOut) => { if (!isSource(value)) throw invalid(); return value }
   const checkedReview = (value: ReviewOut) => { if (!isReview(value)) throw invalid(); return value }
   return {
+    get expiresAt() { return session?.expires_at || null },
+    async logout() {
+      const headers: Record<string,string> = { 'X-BrandProof-Session': 'resume' }
+      if (session) headers.Authorization = `Bearer ${session.actors.creator.access_token}`
+      const response=await requestJson<{logged_out:boolean}>(`${base}/demo-sessions/logout`, {method:'POST',credentials:'include',cache:'no-store',headers})
+      if(response?.logged_out!==true)throw invalid()
+      session = null; campaigns.clear()
+    },
+    async reset() {
+      const headers: Record<string,string> = { 'X-BrandProof-Session': 'resume' }
+      if (session) headers.Authorization = `Bearer ${session.actors.creator.access_token}`
+      const replacement = validateSession(await requestJson<DemoSessionOut>(`${base}/demo-sessions/reset`, {method:'POST',credentials:'include',cache:'no-store',headers}))
+      session = replacement; campaigns.clear()
+      return this.list()
+    },
     async connect() {
       await ensureReady()
       if (!session) {

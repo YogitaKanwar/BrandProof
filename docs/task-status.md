@@ -1,3 +1,11 @@
+## Judge demo slice - 1 November 2026
+
+Completed on `feat/judge-demo-login-20261101`, preserving latest feature baseline `b8acc3c`: Emerald guest entry, explicit synthetic Creator/Reviewer identities, real INR 899/599 Workshop sample with OCR, PDF selection, four-stage guidance, server-side logout/reset revocation, expiry recovery, bounded single-worker admission and operator dry-run retention cleanup. No new demo schema migration or production change.
+
+Tests: 569 backend passes / 18 optional-font skips; final focused 101 passes; 59 frontend passes; lint/build/Ruff/format; seven real HTTP suites, new Chromium demo acceptance and existing expanded Chromium regression pass. Evidence and exact limits: [JUDGE_DEMO_2026-11-01.md](JUDGE_DEMO_2026-11-01.md). Configured local acceptance is recorded separately below/in configured-backend-tests.md.
+
+Blockers: Vercel public API proxy returned 502, direct Render healthy but lacks the new logout route; cloud deployment inventory denied and no selected isolated Render workspace. Local preview available at http://127.0.0.1:8017/. No cloud preview or production release claimed. Next release step: provision/authorize isolated preview target and verify proxy/cookies/schema there. Pre-existing documentation edits remain preserved separately.
+
 # BrandProof task status
 
 ## Recent Reviews deletion and judging answers - 28 October

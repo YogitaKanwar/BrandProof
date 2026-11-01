@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "sample": {
+    "caption": true,
+    "poster": true,
+    "ocr": "completed",
+    "ai": "unavailable"
+  },
+  "permissions": [
+    401,
+    404,
+    403
+  ],
+  "checks": [
+    "passwordless entry",
+    "keyboard and mobile layout",
+    "one-click sandbox",
+    "required field validation",
+    "custom campaign and refresh",
+    "real sample caption and poster contradictions",
+    "explicit human request and reviewer changes decision",
+    "PDF pending extraction",
+    "separate judge cookies and workspace isolation",
+    "reset cancellation and revocation",
+    "stale tab recovery",
+    "logout and reload",
+    "direct sample entry",
+    "no browser credential storage"
+  ]
+}

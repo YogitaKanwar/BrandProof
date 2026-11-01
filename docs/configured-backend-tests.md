@@ -1,3 +1,13 @@
+## Judge demo configured-runtime acceptance - 1 November 2026
+
+Local only: FastAPI plus built frontend at `http://127.0.0.1:8017`, isolated `.cache/judge-demo-20261101.db`, actual installed Tesseract, external AI disabled. Repeated-test runtime session limit 100; the default 20-session limit was verified independently. No provider token or workspace credential was saved in evidence.
+
+Passed genuine browser entry and sample access, synthetic Creator request/Reviewer request-changes, real caption and poster price contradictions against confirmed source v2 INR 899, OCR-completed INR 599 poster with real boxes, PDF three pending page-cited rules, custom campaign, refresh, two independent browser contexts, wrong bearer rejection, cross-workspace denial, reset/cancel/revocation, stale-tab recovery and logout/reload. No findings/approvals pre-seeded; overall automation remains partial, contextual AI unavailable. Screenshots/sanitized result: `docs/evidence/judge-demo/`. Existing seven HTTP suites pass; their small poster fixture separately reports low-confidence OCR truthfully.
+
+Full suite: 569 backend passed / 18 optional Noto-font skipped; final focused 101 passed; frontend 59 passed, build/lint and backend/scripts Ruff/format passed. The existing expanded Chromium regression also passed after adapting its entry/empty-state/PDF selectors. Final preview-helper startup and live contract equality passed with default quotas. See [JUDGE_DEMO_2026-11-01.md](JUDGE_DEMO_2026-11-01.md) for commands, risks and exact scope. New demo behavior needs no schema migration; incorporated upstream baseline has existing migrations through 0006, applied only to isolated local/test data.
+
+Public read-only audit is separate from local acceptance: Vercel frontend 200; proxied health 502 twice; direct Render database health 200 and PDF route present, logout route absent. Vercel inventory 403 and Render workspace selection blocked cloud preview setup. No public workflow acceptance, production migration or production deployment in this task.
+
 # Final tests requiring a fully configured backend
 
 ## Connected deletion local acceptance - 28 October 2026
