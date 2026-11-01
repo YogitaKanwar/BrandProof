@@ -68,4 +68,37 @@ Evidence: `evidence/navy-pdf/` contains sanitized results and screenshots. Sourc
 
 ## Release status
 
-Local candidate verified. Production deployment of the requested theme/PDF correction and public acceptance will be recorded here separately from these local results. No production migration is required.
+Source release: `e01f52b6ee02b6c85c480619cfc82cc486a56123`, pushed on the dedicated `feat/judge-demo-login-20261101` branch and fast-forwarded deployment branch `integration/round2-backend-pr1`. Main and the protected checkpoints remain unchanged. No production migration is required.
+
+The existing Render service is **LIVE** at this exact commit: deployment `dep-dbjn8b7f3r2c73cjfti0`, finished 1 November 2026 at 17:18:30 UTC. Public corrected demo: https://brandproof-api-slz9.onrender.com/#/demo . The complete judge Chromium suite and the new real-PDF HTTP suite both passed against this public origin. Live JavaScript, stylesheet and both PDF SHA-256 digests match the tested local build. These are public acceptance results, separate from the local suite above. Sanitized evidence: `evidence/navy-pdf/public-render-*`.
+
+Both source-release GitHub workflows passed, including frontend and container/PostgreSQL verification: [run 41330615524](https://github.com/YogitaKanwar/BrandProof/actions/runs/41330615524) and [run 41330615411](https://github.com/YogitaKanwar/BrandProof/actions/runs/41330615411).
+
+After fresh explicit user approval of this exact correction, Vercel production deployment `dpl_C15g8rCKBDCfFtwHfmuasXycyb3P` is **READY**, source `e01f52b6ee02b6c85c480619cfc82cc486a56123`, with the public alias and no alias error. Public judge link: https://brand-proof-tau.vercel.app/#/demo . The complete Chromium judge workflow and both-file PDF HTTP suite passed on this origin through its actual API proxy. Public JavaScript, CSS and both PDFs match the tested build byte for byte; the navy/sunshine entry and corrected extended PDF were visually inspected. Sanitized evidence: `evidence/navy-pdf/public-vercel-*`.
+
+The first promotion attempt was rejected by automatic approval review because previous permission covered `6076ccc`. The user then explicitly approved production deployment of `e01f52b`; the hold is resolved. No production migration, main merge, data reset or optional AI enablement occurred.
+
+## Source commit files
+
+The code/PDF release changes these 20 files; later documentation/evidence commits are tracked separately.
+
+- `backend/tests/test_demo_guidelines.py`
+- `docs/THEME_PDF_TEST_REPORT_2026-11-01.md`
+- `docs/evidence/navy-pdf/browser-results.json`
+- `docs/evidence/navy-pdf/direct-demo-entry.png`
+- `docs/evidence/navy-pdf/extended-guidelines.png`
+- `docs/evidence/navy-pdf/fictional-guidelines.png`
+- `docs/evidence/navy-pdf/login-mobile.png`
+- `docs/evidence/navy-pdf/pdf-live-results.json`
+- `docs/evidence/navy-pdf/test-summary.json`
+- `frontend/package.json`
+- `frontend/public/demo/workshop-guidelines.pdf`
+- `frontend/public/fictional-guidelines.pdf`
+- `frontend/src/App.css`
+- `frontend/src/DemoEntry.css`
+- `frontend/src/DocumentImport.tsx`
+- `frontend/src/exampleCampaign.ts`
+- `frontend/tests/judge-demo-browser.mjs`
+- `frontend/tests/pdf-guidelines-live.mjs`
+- `scripts/build_round3_report.py`
+- `scripts/generate_demo_guidelines.py`

@@ -1,0 +1,31 @@
+{
+  "origin": "https://brand-proof-tau.vercel.app",
+  "release": "e01f52b6ee02b6c85c480619cfc82cc486a56123",
+  "html_status": 200,
+  "files": [
+    {
+      "path": "/assets/index-c9J0Lxl_.js",
+      "status": 200,
+      "sha256": "145c4e63183bf5cddf4ce185826a5a882f5667b5ee91002cea289b14d38208a3",
+      "matches_local_build": true
+    },
+    {
+      "path": "/assets/index-Ac8XDMYZ.css",
+      "status": 200,
+      "sha256": "b6364ab160a5d2ed7c7b8d71ff7f399c69495d30eeee3c53100d2e9bc88c5c3f",
+      "matches_local_build": true
+    },
+    {
+      "path": "/demo/workshop-guidelines.pdf",
+      "status": 200,
+      "sha256": "48318e6d3565cf314ff9512c1bcae41783a1934c87ea70abc7fbf2c95b15edc8",
+      "matches_local_build": true
+    },
+    {
+      "path": "/fictional-guidelines.pdf",
+      "status": 200,
+      "sha256": "77107337b537c7c31217eeb6cb9e6f237f22cb587abfacb68a88ea0ec35339b0",
+      "matches_local_build": true
+    }
+  ]
+}

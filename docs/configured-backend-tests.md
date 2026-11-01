@@ -1,3 +1,9 @@
+## Navy/sunshine and actual PDF public acceptance - 1 November 2026
+
+Source `e01f52b6ee02b6c85c480619cfc82cc486a56123`: Render live `dep-dbjn8b7f3r2c73cjfti0`; after fresh user approval, Vercel production READY `dpl_C15g8rCKBDCfFtwHfmuasXycyb3P`, alias https://brand-proof-tau.vercel.app/#/demo . Both origins passed the complete genuine Chromium judge workflow and real-PDF HTTP suite. Live JS/CSS/both PDFs match the tested local build. Browser computed styles confirm the original navy/sunshine theme; actual renders show INR 899. Supported PDF rules agree with confirmed Workshop reference values, while the INR 599 sample still yields real engine contradictions. Matching-caption checks create no approval; their isolated fixture has no poster. PDF text extraction does not authenticate official guidelines or certify full brand compliance.
+
+Local full backend 573 passed / 18 optional Noto-font skips, 591 collected, zero failures/errors; frontend 59 passed; build/lint/Ruff/format, eight existing plus new PDF HTTP suites and two Chromium suites passed. Source CI runs 41330615524 and 41330615411 passed including container/PostgreSQL. No measured code-coverage percentage, new schema migration, provider enablement or main change. Historical imports/source versions are preserved. Evidence: evidence/navy-pdf/public-render-*, public-vercel-* and deployment-results.json. Full report: THEME_PDF_TEST_REPORT_2026-11-01.md.
+
 ## Vercel production acceptance - 1 November 2026
 
 After the user explicitly approved production, redeployed the exact reviewed preview with `withLatestCommit:false`: production `dpl_Hz6sVjshAWgmDstTc7W5Kx9wv9gG`, READY, alias brand-proof-tau.vercel.app, source `6076ccc6f681ad54106d533a73b106e29dea8c60`, no alias error. Public judge link: https://brand-proof-tau.vercel.app/#/demo . HTTPS frontend and proxied API/database health return 200; JS/CSS asset names match the release build and Render.

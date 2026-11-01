@@ -1,6 +1,6 @@
 # Round 3 submission content — judge release
 
-The current judge release is deployed and verified at https://brand-proof-tau.vercel.app/#/demo . The user explicitly approved Vercel production deployment; the matching Render backend is live. Release source: `6076ccc6f681ad54106d533a73b106e29dea8c60`; acceptance: `RELEASE_2026-11-01.md`.
+The corrected navy/sunshine judge release is deployed and verified at https://brand-proof-tau.vercel.app/#/demo and the matching Render frontend/API. Source: `e01f52b6ee02b6c85c480619cfc82cc486a56123`; current acceptance: `THEME_PDF_TEST_REPORT_2026-11-01.md`. The user explicitly approved production deployment of this correction. The original release acceptance remains in `RELEASE_2026-11-01.md`.
 
 ## Project and links
 
@@ -10,7 +10,7 @@ Repository: https://github.com/YogitaKanwar/BrandProof
 
 Judge demo: https://brand-proof-tau.vercel.app/#/demo . Matching Render frontend/API: https://brandproof-api-slz9.onrender.com .
 
-Historical Round 3 PDF: `output/pdf/BrandProof_Round_3_Release_Candidate.pdf`; the current test/deployment evidence is in `RELEASE_2026-11-01.md`.
+Historical Round 3 PDF: `output/pdf/BrandProof_Round_3_Release_Candidate.pdf`; current test/deployment evidence is in `THEME_PDF_TEST_REPORT_2026-11-01.md`.
 
 ## Three improvements in this release
 
@@ -36,7 +36,7 @@ The three promised improvements were completed through bounded extraction, measu
 
 BrandProof uses automated tests for brand fact validation, price contradiction detection, source versioning, content validation, permissions, invalid inputs and edge cases. Backend API tests and end-to-end browser checks exercise content submission, evidence-backed findings and human decisions, including stale reviews, self-approval restrictions, session recovery and workspace isolation.
 
-**Verified results, 1 November 2026:** the final local backend regression suite passed **571 tests**, with **18 optional Noto-font cases skipped** and zero failures. All **59 frontend unit tests** passed. Frontend build/lint and backend Ruff/format checks passed. Fresh isolated acceptance passed eight real HTTP suites and two genuine browser suites. The deployed Render release also passed all eight HTTP suites and the complete judge browser workflow; the Vercel production domain passed the complete judge browser workflow including actual proxy sessions, refresh, OCR, PDF, decisions, reset and logout; both final GitHub container/PostgreSQL/frontend CI runs passed. Actual pre/post-deployment record continuity passed. Public acceptance is recorded separately in `RELEASE_2026-11-01.md`. The backend count includes API/regression tests and is not presented as a unit-only count. No line/branch coverage percentage was measured. The feature coverage above describes tested behavior, not universal correctness or OCR/model accuracy.
+**Verified results, 1 November 2026:** the current local backend regression suite passed **573 tests**, with **18 optional Noto-font cases skipped** and zero failures/errors (591 collected). All **59 frontend unit tests** passed. Frontend build/lint and backend Ruff/format checks passed. Fresh isolated acceptance passed eight existing real HTTP suites, the new real-PDF HTTP suite and two genuine browser suites. Both actual shipped PDFs were imported as pending, explicitly confirmed and checked against conflicting and corrected captions without automatic approval. Both corrected Render and Vercel production origins passed the complete judge browser workflow and real-PDF HTTP suite publicly; both GitHub frontend/container/PostgreSQL workflows passed at this exact source commit. Previous release retention and Vercel acceptance are historical results in `RELEASE_2026-11-01.md`; current deployment evidence is separate in `THEME_PDF_TEST_REPORT_2026-11-01.md`. The backend count includes API/regression tests and is not a unit-only count. No line/branch coverage percentage was measured. These results do not establish universal correctness or representative OCR/model accuracy.
 
 ## User Handling
 
