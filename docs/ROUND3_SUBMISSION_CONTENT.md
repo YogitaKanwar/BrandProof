@@ -32,11 +32,25 @@ The difficult work is evidence/currentness integrity: immutable source and conte
 
 The three promised improvements were completed through bounded extraction, measurements and descriptive governance summaries. We repaired ordinary antialiasing sampling and made partial coverage explicit. We added a small cited India advertising-risk check rather than claiming broad legal understanding. Coaching-specific clauses remain disabled until the final official document can be verified. Existing manual review and immutable evidence remain authoritative.
 
-## Testing notes
+## Unit Testing
 
-31 October 2026: 574 backend tests and 56 frontend tests passed; frontend build/lint, backend Ruff and whitespace checks passed. All seven frontend real-HTTP suites and the expanded improvements smoke passed against an isolated SQLite/Tesseract runtime with external AI disabled. Wheel packaging/import, API-contract parity and actual process restart persistence were verified. Evidence: `ROUND3_LOCAL_ACCEPTANCE_2026-10-31.md`.
+BrandProof uses automated tests for brand fact validation, price contradiction detection, source versioning, content validation, permissions, invalid inputs and edge cases. Backend API tests and end-to-end browser checks exercise content submission, evidence-backed findings and human decisions, including stale reviews, self-approval restrictions, session recovery and workspace isolation.
 
-Manual UI, current PostgreSQL/container execution and public release remain unverified due browser/Docker access restrictions and the user's local-release decision. Scripted reviewer notes are QA, not independent feedback. OCR and English patterns have explicit limitations; sampled contrast is not full accessibility certification.
+**Verified results, 1 November 2026:** the final local backend regression suite passed **571 tests**, with **18 optional Noto-font cases skipped** and zero failures. All **59 frontend unit tests** passed. Frontend build/lint and backend Ruff/format checks passed. The earlier isolated acceptance also passed eight real HTTP suites and two genuine browser suites; current public release acceptance is recorded separately. The backend count includes API/regression tests and is not presented as a unit-only count. No line/branch coverage percentage was measured. The feature coverage above describes tested behavior, not universal correctness or OCR/model accuracy.
+
+## User Handling
+
+BrandProof provides one structured workflow for brand references, marketing content, findings and human decisions. It validates inputs and uploads, prevents duplicate submissions, preserves edits on failures, and shows loading, permission and recovery messages. Backend workspace and role checks protect access; versioned sources, immutable review snapshots and decision history preserve traceability. Changes invalidate earlier readiness instead of silently retaining an approval.
+
+Guest access uses server-issued, hashed bearer credentials held only in browser memory and a protected 24-hour HttpOnly recovery cookie. Logout and reset revoke all guest roles server-side. These are synthetic demo roles, not verified personal or team identities. Production team sign-in is outside this guest model.
+
+## Demo Account for Judges
+
+Judges enter through the **Try Interactive Demo** button without creating a personal account or entering a password. The visible **Demo Credentials** section explains passwordless access and provides copyable Creator/Reviewer access instructions; it does not expose administrator, owner or database secrets. The direct `/#/demo` link shows the simple entry screen even when a browser has a saved session. **Continue Demo** preserves that session's workspace.
+
+Each guest receives an isolated workspace. Judges can create their own reviews or choose the optional fictional workshop campaign inside the workspace, including a real uploaded poster, INR 899 approved reference versus INR 599 content, actual contradiction checking and a human-review workflow. Findings and approvals are not precomputed. Backend scope checks prevent access to another workspace; judges should use fictional, non-confidential material. Reset starts a separate workspace and revokes old access. AI requires server enablement and explicit consent and remains unavailable when unconfigured.
+
+Scripted reviewer notes are QA, not independent feedback. Optional fonts, representative OCR/model quality and full accessibility certification are outside the verified results. See `JUDGE_DEMO_2026-11-01.md` and the dated configured-runtime acceptance for evidence and deployment status.
 
 ## Member contributions
 

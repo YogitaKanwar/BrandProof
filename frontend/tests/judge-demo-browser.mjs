@@ -1,9 +1,13 @@
-// Genuine Chromium + API acceptance. Run only against an isolated demo environment.
+// Genuine Chromium + API acceptance. Public QA requires an explicit opt-in and known host.
 // Credentials and workspace IDs remain in memory; screenshots contain fictional UI only.
 import assert from 'node:assert/strict'
 import {mkdir,writeFile} from 'node:fs/promises'
 const origin=process.env.BRANDPROOF_TEST_URL||'http://127.0.0.1:8017/'
-assert.ok(/^http:\/\/(127\.0\.0\.1|localhost):/.test(origin),'This test is restricted to the isolated local preview')
+const targetOrigin=new URL(origin)
+const localTarget=targetOrigin.protocol==='http:'&&['127.0.0.1','localhost'].includes(targetOrigin.hostname)
+const authorizedPublicTarget=process.env.BRANDPROOF_ALLOW_PUBLIC_DEMO_TESTS==='1'&&targetOrigin.protocol==='https:'&&['brand-proof-tau.vercel.app','brandproof-api-slz9.onrender.com'].includes(targetOrigin.hostname)
+assert.ok(localTarget||authorizedPublicTarget,'Public QA requires explicit opt-in and an authorized BrandProof host')
+const evidenceRoot=process.env.BRANDPROOF_DEMO_EVIDENCE_DIR||'../docs/evidence/judge-demo'
 const browser=await(await fetch('http://127.0.0.1:9223/json/version')).json()
 const browserSocket=new WebSocket(browser.webSocketDebuggerUrl)
 await new Promise(resolve=>browserSocket.addEventListener('open',resolve,{once:true}))
@@ -16,7 +20,7 @@ const button=text=>`Array.from(document.querySelectorAll('button')).find(b=>b.te
 async function click(page,expression){await wait(page,`!!(${expression})&&!(${expression}).disabled`);const point=await evaluate(page,`(()=>{const element=${expression};element.scrollIntoView({block:'center'});const r=element.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);await page.send('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1})}
 async function fill(page,selector,value){await evaluate(page,`(()=>{const input=document.querySelector(${JSON.stringify(selector)});Object.getOwnPropertyDescriptor(input.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(value)});input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}))})()`)}
 async function reload(page){const loaded=new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(new Error('Reload did not complete')),20000);const handler=event=>{if(JSON.parse(event.data).method==='Page.loadEventFired'){clearTimeout(timeout);page.socket.removeEventListener('message',handler);resolve()}};page.socket.addEventListener('message',handler)});await page.send('Page.reload');await loaded}
-async function screenshot(page,name){const root='../docs/evidence/judge-demo';await mkdir(root,{recursive:true});const data=await page.send('Page.captureScreenshot',{format:'png'});await writeFile(`${root}/${name}.png`,Buffer.from(data.data,'base64'))}
+async function screenshot(page,name){await mkdir(evidenceRoot,{recursive:true});const data=await page.send('Page.captureScreenshot',{format:'png'});await writeFile(`${evidenceRoot}/${name}.png`,Buffer.from(data.data,'base64'))}
 const a=await open(),b=await open()
 const access=`async()=>{const response=await fetch('/api/v1/demo-sessions/resume',{method:'POST',headers:{'X-BrandProof-Session':'resume'}});if(!response.ok)throw new Error('Session recovery failed');return response.json()}`
 try{
@@ -88,7 +92,7 @@ try{
     await screenshot(pdf,'fictional-guidelines')
   }finally{await control('Target.disposeBrowserContext',{browserContextId:pdf.browserContextId});pdf.socket.close()}
   // Save only sanitized evidence; do not serialize session credentials or workspace identifiers.
-  await writeFile('../docs/evidence/judge-demo/browser-results.json',JSON.stringify({passed:true,sample:sampleChecks,permissions,checks:['explicit demo route with restored session','simple demo screen without sample prompts','continue preserves current sandbox','passwordless entry','keyboard and mobile layout','one-click sandbox','required field validation','custom campaign and refresh','real sample caption and poster contradictions','explicit human request and reviewer changes decision','PDF pending extraction','separate judge cookies and workspace isolation','reset cancellation and revocation','stale tab recovery','logout and reload','direct sample entry','no browser credential storage']},null,2)+'\n')
+  await writeFile(`${evidenceRoot}/browser-results.json`,JSON.stringify({passed:true,sample:sampleChecks,permissions,checks:['explicit demo route with restored session','simple demo screen without sample prompts','continue preserves current sandbox','passwordless entry','keyboard and mobile layout','one-click sandbox','required field validation','custom campaign and refresh','real sample caption and poster contradictions','explicit human request and reviewer changes decision','PDF pending extraction','separate judge cookies and workspace isolation','reset cancellation and revocation','stale tab recovery','logout and reload','direct sample entry','no browser credential storage']},null,2)+'\n')
   assert.equal(a.errors.length+b.errors.length,0)
   console.log('PASS judge demo: real UI, OCR/evidence, human workflow, PDF, permissions, isolation, refresh, reset/revocation, expired/revoked recovery and logout. No credentials persisted.')
 } catch(error) { await screenshot(a,'failure');console.error(await evaluate(a,`document.querySelector('.live-sources .document-import')?.innerText||document.querySelector('main')?.innerText.slice(0,500)`));throw error }

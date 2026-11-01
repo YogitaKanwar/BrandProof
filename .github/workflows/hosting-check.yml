@@ -1,7 +1,7 @@
 name: Hosting package
 on:
   push:
-    branches: [fix/demo-session-resume, feat/brandproof-improvements-20261028]
+    branches: [fix/demo-session-resume, feat/brandproof-improvements-20261028, feat/judge-demo-login-20261101, integration/round2-backend-pr1]
   pull_request:
     branches: [main, integration/round2-backend-pr1]
   workflow_dispatch:
