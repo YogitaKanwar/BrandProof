@@ -1,3 +1,7 @@
+## Public judge demo release - 1 November 2026
+
+Release `6076ccc6f681ad54106d533a73b106e29dea8c60` is LIVE on the existing Render service: https://brandproof-api-slz9.onrender.com/#/demo . Backend final suite: 571 passed / 18 optional-font skips; frontend: 59 passed; lint/build/format, eight local HTTP suites, two local browser suites, eight public HTTP suites and the public judge browser workflow passed. Both final GitHub frontend/container/PostgreSQL CI runs passed. The original session and source/content/review/revision digests survived the actual deployment. No new schema migration, main change or paid infrastructure. Unit Testing/User Handling/Demo Account copy is updated accurately for passwordless synthetic guests. Vercel preview for the same commit is READY; production promotion awaits explicit approval after automatic review enforced the original preview-only release rule. See RELEASE_2026-11-01.md and configured-backend-tests.md.
+
 ## Direct demo entry follow-up - 1 November 2026
 
 Added `/#/demo` so a saved session cannot bypass the demo screen. This direct entry omits the sample preview/action; Continue Demo validates and reuses the current workspace without creating another session. Ordinary review refresh remains intact. Frontend build/lint, all 59 unit tests and genuine browser tests pass for fresh/direct entry, restored-session reload and continuation. Local link: http://127.0.0.1:8017/#/demo . No backend or deployment changes.

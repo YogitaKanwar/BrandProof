@@ -1,0 +1,28 @@
+{
+  "release_commit": "6076ccc6f681ad54106d533a73b106e29dea8c60",
+  "render_deployment": "dep-dbjmmqu7bikc73fuig8g",
+  "render_status": "live",
+  "public_demo": "https://brandproof-api-slz9.onrender.com/#/demo",
+  "backend_tests_passed": 571,
+  "backend_tests_skipped": 18,
+  "frontend_tests_passed": 59,
+  "http_suites_passed": 8,
+  "public_browser_passed": true,
+  "retention": {
+    "passed": true,
+    "stage": "checked",
+    "same_workspace": true,
+    "same_credentials": true,
+    "same_records": true,
+    "all_roles_valid": true
+  },
+  "ci_runs": [
+    41327484372,
+    41327484492
+  ],
+  "ci_conclusion": "success",
+  "vercel_preview_deployment": "dpl_9a3ZuqBTJbhRCK14Z2juAGLzJ67W",
+  "vercel_production": "awaiting_explicit_production_approval",
+  "new_schema_migration": false,
+  "code_coverage_percent": null
+}

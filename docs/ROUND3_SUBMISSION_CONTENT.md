@@ -1,6 +1,6 @@
-# Round 3 submission content — local candidate
+# Round 3 submission content — judge release
 
-Use after the final deployed workflow is verified. The current release is local only; public acceptance is pending. Do not paste “completed publicly” until the deployed build is checked.
+The current judge release is deployed and verified at https://brandproof-api-slz9.onrender.com/#/demo . The existing Vercel public alias awaits explicit production-promotion approval. Release source: `6076ccc6f681ad54106d533a73b106e29dea8c60`; acceptance: `RELEASE_2026-11-01.md`.
 
 ## Project and links
 
@@ -8,9 +8,9 @@ BrandProof — evidence-first brand and advertising review. Team: YOGI2KANWAR.
 
 Repository: https://github.com/YogitaKanwar/BrandProof
 
-Repository homepage: https://brand-proof-tau.vercel.app (requires current release acceptance; API health returned 429 during this session).
+Judge demo: https://brandproof-api-slz9.onrender.com/#/demo . Repository homepage: https://brand-proof-tau.vercel.app (current demo promotion pending).
 
-Updated PDF: `output/pdf/BrandProof_Round_3_Release_Candidate.pdf`.
+Historical Round 3 PDF: `output/pdf/BrandProof_Round_3_Release_Candidate.pdf`; the current test/deployment evidence is in `RELEASE_2026-11-01.md`.
 
 ## Three improvements completed in the local candidate
 
@@ -24,7 +24,7 @@ A saved advertising profile selects jurisdiction, sector and language. Supported
 
 ## Technology and implementation
 
-React 19, TypeScript and Vite frontend. Python/FastAPI/Pydantic/SQLAlchemy backend. Pillow normalizes images; real Tesseract returns OCR text/confidence/coordinates. pypdf runs in a bounded subprocess. Deterministic structured parsers, measured image samples and versioned English patterns perform the core checks. SQLite is used for isolated local acceptance; PostgreSQL models and an additive migration/CI path are prepared, with six schema steps. Optional external contextual AI requires server configuration and explicit per-review consent; live-provider quality is not claimed here.
+React 19, TypeScript and Vite frontend. Python/FastAPI/Pydantic/SQLAlchemy backend. Pillow normalizes images; real Tesseract returns OCR text/confidence/coordinates. pypdf runs in a bounded subprocess. Deterministic structured parsers, measured image samples and versioned English patterns perform the core checks. SQLite is used for isolated local acceptance; the existing container/PostgreSQL migration and workflow CI passed with six schema steps. Optional external contextual AI requires server configuration and explicit per-review consent; live-provider quality is not claimed here.
 
 The difficult work is evidence/currentness integrity: immutable source and content snapshots, exact quotations, real image coordinates, concurrent revision guards, author/requester approval restrictions, persisted human decisions, historical receipts and safe recovery. Advertising profile changes share source revision guards, while installed pack digests additionally protect approval currentness.
 
@@ -36,7 +36,7 @@ The three promised improvements were completed through bounded extraction, measu
 
 BrandProof uses automated tests for brand fact validation, price contradiction detection, source versioning, content validation, permissions, invalid inputs and edge cases. Backend API tests and end-to-end browser checks exercise content submission, evidence-backed findings and human decisions, including stale reviews, self-approval restrictions, session recovery and workspace isolation.
 
-**Verified results, 1 November 2026:** the final local backend regression suite passed **571 tests**, with **18 optional Noto-font cases skipped** and zero failures. All **59 frontend unit tests** passed. Frontend build/lint and backend Ruff/format checks passed. The earlier isolated acceptance also passed eight real HTTP suites and two genuine browser suites; current public release acceptance is recorded separately. The backend count includes API/regression tests and is not presented as a unit-only count. No line/branch coverage percentage was measured. The feature coverage above describes tested behavior, not universal correctness or OCR/model accuracy.
+**Verified results, 1 November 2026:** the final local backend regression suite passed **571 tests**, with **18 optional Noto-font cases skipped** and zero failures. All **59 frontend unit tests** passed. Frontend build/lint and backend Ruff/format checks passed. Fresh isolated acceptance passed eight real HTTP suites and two genuine browser suites. The deployed Render release also passed all eight HTTP suites and the complete judge browser workflow; both final GitHub container/PostgreSQL/frontend CI runs passed. Actual pre/post-deployment record continuity passed. Public acceptance is recorded separately in `RELEASE_2026-11-01.md`. The backend count includes API/regression tests and is not presented as a unit-only count. No line/branch coverage percentage was measured. The feature coverage above describes tested behavior, not universal correctness or OCR/model accuracy.
 
 ## User Handling
 
@@ -58,4 +58,4 @@ Team-supplied ownership: Rushab Ramhari Patil — backend, OCR, AI/database and 
 
 ## Before the leader submits
 
-Finish team-owned deployment and fresh anonymous desktop/mobile acceptance. Replace local candidate status with verified deployed commits/results; ensure the working app, repository and PDF links open without sign-in. Confirm the exact final form format and deadline in the official instructions. No form submission is authorised or performed by this document.
+Use the verified Render judge link while Vercel production promotion is pending. The release report records actual deployed commits, anonymous browser/API checks and limitations. Ensure the selected app, repository and any historical PDF links open without sign-in; use the current report for final counts. Confirm the exact final form format and deadline in the official instructions. No form submission is authorised or performed by this document.
