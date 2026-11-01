@@ -1,0 +1,26 @@
+{
+  "origin": "https://brand-proof-tau.vercel.app",
+  "assets": [
+    {
+      "path": "/assets/index-DFo-TxNN.js",
+      "status": 200,
+      "bytes": 359749,
+      "matches_release_build": true,
+      "sha256": "a6c10c48f8c06773a034be3b0479f56cc17b98ab7e1d7af080dbd80ba0c98dc6"
+    },
+    {
+      "path": "/assets/index-DkM3GgHK.css",
+      "status": 200,
+      "bytes": 45051,
+      "matches_release_build": true,
+      "sha256": "848e6fbf948781cca5c5d43ff5f31d99a510ec8dcdb84e24056becfa913a3a12"
+    }
+  ],
+  "html_status": 200,
+  "proxy_health_status": 200,
+  "proxy_health": {
+    "status": "ok",
+    "database": "ok",
+    "version": "0.1.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "backend": {
+    "collected": 591,
+    "passed": 573,
+    "skipped": 18,
+    "failures": 0,
+    "errors": 0
+  },
+  "frontend_unit_passed": 59,
+  "existing_http_suites_passed": 8,
+  "pdf_http_suite_passed": true,
+  "browser_suites_passed": 2,
+  "code_coverage_percent": null
+}

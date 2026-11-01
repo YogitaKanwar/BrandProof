@@ -1,5 +1,15 @@
 # Round 3 local release handoff
 
+## 31 October integration update
+
+The latest upstream feature and main heads are now included in pushed integration commit `9d6d227a530ee1aa7fd752579460cab48fdd687b`. Application source matches upstream main `1cf0ddc`; integration retains its extra removal HTTP suite and fixes the container regression-test layout. The primary checkout's uncommitted documentation and local main are preserved.
+
+The earlier backup hold was explicitly superseded: the user authorized deployment without a verified database backup and accepted that recovery is not guaranteed. Production is now live at `7cb8fb3169b0dcd1f171a2765232089cbd4e2578` on the existing Render/Vercel services, with the selected committed navy/Desert Sun design. The six ordered additive startup steps completed without an observed schema error; no data deletion/reset/destructive migration occurred. See the production release entry in `configured-backend-tests.md` for exact evidence and limits.
+
+Fresh local evidence: 558 backend tests passed with 18 optional font skips; 56 frontend tests, lint/build, Ruff, eight HTTP suites, expanded feature smoke, live/saved OpenAPI parity, packaged legal/migration JSON and local migration preflight passed. The intended Noto font passed real OCR/contrast; Arial conservatively abstained. No application behavior was modified to force a measurement. Final integration CI: [run 41213208584](https://github.com/YogitaKanwar/BrandProof/actions/runs/41213208584); **both jobs passed**, including Docker/PostgreSQL upgrade and actual workflows, 558 backend tests (18 optional font skips), and 56 frontend tests/lint/build. Full evidence is recorded in `configured-backend-tests.md`.
+
+The former preview has now been superseded by READY production `dpl_Gc7pQV4JdNBpLGdscYM3Dy9mB2Bu` with the actual public alias, alongside live Render `dep-dbj0dklg1s2s73eeh3vg`. Public asset bytes/contract, seven API suites, expanded feature smoke, staged browser acceptance and actual pre/post-upgrade retention passed. External AI stays unavailable; verified backup and broad quality acceptance remain incomplete. The historical local-only account uncertainty below has been resolved for the existing team-owned resources; its local test limitations remain historical evidence.
+
 31 October 2026. User explicitly requested a local release after the discovered Render workspace could not be identified as theirs. Do not deploy into that workspace or the previously rejected Vercel account `adarshnarwankar`. No push, merge, deployment or submission was performed.
 
 ## Candidate

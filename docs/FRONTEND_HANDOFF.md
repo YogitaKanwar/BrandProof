@@ -1,3 +1,13 @@
+Direct demo entry: `/#/demo` always shows the simple entry screen, including with a restored session. It omits sample preview/actions. Continue Demo checks the current server session and preserves its workspace. Ordinary deep-link refresh still restores saved work.
+
+# Judge guest entry and revocation ? 1 November 2026
+
+See JUDGE_DEMO_2026-11-01.md for audit/evidence. Passwordless public sandbox roles remain synthetic, never verified human accounts. The Emerald entry offers empty demo access or explicit sample setup; findings still require Run review. The Workshop sample has an actual Owner-confirmed price source v2 INR 899 and INR 599 caption/poster. Source confirmation is not content approval.
+
+Additive POST `/api/v1/demo-sessions/logout` returns `{"logged_out":true}`; POST `/api/v1/demo-sessions/reset` returns a new DemoSessionOut (201). Both require the existing `X-BrandProof-Session: resume` browser-provenance protection, credentials:include and optionally the current in-memory Creator bearer when recovery cookies were blocked. A mismatched cookie/bearer is rejected. Logout expires all synthetic actors and cookie recovery; reset does so atomically before creating a separate empty workspace. Histories/actor IDs remain. Clear browser access only after acknowledgement. Expiry/revocation must never silently rotate a workspace or replay a write.
+
+Default bounded single-worker admission: 20 session creations/resets and 300 campaign writes per peer/hour, with 10x global caps; 429 includes Retry-After. Provider quotas/consent remain separate. Multi-replica public release needs shared admission. All private API/session responses use no-store. No new demo schema migration. Operator-only `brandproof.demo_cleanup` is dry-run by default; permanent retention cleanup requires an explicitly isolated database and authorization. No production migration/deployment was performed.
+
 # Yogita's frontend integration handoff
 
 Recent Reviews follow-up (feature branch only): owner DELETE `/api/v1/campaigns/{id}` requires both expected revisions and returns `{campaign_id,deletion_id,deleted:true,retained_history:true}`. This is reversible removal, not data erasure. Removed campaigns are excluded from lists/insights and ordinary resource access. Running reviews return 409; stale/cross-workspace/role guards remain authoritative. Owner POST `/campaigns/{id}/restore` requires both expected revisions plus `expected_deletion_id`; an older Undo cannot restore a later deletion. The UI requires explicit confirmation and keeps Undo metadata only in memory. Schema step `0005_review_removal` is additive. Public release `36cb8ae` does not have these routes yet.

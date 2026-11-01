@@ -47,6 +47,48 @@
         }
       }
     },
+    "/api/v1/demo-sessions/logout": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Logout Demo",
+        "operationId": "logout_demo_api_v1_demo_sessions_logout_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoLogoutOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo-sessions/reset": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Reset Demo",
+        "operationId": "reset_demo_api_v1_demo_sessions_reset_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSessionOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/campaigns": {
       "get": {
         "tags": [
@@ -2954,6 +2996,20 @@
           "access_token"
         ],
         "title": "DemoActor"
+      },
+      "DemoLogoutOut": {
+        "properties": {
+          "logged_out": {
+            "type": "boolean",
+            "const": true,
+            "title": "Logged Out"
+          }
+        },
+        "type": "object",
+        "required": [
+          "logged_out"
+        ],
+        "title": "DemoLogoutOut"
       },
       "DemoSessionOut": {
         "properties": {

@@ -1,7 +1,7 @@
 name: Hosting package
 on:
   push:
-    branches: [fix/demo-session-resume, feat/brandproof-improvements-20261028]
+    branches: [fix/demo-session-resume, feat/brandproof-improvements-20261028, feat/judge-demo-login-20261101, integration/round2-backend-pr1]
   pull_request:
     branches: [main, integration/round2-backend-pr1]
   workflow_dispatch:
@@ -67,8 +67,8 @@ jobs:
           docker exec brandproof python /tmp/improvements_smoke.py --base-url http://127.0.0.1:8001
       - name: Run the complete offline backend regression suite in the image
         run: |
-          docker cp backend/tests brandproof:/tmp/backend-tests
-          docker exec brandproof uv run --locked --extra dev python -m pytest /tmp/backend-tests -q --tb=short -p no:cacheprovider
+          docker cp scripts brandproof:/app/scripts
+          docker exec brandproof uv run --locked --extra dev python -m pytest backend/tests -q --tb=short -p no:cacheprovider
       - name: Stop test app
         if: always()
         run: docker rm --force brandproof || true

@@ -48,6 +48,7 @@ export function describeError(error: unknown): string {
     413: 'Image exceeds the upload limit.',
     415: 'Choose a PNG or JPEG file.',
     422: 'Check the supplied fields.',
+    429: 'Please wait before trying again. Public demo usage is limited to keep it available for everyone.',
     502: 'The service connection was interrupted. If you were saving, reload recent reviews before submitting again to avoid duplicates.',
     504: 'The service took too long to respond. If you were saving, reload recent reviews before submitting again to avoid duplicates.',
   }

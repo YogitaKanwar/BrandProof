@@ -11,10 +11,12 @@ import CampaignStatus from './CampaignStatus'
 import GovernanceInsights from './GovernanceInsights'
 import { loadInitialWorkspace } from './workspaceStartup'
 import { exampleDetails, prepareExampleCampaign } from './exampleCampaign'
+import DemoEntry from './DemoEntry'
 
-type Page = 'home' | 'new' | 'draft' | 'insights'
+type Page = 'home' | 'new' | 'draft' | 'insights' | 'demo'
 function currentRoute(): { page: Page; id: string; local?: boolean } {
   const hash = window.location.hash
+  if(hash==='#/demo')return {page:'demo',id:''}
   if(hash==='#/insights')return {page:'insights',id:''}
   if (hash === '#/new') return { page: 'new', id: '' }
   if (hash === '#/local-new') return {page:'new',id:'',local:true}
@@ -56,6 +58,9 @@ export default function ReviewWorkspace() {
   const [publicationDate, setPublicationDate] = useState('')
   const [connecting, setConnecting] = useState(false)
   const [creatingExample, setCreatingExample] = useState(false)
+  const [entryOpen,setEntryOpen]=useState(!currentRoute().local)
+  const [resetRequested,setResetRequested]=useState(false)
+  const [sessionExpired,setSessionExpired]=useState(false)
   const [sourceClient, setSourceClient] = useState<BackendClient | null>(null)
   const service = useRef< typeof reviewClient | ReturnType<typeof createBackendClient>>(reviewClient)
   const connectionInFlight = useRef(false)
@@ -66,6 +71,9 @@ export default function ReviewWorkspace() {
   const { register, confirmLeave } = useDraftGuard()
   const acceptedUrl = useRef(window.location.href)
   const allowedHash = useRef('')
+  function newClient() {
+    return createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', {onStatus:setConnectionNotice,onSessionExpired:()=>setSessionExpired(true)})
+  }
   function goTo(destination: string) {
     const hash = `#${destination}`
     if (window.location.hash === hash) return
@@ -98,13 +106,14 @@ export default function ReviewWorkspace() {
   useEffect(() => {
     let active = true
     const version = ++workspaceLoadVersion.current
-    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
+    const client = newClient()
     loadInitialWorkspace(client, reviewClient, currentRoute()).then(data => {
       if (!active || version !== workspaceLoadVersion.current) return
       needsInitialLoad.current = false
       service.current = data.mode === 'backend' ? client : reviewClient
       setSourceClient(data.mode === 'backend' ? client : null)
       setResult(data)
+      setEntryOpen(data.mode !== 'backend' && !currentRoute().local && !(currentRoute().page==='draft' && data.data.reviews.some(row=>row.id===currentRoute().id)))
     })
       .catch(error => { if (active && version === workspaceLoadVersion.current) setLoadError(`Could not restore your workspace. ${describeError(error)} No new workspace was created.`) })
       .finally(() => { if (active && version === workspaceLoadVersion.current) setLoading(false) })
@@ -116,11 +125,12 @@ export default function ReviewWorkspace() {
     setLoading(true); setLoadError('')
     try {
       if (needsInitialLoad.current) {
-        const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
+        const client = newClient()
         const data = await loadInitialWorkspace(client, reviewClient, currentRoute())
         if (version !== workspaceLoadVersion.current) return
         service.current = data.mode === 'backend' ? client : reviewClient
         setSourceClient(data.mode === 'backend' ? client : null)
+        setEntryOpen(data.mode!=='backend' && !currentRoute().local)
         needsInitialLoad.current = false
         setResult(data)
       } else {
@@ -131,17 +141,28 @@ export default function ReviewWorkspace() {
     catch (error) { if (version === workspaceLoadVersion.current) setLoadError(describeError(error)) }
     finally { if (version === workspaceLoadVersion.current) setLoading(false) }
   }
+  async function enterDemo() {
+    if (!sourceClient || sessionExpired) { await connectDemo(); return }
+    if (loading || deleting || connectionInFlight.current) return
+    connectionInFlight.current = true; setConnecting(true); setNotice('')
+    try {
+      setResult(await sourceClient.list())
+      setEntryOpen(false); goTo('/')
+    } catch (error) { setNotice(describeError(error)) }
+    finally { connectionInFlight.current = false; setConnecting(false) }
+  }
   async function connectDemo(destination='/') {
     if (loading || deleting || connectionInFlight.current || !confirmLeave()) return
     connectionInFlight.current = true
     setConnecting(true); setNotice('')
     // Explicit action always means a new isolated demo, never silent session renewal.
-    const client = createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
+    const client = newClient()
     try {
       const data = await client.connect()
       service.current = client
       needsInitialLoad.current = false
       setSourceClient(client)
+      setEntryOpen(false);setSessionExpired(false)
       setRemovedReview(null)
       setResult(data); setLoadError(''); goTo(destination)
     } catch (error) { setNotice(describeError(error)) }
@@ -152,7 +173,7 @@ export default function ReviewWorkspace() {
     if (loading || deleting || connecting || creatingExample || connectionInFlight.current || !confirmLeave()) return
     connectionInFlight.current = true
     setCreatingExample(true); setNotice('')
-    const client = sourceClient || createBackendClient(import.meta.env.VITE_API_BASE_URL || '/api/v1', { onStatus: setConnectionNotice })
+    const client = sourceClient || newClient()
     let created: ReviewResult | undefined
     try {
       if (!sourceClient) await client.connect()
@@ -160,6 +181,7 @@ export default function ReviewWorkspace() {
       service.current = client
       needsInitialLoad.current = false
       setSourceClient(client); setResult(created); setLoadError('')
+      setEntryOpen(false);setSessionExpired(false)
       const campaign = created.data.reviews[0].backendCampaign!
       // Keep a partly prepared example visible if a later request fails.
       const prepared = await prepareExampleCampaign(client, campaign)
@@ -180,8 +202,31 @@ export default function ReviewWorkspace() {
     service.current = reviewClient
     needsInitialLoad.current = false
     setSourceClient(null)
+    setEntryOpen(false)
     setRemovedReview(null)
     await retry(); goTo(destination)
+  }
+  useEffect(()=>{
+    if(!sourceClient?.expiresAt)return
+    const remaining=Date.parse(sourceClient.expiresAt)-Date.now()
+    const timer=window.setTimeout(()=>setSessionExpired(true),Math.max(0,remaining))
+    return()=>window.clearTimeout(timer)
+  },[sourceClient,sourceClient?.expiresAt])
+  async function endDemo(reset=false) {
+    if(!sourceClient||connectionInFlight.current||loading||saving||deleting||!confirmLeave())return
+    connectionInFlight.current=true;setConnecting(true);setNotice('')
+    try {
+      if(reset){const data=await sourceClient.reset();setResult(data);setSessionExpired(false);setNotice('Demo reset. You have a new isolated workspace. Previous credentials are revoked; previous audit history is retained.')}
+      else {await sourceClient.logout();service.current=reviewClient;setSourceClient(null);setResult(null);setEntryOpen(true);setSessionExpired(false)}
+      setResetRequested(false);setRemovedReview(null);goTo('/')
+    }catch(error){setNotice(`${describeError(error)} ${reset?'Reset':'Logout'} was not confirmed. Retry or reload to check your session.`)}
+    finally{connectionInFlight.current=false;setConnecting(false)}
+  }
+  async function recoverSession(){
+    if(!sourceClient||connectionInFlight.current)return
+    connectionInFlight.current=true;setConnecting(true);setNotice('')
+    try{const data=await sourceClient.resume();if(data){setResult(data);setSessionExpired(false);setNotice('Your browser session was restored.')}else{setSessionExpired(true);setNotice('This session has expired or was revoked. Exit Demo, then explicitly start a new sandbox. Unsaved edits remain here until you leave.')}}
+    catch(error){setNotice(describeError(error))}finally{connectionInFlight.current=false;setConnecting(false)}
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -237,6 +282,7 @@ export default function ReviewWorkspace() {
   const draft = result?.data.reviews.find(review => review.id === route.id)
   const campaign = result?.data.campaigns.find(item => item.id === draft?.campaignId)
   const pageName = route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
+  if(route.page==='demo'||(entryOpen&&!sourceClient))return <DemoEntry simple={route.page==='demo'} hasSession={!!sourceClient&&!sessionExpired} busy={loading||connecting||creatingExample} restoring={loading} error={loadError||notice} status={connectionNotice} onTry={()=>void enterDemo()} onSample={()=>void startExample()} onLocal={()=>void openLocalDrafts()} onRetry={()=>void retry()}/>
   return <UnsavedChangesContext.Provider value={register}><div className={`app-shell page-${route.page}`}>
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main')?.focus() }}>Skip to content</a>
     <aside className="sidebar">
@@ -250,7 +296,8 @@ export default function ReviewWorkspace() {
       <p className="sidebar-note">Brand review workspace</p>
     </aside>
     <div className="workspace">
-      <header className="topbar"><div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{pageName}</strong></div><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Saved work can be restored in this browser for up to 24 hours. A new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. A protected browser cookie restores the demo; role tokens stay in memory. Deleted reviews are hidden while audit history is retained; this is not permanent data erasure. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={loading || connecting || saving || deleting} onClick={() => void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Start a new demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving || deleting} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving||deleting} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p>}</div></details></header>
+      {sourceClient&&<><div className="demo-mode-bar" aria-label="Demo session"><strong>DEMO MODE</strong><span>Synthetic Creator / Reviewer roles · isolated fictional workspace</span><button type="button" disabled={loading||connecting||creatingExample||saving||deleting} onClick={()=>setResetRequested(true)}>Reset Demo</button><button type="button" disabled={loading||connecting||creatingExample||saving||deleting} onClick={()=>void endDemo()}>Exit Demo</button></div>{resetRequested&&<div className="demo-reset-confirm" role="group" aria-label="Confirm demo reset"><p>Start a fresh, empty sandbox? This revokes all roles in this demo. Its saved records and audit history are retained but become inaccessible. Other judges’ workspaces are unaffected.</p><button type="button" disabled={connecting} onClick={()=>void endDemo(true)}>Confirm Reset Demo</button><button type="button" disabled={connecting} onClick={()=>setResetRequested(false)}>Keep current demo</button></div>}{sessionExpired&&<div className="session-expiry" role="alert"><p>Demo access expired or was revoked. Your unsaved edits are still here. Restore a valid browser session, or Exit Demo to begin again.</p><button type="button" disabled={connecting} onClick={()=>void recoverSession()}>Restore session</button></div>}</>}
+      <header className="topbar"><div className="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong>{pageName}</strong></div><details className="connection-status"><summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo connected' : 'Preview mode'}</summary><div className="connection-popover"><p>{result?.mode === 'backend' ? 'Connected demo: use fictional material only. Saved work can be restored in this browser for up to 24 hours. A new demo creates a separate workspace.' : 'Drafts are stored in this browser. Live verification is not connected.'}</p><details className="connection-details"><summary>About this demo</summary><p className="form-help">{result?.notice} Demo roles are synthetic. A protected browser cookie restores the demo; role tokens stay in memory. Deleted reviews are hidden while audit history is retained; this is not permanent data erasure. AI and OCR coverage depend on server configuration.</p></details><button type="button" disabled={loading || connecting || saving || deleting} onClick={() => result?.mode==='backend'?setResetRequested(true):void connectDemo()}>{connecting ? 'Connecting…' : result?.mode === 'backend' ? 'Reset Demo workspace' : 'Start connected demo'}</button>{result?.mode === 'backend' ? <><button type="button" disabled={saving || deleting} onClick={() => void retry()}>Reload campaigns</button><button type="button" disabled={saving||deleting} onClick={() => void openLocalDrafts()}>Open local drafts</button></> : <p><a className="local-draft-link" href="#/local-new" onClick={event => { event.preventDefault(); void openLocalDrafts("/local-new") }}>Create a local-only draft instead</a></p>}</div></details></header>
       <main id="main" tabIndex={-1}>
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>
         <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Your reviews' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page==='insights'?'Trace repeated finding signals to their evidence and human decisions.':route.page === 'home' ? 'Check your content. Keep the evidence. Decide what goes live.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}<WorkspaceIcon kind="new" /></a>}</div>

@@ -1,0 +1,19 @@
+{
+  "backend": {
+    "collected": 589,
+    "passed": 571,
+    "skipped": 18,
+    "failures": 0,
+    "errors": 0
+  },
+  "frontend_unit": {
+    "passed": 59,
+    "failures": 0
+  },
+  "http_suites_passed": 8,
+  "browser_suites_passed": 2,
+  "frontend_build": "passed",
+  "frontend_lint": "passed",
+  "backend_lint_format": "passed",
+  "code_coverage_percent": null
+}

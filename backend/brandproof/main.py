@@ -9,6 +9,7 @@ from brandproof.accessibility import router as accessibility_router
 from brandproof.approval import router as approval_router
 from brandproof.config import Settings
 from brandproof.db import make_engine, session_factory
+from brandproof.demo_limits import DemoLimits
 from brandproof.documents import router as documents_router
 from brandproof.errors import install_errors
 from brandproof.insights import router as insights_router
@@ -59,6 +60,7 @@ def create_app(*, database_url: str | None = None):
     app.state.engine = engine
     app.state.sessions = sessions
     app.state.settings = settings
+    demo_limits = DemoLimits(settings)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -74,11 +76,10 @@ def create_app(*, database_url: str | None = None):
 
     @app.middleware("http")
     async def prevent_session_caching(request, call_next):
-        response = await call_next(request)
-        if request.url.path.rstrip("/") in (
-            "/api/v1/demo-sessions",
-            "/api/v1/demo-sessions/resume",
-        ):
+        response = demo_limits.admit(request)
+        if response is None:
+            response = await call_next(request)
+        if request.url.path.startswith("/api/v1/") and request.url.path != "/api/v1/health":
             response.headers["Cache-Control"] = "no-store"
             response.headers["Pragma"] = "no-cache"
         return response

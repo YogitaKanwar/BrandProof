@@ -333,7 +333,7 @@ c.drawString(50, A4[1] - 92, "Workshop campaign guidelines")
 c.setFillColor(navy)
 c.setFont("Noto", 12)
 lines = [
-    "Campaign price: INR 499",
+    "Campaign price: INR 899",
     "Campaign date: 2026-11-12",
     "Required text: Terms apply",
     'Use "affordable" instead of "cheap"',
