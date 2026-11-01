@@ -22,7 +22,7 @@ export async function prepareExampleCampaign(api: BackendClient, campaign: Campa
   const canvas=document.createElement('canvas');canvas.width=1400;canvas.height=440
   const context=canvas.getContext('2d')
   if(!context)throw new Error('Sample poster could not be prepared. The example sources and caption are saved.')
-  context.fillStyle='white';context.fillRect(0,0,canvas.width,canvas.height);context.fillStyle='#0B292D'
+  context.fillStyle='white';context.fillRect(0,0,canvas.width,canvas.height);context.fillStyle='#1e2640'
   context.font='bold 64px Arial';context.fillText('Fictional workshop launch.',40,90)
   context.font='56px Arial';context.fillText('Book for INR 599.',40,175);context.fillText('Guaranteed results in 30 days.',40,260)
   context.font='32px Arial';context.fillText('Fictional demo. Inspect and edit this example.',40,360)

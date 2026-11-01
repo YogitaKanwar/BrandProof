@@ -553,17 +553,3 @@ body { min-width: 0; }
 body { color: var(--navy); background: var(--background); }
 input:focus, textarea:focus { box-shadow: 0 0 0 3px #34456818; }
 .review-row:hover { border-color: #9aacc8; }
-
-/* Native Emerald demo palette; keep the existing workspace layout and components. */
-.app-shell { --navy:#0B292D; --teal:#0B6659; --desert-sun:#11B7A3; --background:#F5FAF8; --border:#D5E5DD; background:var(--background); }
-.app-shell .sidebar, .app-shell .topbar { background:#0B292D; border-color:#244A48; }
-.app-shell .wordmark span { background:#11B7A3; color:#0B292D; }
-.app-shell .main-nav a[aria-current] { color:#FFF; background:#0B6659; border-color:#0B6659; }
-.app-shell .main-nav a:hover:not([aria-current]) { background:#16423F; }
-.app-shell .primary { color:#FFF; background:#0B6659; border-color:#0B6659; }
-.app-shell .primary:hover:not(:disabled) { color:#FFF; background:#085448; border-color:#085448; }
-.app-shell .example-invitation { background:#EEF8F3; border-color:#CBE5D7; border-left-color:#11B7A3; }
-.app-shell .step-number { color:#0B6659; }
-.app-shell .connection-status > summary { background:#153C3C; border-color:#416B64; color:#E5F5EE; }
-.app-shell .connection-status > summary:hover, .app-shell .connection-status[open] > summary { background:#1A4943; border-color:#11B7A3; }
-.app-shell .ai-options { border-color:#D8D4F7; }
