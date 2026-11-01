@@ -1,3 +1,9 @@
+## Vercel production acceptance - 1 November 2026
+
+After the user explicitly approved production, redeployed the exact reviewed preview with `withLatestCommit:false`: production `dpl_Hz6sVjshAWgmDstTc7W5Kx9wv9gG`, READY, alias brand-proof-tau.vercel.app, source `6076ccc6f681ad54106d533a73b106e29dea8c60`, no alias error. Public judge link: https://brand-proof-tau.vercel.app/#/demo . HTTPS frontend and proxied API/database health return 200; JS/CSS asset names match the release build and Render.
+
+The full genuine judge browser suite passed against this Vercel origin, including direct entry with existing/new guest sessions, real reload/cookie recovery, own campaign, actual caption/poster price contradictions with source evidence/boxes, human request/changes decision, pending PDF extraction, two judge contexts, 401/403/404, reset/revocation and logout. AI remains unavailable truthfully. Public evidence: evidence/judge-release-public/vercel-browser-results.json and Vercel screenshots. This resolves the prior automatic-review production hold. Other limitations and the verified backend/CI counts below remain unchanged.
+
 ## Public judge release acceptance - 1 November 2026
 
 Existing Render deployment `dep-dbjmmqu7bikc73fuig8g` is LIVE at source `6076ccc6f681ad54106d533a73b106e29dea8c60`; public frontend/API: https://brandproof-api-slz9.onrender.com/#/demo . The built frontend and API share one HTTPS origin. All eight real HTTP suites and the complete Chromium judge workflow passed publicly: actual price/OCR evidence, human decisions, PDF candidates, separate guests, restored direct entry, reset, logout and recovery. Workshop OCR completed; the small HTTP fixture truthfully remained low-confidence. Contextual AI stayed unavailable. Synthetic notes are test actions, not independent human review.

@@ -1,6 +1,6 @@
 # Round 3 submission content — judge release
 
-The current judge release is deployed and verified at https://brandproof-api-slz9.onrender.com/#/demo . The existing Vercel public alias awaits explicit production-promotion approval. Release source: `6076ccc6f681ad54106d533a73b106e29dea8c60`; acceptance: `RELEASE_2026-11-01.md`.
+The current judge release is deployed and verified at https://brand-proof-tau.vercel.app/#/demo . The user explicitly approved Vercel production deployment; the matching Render backend is live. Release source: `6076ccc6f681ad54106d533a73b106e29dea8c60`; acceptance: `RELEASE_2026-11-01.md`.
 
 ## Project and links
 
@@ -8,11 +8,11 @@ BrandProof — evidence-first brand and advertising review. Team: YOGI2KANWAR.
 
 Repository: https://github.com/YogitaKanwar/BrandProof
 
-Judge demo: https://brandproof-api-slz9.onrender.com/#/demo . Repository homepage: https://brand-proof-tau.vercel.app (current demo promotion pending).
+Judge demo: https://brand-proof-tau.vercel.app/#/demo . Matching Render frontend/API: https://brandproof-api-slz9.onrender.com .
 
 Historical Round 3 PDF: `output/pdf/BrandProof_Round_3_Release_Candidate.pdf`; the current test/deployment evidence is in `RELEASE_2026-11-01.md`.
 
-## Three improvements completed in the local candidate
+## Three improvements in this release
 
 1. **PDF guideline import with traceable evidence:** supported PDF text directives produce pending rule candidates with exact page quotations, validated offsets and document digests. Owners explicitly confirm versions. Modified rules retain history without falsely inheriting old quotation support. Unsupported/scanned pages and extraction limits remain visible.
 2. **Measured visual consistency and accessibility:** flat background colour distance, reliable OCR-word contrast with measured colours/ratios/targets, poster-description requirements and literal price/date coverage. Ordinary antialiased text is supported; uncertain/complex images return partial coverage. Relevant edits invalidate earlier reviews and receipts.
@@ -36,7 +36,7 @@ The three promised improvements were completed through bounded extraction, measu
 
 BrandProof uses automated tests for brand fact validation, price contradiction detection, source versioning, content validation, permissions, invalid inputs and edge cases. Backend API tests and end-to-end browser checks exercise content submission, evidence-backed findings and human decisions, including stale reviews, self-approval restrictions, session recovery and workspace isolation.
 
-**Verified results, 1 November 2026:** the final local backend regression suite passed **571 tests**, with **18 optional Noto-font cases skipped** and zero failures. All **59 frontend unit tests** passed. Frontend build/lint and backend Ruff/format checks passed. Fresh isolated acceptance passed eight real HTTP suites and two genuine browser suites. The deployed Render release also passed all eight HTTP suites and the complete judge browser workflow; both final GitHub container/PostgreSQL/frontend CI runs passed. Actual pre/post-deployment record continuity passed. Public acceptance is recorded separately in `RELEASE_2026-11-01.md`. The backend count includes API/regression tests and is not presented as a unit-only count. No line/branch coverage percentage was measured. The feature coverage above describes tested behavior, not universal correctness or OCR/model accuracy.
+**Verified results, 1 November 2026:** the final local backend regression suite passed **571 tests**, with **18 optional Noto-font cases skipped** and zero failures. All **59 frontend unit tests** passed. Frontend build/lint and backend Ruff/format checks passed. Fresh isolated acceptance passed eight real HTTP suites and two genuine browser suites. The deployed Render release also passed all eight HTTP suites and the complete judge browser workflow; the Vercel production domain passed the complete judge browser workflow including actual proxy sessions, refresh, OCR, PDF, decisions, reset and logout; both final GitHub container/PostgreSQL/frontend CI runs passed. Actual pre/post-deployment record continuity passed. Public acceptance is recorded separately in `RELEASE_2026-11-01.md`. The backend count includes API/regression tests and is not presented as a unit-only count. No line/branch coverage percentage was measured. The feature coverage above describes tested behavior, not universal correctness or OCR/model accuracy.
 
 ## User Handling
 
@@ -58,4 +58,4 @@ Team-supplied ownership: Rushab Ramhari Patil — backend, OCR, AI/database and 
 
 ## Before the leader submits
 
-Use the verified Render judge link while Vercel production promotion is pending. The release report records actual deployed commits, anonymous browser/API checks and limitations. Ensure the selected app, repository and any historical PDF links open without sign-in; use the current report for final counts. Confirm the exact final form format and deadline in the official instructions. No form submission is authorised or performed by this document.
+Use the verified Vercel judge link. The release report records actual deployed commits, anonymous browser/API checks and limitations. Ensure the selected app, repository and any historical PDF links open without sign-in; use the current report for final counts. Confirm the exact final form format and deadline in the official instructions. No form submission is authorised or performed by this document.
