@@ -6,6 +6,8 @@ Evidence-first campaign review for **YOGI2KANWAR**, Codex 48. BrandProof compare
 
 The public Vercel frontend proxies `/api/*` to the Render Docker API and PostgreSQL database. On 2 November 2026 both providers reported source `e01f52b6ee02b6c85c480619cfc82cc486a56123`. Fetched main `d251daa` has the same application files; this final-hardening patch requires its own release approval. Historical reports retain their original scope.
 
+Release candidate **5eac376** is published in [PR #14](https://github.com/YogitaKanwar/BrandProof/pull/14). Fresh Docker/PostgreSQL/legacy-upgrade and frontend CI passed. The [isolated full-stack preview](https://brandproof-round3-preview-20261102.onrender.com/#/demo) uses its own disposable SQLite data and passed the judge, combined improvements and error-recovery browser suites without the description reload workaround. Production remains unchanged; [review the release gate](docs/ROUND3_PRODUCTION_RELEASE_GATE_2026-11-02.md) before approval.
+
 ## Exactly three Round 3 improvements
 
 1. **PDF import with traceable evidence.** Text-layer directives become pending candidates with exact page quotes, offsets and document digests. Explicit Owner confirmation creates immutable approved versions. Unsupported/scanned pages remain incomplete. Editing a rule clears a quotation that no longer supports it.

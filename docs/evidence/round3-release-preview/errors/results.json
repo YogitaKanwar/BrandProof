@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "preview_fault_injection": true,
+  "campaign_posts": {
+    "injected_503": 1,
+    "injected_timeout": 1,
+    "real_after_double_activation": 1
+  },
+  "checks": [
+    "768px tablet layout",
+    "503 preserves draft and re-enables action",
+    "real 10-second transport timeout and recovery advice",
+    "duplicate activation sends one write",
+    "wrong/empty/oversized/corrupt PDF recovery",
+    "successful retry creates only pending rules",
+    "no browser credential storage"
+  ]
+}

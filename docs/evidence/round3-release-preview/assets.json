@@ -1,0 +1,33 @@
+{
+  "candidate": "5eac37660a7c4f53d17464dea3ced563486aa9bd",
+  "isolated": true,
+  "health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "database": "ok",
+      "version": "0.1.0"
+    }
+  },
+  "contract_matches": true,
+  "assets": [
+    {
+      "path": "/assets/index-C5j__kmz.js",
+      "status": 200,
+      "sha256": "a64c2034cfbb38a7ec771ba07ae17a3f0a3bb902c26864ca5274d0725691420d",
+      "matches_tested_build": true
+    },
+    {
+      "path": "/assets/index-Ac8XDMYZ.css",
+      "status": 200,
+      "sha256": "b6364ab160a5d2ed7c7b8d71ff7f399c69495d30eeee3c53100d2e9bc88c5c3f",
+      "matches_tested_build": true
+    }
+  ],
+  "vercel_frontend_preview": {
+    "origin": "https://brand-proof-jh29qzass-yogitakanwars-projects.vercel.app",
+    "status": 302,
+    "asset_matches": false,
+    "production_api_rewrite": true
+  }
+}

@@ -12,7 +12,7 @@ Classification: **VERIFIED** = the stated bounded behavior was exercised; **PART
 | Error-message hardening | VERIFIED candidate | 62 frontend tests and local fault-injection browser | NOT DEPLOYED | client.ts; y01.test; errors/results.json | Specific production release approval |
 | Poster-description revision race | VERIFIED candidate fix | Real replacement → immediate edit/save Chromium regression | Older public UI needs explicit saved-description reload | AltTextEditor; strengthened improvements-browser | Remaining gates/approval |
 | Current README/report | VERIFIED candidate | Clean setup/render results in QA | Repository patch; no publication claimed | README; Markdown source; generated final PDF | Official submission remains team action |
-| Docker/PostgreSQL/legacy upgrade | Existing CI VERIFIED on deployed e01f52b | Current patch: NOT TESTED remotely unless QA records a new run | Deployed schema unchanged | hosting-check.yml; deployed-ci.json | Fresh candidate CI is a release gate |
+| Docker/PostgreSQL/legacy upgrade | VERIFIED | Exact 5eac376 push and PR CI passed | Deployed schema unchanged | Runs 41473172383 / 41473406560; release-preview/ci.json | Final production approval |
 
 ## PDF cases
 
@@ -67,6 +67,6 @@ Classification: **VERIFIED** = the stated bounded behavior was exercised; **PART
 | Source/content conflicts and stale approvals | VERIFIED | Sources/reviews/approval HTTP and backend guards |
 | OCR/logo timeout handling and interrupted review recovery | VERIFIED bounded behavior | Existing process/recovery/uncertainty suites; live logo quality remains limited |
 | Desktop/tablet/mobile/keyboard | VERIFIED automated | 1440/768/390/320px; keyboard entry/finding focus; no independent usability study |
-| Current candidate container/PostgreSQL CI | NOT TESTED here | No Docker/PostgreSQL binaries on this host; successful deployed-source CI retained separately |
+| Current candidate container/PostgreSQL CI | VERIFIED remotely | Exact 5eac376 CI: 576 backend passes, 18 optional skips; frontend 62 passes; fresh/legacy PostgreSQL upgrade and actual workflows passed |
 | New production migration/deployment | NOT TESTED / NOT REQUESTED | No schema/product-backend changes; production remains e01f52b |
 | Backup/restore, prolonged idle and near-limit production latency | NOT TESTED | Release/operational gaps retained explicitly |

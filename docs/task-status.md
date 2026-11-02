@@ -393,3 +393,11 @@ Merged-tree checks: frontend 56 tests, lint/build and backend Ruff lint/format p
 - Backend: 576 passed, 18 optional font skips; frontend: 62 passed, lint/build and Ruff passed. Nine HTTP suites, four Python smokes, three local browser suites, two public browser suites and both-file public PDF HTTP passed. Actual restart preserved ten compared resources; clean isolated setup passed. Old public UI uses explicit saved-description reload after poster replacement; candidate fixes it.
 - README rewritten; final QA/matrix/walkthrough/limitations and six-page screenshot-backed submission PDF/source completed. Public cold-start 502 and retries retained. Final candidate container/PostgreSQL CI remains unrun locally; deployed-source historical CI success is identified separately.
 - Production remains e01f52b. No push/main publication/deploy/migration/AI enablement/official submission. Next: exact-candidate CI, patch review and separate production approval, hosting retention/recovery review. See ROUND3_FINAL_QA.md.
+
+
+## 2 November 2026 - published candidate and isolated preview
+
+- Pushed 5eac376 without force to integration/round2-backend-pr1; PR #14 targets main. Exact push CI 41473172383 and PR CI 41473406560 both passed: Docker/PostgreSQL/legacy upgrades and actual workflows, 576 backend passes/18 optional font skips, 62 frontend passes/lint/build.
+- New Free isolated Render preview at https://brandproof-round3-preview-20261102.onrender.com/#/demo uses its own disposable SQLite database, AI off, auto-deploy off. Three Chromium suites, both-file PDF HTTP and measured-feature smoke passed. Description replacement/edit/save passes without the old public reload workaround. Asset bytes/contract match the tested build.
+- Production remains e01f52b, no migration/backend/schema delta. Production SQL history read is blocked by unchanged empty external allowlist; PostgreSQL available, expiry 27 November; no verified full backup. Recommended release is frontend-only with existing Render/API/data retained and old Vercel deployment available for frontend rollback.
+- READY for explicit production approval, not deployed/merged. Final gate: ROUND3_PRODUCTION_RELEASE_GATE_2026-11-02.md. README/QA/matrix/PDF synchronized; no new features/redesign or production data tests.

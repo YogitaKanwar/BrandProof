@@ -14,7 +14,7 @@ BrandProof helps a campaign team check marketing copy and posters against confir
 
 The existing OCR, human-review and bounded advertising-risk capabilities support these three improvements. They are not additional Round 3 promises.
 
-![Genuine public judge entry from the accepted e01f52b build. Passwordless access creates an isolated fictional sandbox.](evidence/round3-final/public-judge/login-desktop.png)
+![Genuine isolated release-preview entry at 5eac376. Passwordless access creates an isolated fictional sandbox. Production remains unchanged.](evidence/round3-release-preview/judge/login-desktop.png)
 
 **Judge demo:** [brand-proof-tau.vercel.app/#/demo](https://brand-proof-tau.vercel.app/#/demo)
 
@@ -32,7 +32,7 @@ Explicit synthetic Owner confirmation creates approved v2 from pending v1 while 
 
 The compact Workshop PDF produces three candidates; the extended sample produces seven rule types. Both specify INR 899. A real review of sample marketing content at INR 599 produces a source-version-cited contradiction. Correcting supported caption facts does not approve content or fix an unchanged poster.
 
-![Genuine public PDF candidate with expanded page quotation and exact provenance. The rule remains pending until explicit Owner confirmation.](evidence/round3-final/public-improvements/pdf-page-provenance.png)
+![Genuine isolated-preview PDF candidate with expanded page quotation and exact provenance. The rule remains pending until explicit Owner confirmation.](evidence/round3-release-preview/improvements/pdf-page-provenance.png)
 
 ## Robustness and limits
 
@@ -46,7 +46,7 @@ A reliable flat-background sample exposes the observed hex colour, approved targ
 
 Description checks assess presence and literal high-confidence OCR price/date coverage. Saving a description creates a content revision and can stale a prior approval. Description presence is not a semantic-quality verdict.
 
-![Genuine public measurement details after explicitly replacing the Workshop image with a supported controlled black/white TEST poster. The original Workshop image truthfully abstains on contrast. Limited measurements do not establish full visual or accessibility compliance.](evidence/round3-final/public-improvements/measured-checks.png)
+![Genuine isolated-preview measurements after replacing the Workshop image with a supported controlled black/white TEST poster: contrast 21:1 against 4.5:1. The Workshop image truthfully abstains; limited samples do not establish full accessibility.](evidence/round3-release-preview/improvements/measured-checks.png)
 
 ## Measured acceptance
 
@@ -66,7 +66,7 @@ Insights show recurring categories, campaign counts, exact confirmed source-vers
 
 A group needs at least five reviewed observations and five distinct reviewed campaign/content revisions before a rate is shown. The rate is dismissals plus exceptions divided by all reviewed observations, including reopened decisions. Identical content/source/pack reruns contribute the latest snapshot and do not inherit previous-run decisions.
 
-![Genuine public Governance Insights from a fresh fictional workspace. Insufficient sample is visible; small samples do not become numerical trend recommendations.](evidence/round3-final/public-improvements/governance-sample-evidence.png)
+![Genuine isolated-preview Governance Insights. Insufficient sample is visible; small samples do not become numerical trend recommendations.](evidence/round3-release-preview/improvements/governance-sample-evidence.png)
 
 ## Verified boundaries
 
@@ -82,11 +82,11 @@ The bounded result covers at most 500 runs and 5,000 decisions, with at most 50 
 
 **Real HTTP:** nine frontend suites passed for sessions/campaigns, sources, reviews, posters, collaboration, approval, consent, removal/restore and both PDFs. Four Python workflow scripts passed; parser smoke verified ten readback cases, and real Tesseract workflow verified a reasoned scripted approval becoming stale after poster edit.
 
-**Genuine Chromium:** three local suites passed (judge, combined improvements, fault injection). Two public suites passed (judge and combined improvements), plus both-file public PDF HTTP acceptance. Fresh contexts exercised roles/isolation, actual OCR boxes, human decisions, PDF confirmation, Insights links, refresh, reset/logout and removal/Undo. Desktop 1440px, tablet 768px and narrow 390/320px layouts were exercised.
+**Genuine Chromium:** three local and three isolated-preview suites passed: judge journey, combined improvements and failure injection. Fresh contexts exercised roles/isolation, OCR boxes, human decisions, PDF confirmation, numeric measurements, Insights links, refresh, reset/logout and removal/Undo. Desktop 1440px, tablet 768px and narrow 390/320px layouts were exercised. Preview description replacement/edit/save passes without manual reload.
 
 **Failure injection:** a 503 and an actual ten-second transport timeout preserved the draft and restored controls. Duplicate activation sent one real create request. Wrong/empty/oversized/corrupt PDFs failed clearly, then a valid retry created only pending rules. New error-message regressions prevent PDF failures from prescribing image-only remedies.
 
-![Genuine local tablet screenshot after the actual request timeout: input remains available and the recovery message asks users to check saved state before resubmitting.](evidence/round3-final/errors/timeout-recovery-tablet.png)
+![Genuine isolated-preview tablet screenshot after an actual ten-second transport timeout: input remains available and recovery asks users to check saved state before resubmitting.](evidence/round3-release-preview/errors/timeout-recovery-tablet.png)
 
 Actual local process restart preserved ten compared resources, the recovery workspace, credentials and all role access. Clean isolated Windows setup installed locked dependencies, passed frontend lint/62 tests/build, read-only migration preflight and restart persistence. Linux instructions follow the existing Docker/CI path; they were not executed on this host.
 
@@ -96,17 +96,17 @@ Actual local process restart preserved ten compared resources, the recovery work
 
 ## Current public release and candidate
 
-Vercel and Render independently reported **e01f52b6ee02b6c85c480619cfc82cc486a56123**. Latest fetched main **d251daa** includes PRs 12/13 and matches that application baseline. Final frontend error hardening, tests and documentation are a separate local candidate; no production deployment, migration or main publication was performed.
+Production Vercel and Render remain **e01f52b6ee02b6c85c480619cfc82cc486a56123**. Published candidate **5eac37660a7c4f53d17464dea3ced563486aa9bd** is in [PR 14](https://github.com/YogitaKanwar/BrandProof/pull/14). No production deployment, migration or main merge was performed.
 
-Tested candidate code/tests: **61dfa47dc8c4d34b0a006280fb45253a52dd20db**. Later provenance/document-only commits preserve that tested application tree. Candidate and live SHAs do not match.
+The [isolated full-stack preview](https://brandproof-round3-preview-20261102.onrender.com/#/demo) runs the candidate with its own disposable SQLite database, AI disabled and automatic deployment off. It passed all three browser suites, both-file PDF HTTP checks and measured-feature smoke. Later documentation commits preserve the tested application tree.
 
 Public startup initially returned a proxy 502; direct Render database health recovered in about 22 seconds. The initial browser harness stopped at 45 seconds, shorter than the app's documented 90-second readiness. The harness now allows that initial window; unchanged assertions and the warmed public judge/PDF/combined journeys passed. Both attempts are retained. This is not a guarantee of idle cold-start latency.
 
-Deployed-source GitHub container/PostgreSQL/legacy-upgrade and frontend workflows passed. No Docker/PostgreSQL executables are available on this Windows host; fresh final-candidate container CI remains a release gate. There is no new backend product/schema change. Production changes require explicit approval of a tested commit and reviewed recovery plan.
+Exact-candidate [push CI](https://github.com/YogitaKanwar/BrandProof/actions/runs/41473172383) and [PR CI](https://github.com/YogitaKanwar/BrandProof/actions/runs/41473406560) passed Docker/PostgreSQL 16, six-step legacy upgrades, real workflows, 576 backend tests (18 optional skips) and 62 frontend tests/lint/build. Backend/schema code matches live; **no new migration is needed**. Recommended release is frontend-only, with the existing API/database retained and the previous Vercel deployment available for frontend rollback. Production remains held for explicit approval.
 
 ## Remaining limits
 
-Text-layer/directive PDFs only; limited reliable image samples; OCR omissions/logo timeouts; bounded English claims/India legal scope; external contextual AI unavailable. Synthetic actors are not verified identities or independent sign-off. No full WCAG/brand/legal certification, production backup/restore audit, permanent free retention or representative accuracy is claimed. Earlier evidence reports database expiry 27 November 2026; verify current hosting retention separately.
+Text-layer/directive PDFs only; limited image samples; OCR omissions/logo timeouts; bounded English/India legal scope; contextual AI unavailable. Synthetic actors are not verified identities. No full WCAG/brand/legal certification, representative accuracy or verified production backup/restore is claimed. Provider metadata confirms free PostgreSQL expiry **27 November 2026**. Direct schema SQL remains blocked by its unchanged external allowlist; frontend-only release avoids a database change.
 
 ## Technology and actual ownership
 
