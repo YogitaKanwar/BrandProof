@@ -98,6 +98,8 @@ Actual local process restart preserved ten compared resources, the recovery work
 
 Vercel and Render independently reported **e01f52b6ee02b6c85c480619cfc82cc486a56123**. Latest fetched main **d251daa** includes PRs 12/13 and matches that application baseline. Final frontend error hardening, tests and documentation are a separate local candidate; no production deployment, migration or main publication was performed.
 
+Tested candidate code/tests: **61dfa47dc8c4d34b0a006280fb45253a52dd20db**. Later provenance/document-only commits preserve that tested application tree. Candidate and live SHAs do not match.
+
 Public startup initially returned a proxy 502; direct Render database health recovered in about 22 seconds. The initial browser harness stopped at 45 seconds, shorter than the app's documented 90-second readiness. The harness now allows that initial window; unchanged assertions and the warmed public judge/PDF/combined journeys passed. Both attempts are retained. This is not a guarantee of idle cold-start latency.
 
 Deployed-source GitHub container/PostgreSQL/legacy-upgrade and frontend workflows passed. No Docker/PostgreSQL executables are available on this Windows host; fresh final-candidate container CI remains a release gate. There is no new backend product/schema change. Production changes require explicit approval of a tested commit and reviewed recovery plan.

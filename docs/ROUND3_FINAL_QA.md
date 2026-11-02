@@ -4,6 +4,8 @@
 
 **Release boundary:** production remains `e01f52b6ee02b6c85c480619cfc82cc486a56123`; the frontend error-message patch, additional tests and final documentation are a separate local candidate. No deployment, provider enablement, production migration, destructive cleanup, main merge or official submission was performed. Fresh candidate Docker/PostgreSQL CI and explicit production approval remain release gates.
 
+**Tested code/test commit:** `61dfa47dc8c4d34b0a006280fb45253a52dd20db` on `integration/round2-backend-pr1`. A later documentation/PDF provenance commit may have a newer HEAD; application, tests, contracts and migration files remain identical to this tested commit. `git rev-parse HEAD` identifies the final local documentation commit. Neither commit is pushed or deployed. Primary-workspace pre-existing documentation additions were restored uncommitted; user test-kit artifacts were untouched.
+
 ## State established before changes
 
 - Read AGENTS.md, product plan/contracts, README, Round 3 scope/handoff/local acceptance/submission, 1 November theme/release reports, configured-runtime evidence, workflow, Docker/Vercel/Render configuration and six-step migration history. Original `docs/plan.pdf` was not extracted or modified.
