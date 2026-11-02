@@ -20,7 +20,11 @@ export async function requestResponse(url: string, options: RequestInit = {}): P
     response = await fetch(url, { ...options, headers, signal: options.signal ?? AbortSignal.timeout(10000) })
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error
-    throw new ApiError('Cannot reach the server. Check your connection and try again.', 0)
+    const recovery = 'If you were saving, reload the campaign or recent reviews to check whether it was saved before submitting again.'
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      throw new ApiError(`The server took too long to respond. ${recovery}`, 0, 'request_timeout')
+    }
+    throw new ApiError(`Cannot reach the server. Check your connection. ${recovery}`, 0)
   }
   if (!response.ok) {
     let payload
@@ -45,8 +49,8 @@ export function describeError(error: unknown): string {
     403: 'Your demo role cannot perform this action.',
     404: 'This resource is missing or inaccessible in this workspace.',
     409: 'State changed. Reload and reconcile before trying again.',
-    413: 'Image exceeds the upload limit.',
-    415: 'Choose a PNG or JPEG file.',
+    413: 'The file exceeds the upload limit shown for this action.',
+    415: 'Choose a file type supported by this action: PDF guidelines or PNG/JPEG images.',
     422: 'Check the supplied fields.',
     429: 'Please wait before trying again. Public demo usage is limited to keep it available for everyone.',
     502: 'The service connection was interrupted. If you were saving, reload recent reviews before submitting again to avoid duplicates.',

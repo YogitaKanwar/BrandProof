@@ -1,0 +1,38 @@
+{
+  "observed_date": "2026-11-02",
+  "branch": "integration/round2-backend-pr1",
+  "fetched_main": "d251daac34361b97c88a6e2a8484a56b8c93a46b",
+  "deployed_sha": "e01f52b6ee02b6c85c480619cfc82cc486a56123",
+  "backend": {
+    "collected": 594,
+    "passed": 576,
+    "skipped": 18,
+    "failed": 0
+  },
+  "frontend": {
+    "passed": 62,
+    "failed": 0,
+    "skipped": 0
+  },
+  "local_http_suites": 9,
+  "python_workflow_smokes": 4,
+  "local_chromium_suites": 3,
+  "public_chromium_suites": 2,
+  "public_pdf_http_suite": true,
+  "public_description_manual_reload": true,
+  "candidate_description_race_fixed": true,
+  "candidate_container_ci": "not_run",
+  "production_changed": false,
+  "files": {
+    "frontend/src/api/client.ts": "2e2a66e5d364b77c2dffb20149d87032d6f0922327ee14caa518ed7999555e51",
+    "frontend/src/AltTextEditor.tsx": "972da65697d8b50e016ecd2afac65fc965fa32fce84d25698508cad6f05cd87e",
+    "frontend/tests/improvements-browser.mjs": "c4ac4a9a8111c83d85450d064b3ff1751dfea332d586f2b98768c93b614fe800",
+    "frontend/tests/judge-demo-browser.mjs": "65afcb0ee4a4cfc66339c9c9995d4f6c3685118d19cb1e1ba35430f484432965",
+    "frontend/tests/round3-errors-browser.mjs": "e4d7c6e7ac285b85ca6d646dde8f00e467db917c59b2eb34b25f4227bc1c80e8",
+    "backend/tests/test_round3_acceptance.py": "4b55df217fbb2823096760d3f7bb337c27ef675cfa794f9a5e6e10f056902303",
+    "docs/openapi.json": "527c26d4e2932832e859c6da9f927f2e35631314c2c4e8b11cb2843c9e8c0719",
+    "frontend/tests/fixtures/measured-poster.png": "3a4ead0f0133af9cd55b28079631f28ca3d986754d3627e20d7792ec967f36b4"
+  },
+  "candidate_code_sha": "61dfa47dc8c4d34b0a006280fb45253a52dd20db",
+  "hash_method": "SHA-256 of git blob at candidate_code_sha; working text normalized to LF for comparison"
+}

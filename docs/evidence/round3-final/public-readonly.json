@@ -1,0 +1,96 @@
+{
+  "observed_at": "2026-11-02T14:55:33.533Z",
+  "origins": [
+    {
+      "origin": "https://brand-proof-tau.vercel.app",
+      "assets": [
+        {
+          "path": "/assets/index-c9J0Lxl_.js",
+          "status": 200,
+          "sha256": "145c4e63183bf5cddf4ce185826a5a882f5667b5ee91002cea289b14d38208a3",
+          "matches_candidate": false
+        },
+        {
+          "path": "/assets/index-Ac8XDMYZ.css",
+          "status": 200,
+          "sha256": "b6364ab160a5d2ed7c7b8d71ff7f399c69495d30eeee3c53100d2e9bc88c5c3f",
+          "matches_candidate": true
+        },
+        {
+          "path": "/demo/workshop-guidelines.pdf",
+          "status": 200,
+          "sha256": "48318e6d3565cf314ff9512c1bcae41783a1934c87ea70abc7fbf2c95b15edc8",
+          "matches_candidate": true
+        },
+        {
+          "path": "/fictional-guidelines.pdf",
+          "status": 200,
+          "sha256": "77107337b537c7c31217eeb6cb9e6f237f22cb587abfacb68a88ea0ec35339b0",
+          "matches_candidate": true
+        }
+      ],
+      "/api/v1/health": {
+        "status": 502,
+        "ms": 344,
+        "sha256": "27d0c6550489488e0ff99697d14443c4bd8d21717ee8d43db28fed2c9d1d0d2a",
+        "body": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>502</title>\n    <style>@font-face {\n  font-family: \"Roobert\";\n  font-weight: 500;\n  font-style: normal;\n  font-stretch: normal;\n  src: url(\"data:fo"
+      },
+      "/openapi.json": {
+        "status": 404,
+        "ms": 42,
+        "sha256": "a78a551fdeb74980180e9be67242cccd0cf5d8a4fde57d92fc154a1f6e145721"
+      },
+      "/": {
+        "status": 200,
+        "ms": 14,
+        "sha256": "69f41570c4d08db5dc6c138d555789ba0436e78c31000d02f00aba81188369f6"
+      }
+    },
+    {
+      "origin": "https://brandproof-api-slz9.onrender.com",
+      "assets": [
+        {
+          "path": "/assets/index-c9J0Lxl_.js",
+          "status": 200,
+          "sha256": "145c4e63183bf5cddf4ce185826a5a882f5667b5ee91002cea289b14d38208a3",
+          "matches_candidate": false
+        },
+        {
+          "path": "/assets/index-Ac8XDMYZ.css",
+          "status": 200,
+          "sha256": "b6364ab160a5d2ed7c7b8d71ff7f399c69495d30eeee3c53100d2e9bc88c5c3f",
+          "matches_candidate": true
+        },
+        {
+          "path": "/demo/workshop-guidelines.pdf",
+          "status": 200,
+          "sha256": "48318e6d3565cf314ff9512c1bcae41783a1934c87ea70abc7fbf2c95b15edc8",
+          "matches_candidate": true
+        },
+        {
+          "path": "/fictional-guidelines.pdf",
+          "status": 200,
+          "sha256": "77107337b537c7c31217eeb6cb9e6f237f22cb587abfacb68a88ea0ec35339b0",
+          "matches_candidate": true
+        }
+      ],
+      "/api/v1/health": {
+        "status": 200,
+        "ms": 22397,
+        "sha256": "1473b098fbf9eced19bb812dba57fddbffbedd392671b8a09239a2c76143ade8",
+        "body": "{\"status\":\"ok\",\"database\":\"ok\",\"version\":\"0.1.0\"}"
+      },
+      "/openapi.json": {
+        "status": 200,
+        "ms": 1432,
+        "sha256": "06e7372994deda3b633f1bebdda0d756758baa899813496890289cfc346d140e",
+        "matches_saved": true
+      },
+      "/": {
+        "status": 200,
+        "ms": 104,
+        "sha256": "69f41570c4d08db5dc6c138d555789ba0436e78c31000d02f00aba81188369f6"
+      }
+    }
+  ]
+}

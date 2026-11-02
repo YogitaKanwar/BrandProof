@@ -2,8 +2,17 @@
 import assert from 'node:assert/strict'
 import {readFile,mkdir,writeFile} from 'node:fs/promises'
 const origin=process.env.BRANDPROOF_TEST_URL||'http://127.0.0.1:8013/'
-const pdf=(await readFile(new URL('./fixtures/guidelines.pdf',import.meta.url))).toString('base64')
-const target=await(await fetch('http://127.0.0.1:9223/json/new?about:blank',{method:'PUT'})).json()
+const pdf=(await readFile(new URL('../public/fictional-guidelines.pdf',import.meta.url))).toString('base64')
+const measuredPoster=(await readFile(new URL('./fixtures/measured-poster.png',import.meta.url))).toString('base64')
+const browser=await(await fetch('http://127.0.0.1:9223/json/version')).json()
+const browserSocket=new WebSocket(browser.webSocketDebuggerUrl)
+await new Promise(resolve=>browserSocket.addEventListener('open',resolve,{once:true}))
+let controlId=0;const controls=new Map()
+browserSocket.addEventListener('message',event=>{const data=JSON.parse(event.data);const entry=controls.get(data.id);if(entry){controls.delete(data.id);if(data.error)entry.reject(new Error(data.error.message));else entry.resolve(data.result)}})
+function control(method,params={}){return new Promise((resolve,reject)=>{const id=++controlId;controls.set(id,{resolve,reject});browserSocket.send(JSON.stringify({id,method,params}))})}
+const {browserContextId}=await control('Target.createBrowserContext')
+const {targetId}=await control('Target.createTarget',{url:'about:blank',browserContextId})
+const target=(await(await fetch('http://127.0.0.1:9223/json/list')).json()).find(row=>row.id===targetId)
 const socket=new WebSocket(target.webSocketDebuggerUrl)
 await new Promise((resolve,reject)=>{socket.addEventListener('open',resolve);socket.addEventListener('error',reject)})
 let sequence=0;const pending=new Map(),errors=[]
@@ -13,9 +22,9 @@ async function evaluate(expression){const data=await send('Runtime.evaluate',{ex
 async function wait(expression){for(const deadline=Date.now()+45000;Date.now()<deadline;){try{if(await evaluate(expression))return}catch(error){if(!/navigated|context|Cannot find/.test(error.message))throw error}await new Promise(r=>setTimeout(r,50))}throw new Error('Timed out: '+expression)}
 async function click(expression){await wait(`!!(${expression})&&!(${expression}).disabled`);const point=await evaluate(`(()=>{const element=${expression};element.scrollIntoView({block:'center'});const r=element.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);await send('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1})}
 const button=text=>`Array.from(document.querySelectorAll('button')).find(b=>b.textContent===${JSON.stringify(text)})`
-async function snapshot(name){if(!process.env.BRANDPROOF_SCREENSHOTS)return;const dir='node_modules/.cache/improvements';await mkdir(dir,{recursive:true});const data=await send('Page.captureScreenshot',{format:'png'});await writeFile(`${dir}/${name}.png`,Buffer.from(data.data,'base64'))}
+async function snapshot(name){if(!process.env.BRANDPROOF_SCREENSHOTS)return;const dir=process.env.BRANDPROOF_IMPROVEMENTS_EVIDENCE_DIR||'node_modules/.cache/improvements';await mkdir(dir,{recursive:true});const data=await send('Page.captureScreenshot',{format:'png'});await writeFile(`${dir}/${name}.png`,Buffer.from(data.data,'base64'))}
 try{
-  await send('Page.enable');await send('Runtime.enable');await send('Network.enable');await send('Network.clearBrowserCookies')
+  await send('Page.enable');await send('Runtime.enable');await send('Network.enable')
   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false})
   await send('Page.navigate',{url:origin});await wait(`!!document.querySelector('h1')`)
   await evaluate(`localStorage.clear()`);await wait(`!!document.querySelector('.demo-cta')&&!document.querySelector('.demo-cta').disabled`);await click(`document.querySelector('.demo-cta')`);await wait(`document.querySelector('.reviews-empty h3')?.textContent==='No reviews yet'`)
@@ -41,24 +50,44 @@ try{
   await click(`document.querySelector('.run-caption button')`)
   await wait(`document.querySelectorAll('#review-history option').length===2&&!document.querySelector('.run-caption button').disabled`)
   await click(`document.querySelector('.live-sources .document-import > summary')`)
-  await evaluate(`(()=>{const bytes=Uint8Array.from(atob(${JSON.stringify(pdf)}),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([bytes],'acceptance-guidelines.pdf',{type:'application/pdf'}));const input=document.querySelector('.live-sources .document-import input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}))})()`)
+  await evaluate(`(()=>{const bytes=Uint8Array.from(atob(${JSON.stringify(pdf)}),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([bytes],'fictional-workshop-guidelines.pdf',{type:'application/pdf'}));const input=document.querySelector('.live-sources .document-import input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}))})()`)
   await click(button('Import as pending candidates'))
-  await wait(`document.querySelectorAll('.server-source').length===8&&document.querySelector('.live-sources .document-import').textContent.includes('3 imported candidates')`)
+  await wait(`document.querySelectorAll('.server-source').length===12&&document.querySelector('.live-sources .document-import').textContent.includes('7 imported candidates')`)
   assert.match(await evaluate(`document.querySelector('.document-citation').textContent`),/page 1/)
-  for(let remaining=3;remaining>0;remaining--){await click(`document.querySelector('.confirm-source')`);await wait(`document.querySelectorAll('.confirm-source').length===${remaining-1}`)}
+  await click(`document.querySelector('.document-citation summary')`)
+  await evaluate(`document.querySelector('.document-citation').scrollIntoView({block:'center'})`)
+  await snapshot('pdf-page-provenance')
+  for(let remaining=7;remaining>0;remaining--){await click(`document.querySelector('.confirm-source')`);await wait(`document.querySelectorAll('.confirm-source').length===${remaining-1}`)}
+  // The antialiased Workshop image legitimately abstains on contrast. Replace it
+  // with a real supported Noto 72px black/white fixture, without altering thresholds.
+  await evaluate(`(()=>{const bytes=Uint8Array.from(atob(${JSON.stringify(measuredPoster)}),c=>c.charCodeAt(0));const transfer=new DataTransfer();transfer.items.add(new File([bytes],'measured-poster.png',{type:'image/png'}));const input=document.querySelector('.live-poster input[type=file]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}))})()`)
+  await click(button('Upload poster'))
+  await wait(`document.querySelector('.poster-upload-status').textContent.includes('OCR completed')&&!document.querySelector('.poster-preview')`)
   await click(`document.querySelector('.alt-text-editor > summary')`)
   await wait(`!!document.querySelector('#poster-alt-text')&&!document.querySelector('#poster-alt-text').disabled`)
-  await evaluate(`(()=>{const input=document.querySelector('#poster-alt-text');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(input,'Fictional workshop launch. Book for INR 599. The poster promises results and needs supporting evidence.');input.dispatchEvent(new Event('input',{bubbles:true}))})()`)
+  // Explicit recovery path for the older deployed UI; candidate regression runs
+  // omit this flag and must handle the poster revision without manual reload.
+  if(process.env.BRANDPROOF_MANUAL_DESCRIPTION_RELOAD==='1'){
+    await click(button('Load saved description (discard draft)'))
+    await wait(`!document.querySelector('#poster-alt-text').disabled`)
+    console.log('Public baseline acceptance uses explicit saved-description reload after poster replacement.')
+  }
+  await evaluate(`(()=>{const input=document.querySelector('#poster-alt-text');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(input,'Fictional controlled contrast test: black TEST text on a white background.');input.dispatchEvent(new Event('input',{bubbles:true}))})()`)
   await click(button('Save poster description'))
   await wait(`document.querySelector('.alt-text-editor').textContent.includes('Description saved as a new content revision')`)
   await click(`document.querySelector('.run-caption button')`)
   await wait(`document.querySelectorAll('#review-history option').length===3&&!document.querySelector('.run-caption button').disabled`)
   assert.match(await evaluate(`document.querySelector('.measured-checks').textContent`),/visual.*completed/s)
+  assert.match(await evaluate(`document.querySelector('.measured-checks').textContent`),/measured contrast [\d.]+:1; required 4.5:1/)
+  await evaluate(`document.querySelectorAll('.measured-checks details').forEach(detail=>{detail.open=true});document.querySelector('.measured-checks').scrollIntoView({block:'start'})`)
+  await snapshot('measured-checks')
   assert.equal(await evaluate(`Array.from(document.querySelectorAll('.finding h4')).some(n=>n.textContent==='alt text')`),false)
   await click(`document.querySelector('a[href="#/insights"]')`)
   await wait(`!!document.querySelector('.insight-card')`)
   assert.match(await evaluate(`document.querySelector('.governance-insights').textContent`),/Insufficient sample/)
   await snapshot('governance-desktop')
+  await evaluate(`document.querySelector('.insight-card').scrollIntoView({block:'center'})`)
+  await snapshot('governance-sample-evidence')
   await click(`Array.from(document.querySelectorAll('.insight-card details')).find(n=>n.querySelector('a')?.getAttribute('href')?.includes('source_version=')).querySelector('summary')`)
   const linked=await evaluate(`Array.from(document.querySelectorAll('.insight-card a')).find(n=>n.getAttribute('href').includes('source_version=')).getAttribute('href')`)
   await click(`Array.from(document.querySelectorAll('.insight-card a')).find(n=>n.getAttribute('href').includes('source_version='))`)
@@ -88,4 +117,4 @@ try{
   await send('Page.reload');await wait(`document.querySelector('.reviews-empty h3')?.textContent==='No reviews yet'`)
   assert.deepEqual(errors,[])
   console.log('PASS expanded demo/poster/readiness, explicit drafts/save/review, PDF import/confirmation, alt-text/measurements, governance/sample guards and historical links, responsive/session recovery; connected delete cancel/confirm, Undo and deletion persistence after reload. No credentials persisted.')
-}catch(error){await snapshot('failure');console.error(await evaluate(`document.body.innerText.slice(0,1600)`));throw error}finally{await fetch('http://127.0.0.1:9223/json/close/'+target.id);socket.close()}
+}catch(error){await snapshot('failure');console.error(await evaluate(`document.body.innerText.slice(0,1600)`));throw error}finally{await control('Target.disposeBrowserContext',{browserContextId});socket.close();browserSocket.close()}

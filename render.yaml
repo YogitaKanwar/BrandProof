@@ -1,4 +1,4 @@
-# Create this Blueprint from fix/demo-session-resume until its PR is merged.
+# Existing service follows integration/round2-backend-pr1; releases require approval.
 # Database URL is entered privately in Render, never in this file.
 services:
   - type: web

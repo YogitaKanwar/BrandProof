@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "actual_process_restart": true,
+  "credentials_written": false,
+  "same_workspace": true,
+  "same_credentials": true,
+  "same_saved_records": true,
+  "all_roles_valid": true,
+  "compared_resources": 10
+}
