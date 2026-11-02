@@ -1,79 +1,162 @@
 # BrandProof
 
-Campaign review API for team YOGI2KANWAR, Codex 48. Implementation began during the permitted build window on 26 October 2026.
+Evidence-first campaign review for **YOGI2KANWAR**, Codex 48. BrandProof compares saved captions and PNG/JPEG posters with owner-confirmed rules, preserves evidence/source versions, and records reasoned human decisions. Automated checks and human approval are separate.
 
-The React app and FastAPI backend implement approved-source checks, real poster OCR, conservative owner-confirmed logo comparison, collaboration and revision-bound human approval. The combined product is verified locally; no public deployment is claimed. See [free hosting setup](docs/FREE_HOSTING.md) for the prepared single-origin Render Free + Neon Free route. Groq openai/gpt-oss-120b has completed a genuine live API probe with persisted findings. A frozen six-case synthetic evaluation yielded three assessed development matches and three unassessed heldout cases; this is not evidence of representative model accuracy. See docs/examples/live-model-evaluation.json.
+**[Passwordless judge demo](https://brand-proof-tau.vercel.app/#/demo)** · [Repository](https://github.com/YogitaKanwar/BrandProof) · [Final QA](docs/ROUND3_FINAL_QA.md) · [Walkthrough](docs/JUDGE_FINAL_WALKTHROUGH.md)
 
-## Run locally
+The public Vercel frontend proxies `/api/*` to the Render Docker API and PostgreSQL database. On 2 November 2026 both providers reported source `e01f52b6ee02b6c85c480619cfc82cc486a56123`. Fetched main `d251daa` has the same application files; this final-hardening patch requires its own release approval. Historical reports retain their original scope.
 
-Requires Python 3.12+, uv, local Tesseract with English language data, and a TrueType font for image tests/smoke scripts (the current scripts use /usr/share/fonts/noto/NotoSans-Regular.ttf). Pillow is a Python dependency. From the repository root:
+## Exactly three Round 3 improvements
 
-    uv sync --extra dev
-    uv run uvicorn brandproof.main:create_app --factory --host 127.0.0.1 --port 8001 --no-access-log
+1. **PDF import with traceable evidence.** Text-layer directives become pending candidates with exact page quotes, offsets and document digests. Explicit Owner confirmation creates immutable approved versions. Unsupported/scanned pages remain incomplete. Editing a rule clears a quotation that no longer supports it.
+2. **Measured visual consistency and accessibility.** Supported flat backgrounds expose observed/approved colour, CIE76 deviation and tolerance. Reliable OCR-word samples expose foreground/background, measured contrast and the confirmed target. Description checks cover presence and literal OCR prices/dates. Uncertain measurements remain partial; this is not WCAG certification.
+3. **Governance Insights.** Persisted findings/latest dispositions are grouped by category and exact source version, with campaign counts, reasons and saved-evidence links. Rates require five distinct reviewed campaign/content revisions for that group. Identical reruns contribute the latest snapshot only. Regulation groups never recommend weakening obligations.
 
-Open http://127.0.0.1:8001/docs for interactive Swagger documentation.
-Health: http://127.0.0.1:8001/api/v1/health
-Contract: docs/openapi.json
+Existing OCR/boxes, deterministic caption checks, conservative logo comparison, bounded English claim-risk/cited India advertising-risk review, revision conflicts, human approval/staleness and removal/Undo support this workflow. They are not additional Round 3 promises.
 
-For frontend development, run `npm ci` then `npm run dev` in `frontend/`; Vite proxies `/api` to port 8001. For the packaged app, run `npm run build` in `frontend/`, set `BRANDPROOF_FRONTEND_DIST=./frontend/dist`, and open port 8001 directly. Local HTTP requires `BRANDPROOF_DEMO_COOKIE_SECURE=false`; HTTPS hosting defaults to secure cookies.
+## Architecture and stack
 
-On first startup, the app creates its initial tables and data/brandproof.db. SQLite is the exercised development database. The full container and actual caption/parser/OCR/human-workflow smoke scripts passed against PostgreSQL 16 in [GitHub Actions run 40671322353](https://github.com/YogitaKanwar/BrandProof/actions/runs/40671322353). Actual Render/Neon acceptance remains pending. The current schema bootstrap is not a migration system; use a fresh database and do not assume future upgrades can alter old tables automatically.
+React 19 / TypeScript / Vite → same-origin API proxy → Python / FastAPI / Pydantic / SQLAlchemy → SQLite locally or PostgreSQL in hosting/CI. Bounded pypdf worker handles PDFs; Pillow normalizes images; local Tesseract provides OCR. Optional Groq/OpenRouter is disabled by default and consent-gated.
 
-Optional configuration uses .env or environment variables; copy the names from .env.example. Never commit real secrets or data. BRANDPROOF_DATABASE_URL selects storage; BRANDPROOF_CORS_ORIGINS is a JSON list of exact authorised frontend origins. Configuration is read when creating the app.
+API: [OpenAPI](docs/openapi.json) and [integration handoff](docs/FRONTEND_HANDOFF.md). Locked dependencies: `uv.lock`, `frontend/package-lock.json`.
 
-## Tests and real HTTP smoke test
+## Requirements
 
-    uv run pytest -q
-    uv run ruff check backend scripts
-    uv run ruff format --check backend scripts
-    uv run python scripts/smoke.py
-    uv run python scripts/parser_smoke.py
-    uv run python scripts/workflow_smoke.py
+- Python **3.12–3.14**; Docker/CI uses 3.12. Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- Node **24**, npm, Git.
+- Tesseract with English language data on `PATH`.
+- TrueType test font. Set `BRANDPROOF_TEST_FONT`; Noto Sans is the intended expanded measurement fixture.
+- Docker/PostgreSQL are optional locally and required for the container/PostgreSQL CI recipe.
 
-The smoke test requires a running API. It creates a new fictional sandbox, confirms four rules, finds four errors, verifies persisted findings, checks corrected copy has no exact findings, and verifies the historical run becomes stale after an edit. Clean copy returns a partial review when contextual AI is disabled. The additional workflow smoke exercises real poster OCR, comments, explicit suggestion acceptance, finding decisions, manual-supplement approval and stale readiness after a poster edit. Its reviewer actions are scripted synthetic tests, not human user feedback. The saved docs/examples/live-review.json is actual HTTP output from fictional inputs, not a fabricated model response. It contains no bearer tokens.
+### Windows / PowerShell
 
-## What works
+Install Python, Node, uv and Tesseract through trusted installers. No PowerShell execution-policy change is needed: use `npm.cmd`.
 
-- Persistent, isolated demo workspaces and 24-hour bearer tokens for owner/creator/reviewer roles.
-- Same-browser refresh recovery through a 24-hour HttpOnly, SameSite=Strict cookie. Recovery retains workspace/actor identity and does not extend expiry; role bearer tokens remain in memory. Secure cookies default on; local HTTP requires the explicit example override. Serve frontend and API under the same origin for browser recovery.
-- Campaign creation/read/list with explicit publication date.
-- Typed price/date/terminology/required-text sources and tone/claim-policy guidance for bounded contextual retrieval.
-- Owner confirmation and immutable source version history. Revisions become pending until reconfirmed; the previous approved version remains historical, not active.
-- Caption revisions with optimistic version conflicts.
-- Exact price, ISO-date, whole-term and literal required-wording checks with actual text offsets and exact source/version evidence.
-- Multiple prices/dates or conflicting approved main-price/main-date rules request clarification rather than an unsafe replacement. A finite scope grammar also abstains on cashback, deposits, registration deadlines, negation and unknown surrounding wording.
-- Exact-check coverage is reported per rule. Missing/unsupported comparable expressions remain not_assessed; an available approved source alone cannot establish a completed comparison.
-- Validity is assessed against the campaign publication date. Pending, expired and not-yet-valid sources are excluded and explicitly reported.
-- Persisted review snapshots; historical results remain unchanged and expose is_current after content/source edits.
-- Raw PNG/JPEG upload, canonical private PNG storage, real local OCR with coordinates/confidence and OCR-based exact poster findings.
-- Consent-gated Groq/OpenRouter adapter, bounded approved-source keyword retrieval, strict span/citation validation and fail-closed errors. Provider contracts are tested offline; genuine Groq API examples are separately recorded.
-- Persisted comments, explicit caption suggestion application, append-only finding decisions, creator review requests and eligible-reviewer approval/request-changes.
-- Self-approval protection and revision-/request-/decision-bound readiness; explicit manual notes supplement incomplete checks without relabelling them automated successes.
-- Findings grouped by category and the same approved source/version without losing caption/image locations.
-- Persistent global/workspace provider budgets and concurrency admission, with no hidden retries or paid fallback.
-- Manual interrupted-run recovery preserving snapshots and incomplete coverage.
-- Uniform validation/auth/conflict errors and generated OpenAPI schemas.
+```powershell
+git clone https://github.com/YogitaKanwar/BrandProof.git
+cd BrandProof
+uv sync --locked --extra dev
+Copy-Item .env.example .env
+$env:PATH = 'C:\Program Files\Tesseract-OCR;' + $env:PATH
+$env:BRANDPROOF_TEST_FONT = 'C:\Windows\Fonts\arial.ttf'
+tesseract --version
+tesseract --list-langs
+cd frontend
+npm.cmd ci --no-audit --no-fund
+cd ..
+uv run uvicorn brandproof.main:create_app --factory --host 127.0.0.1 --port 8001 --no-access-log
+```
 
-## Important boundaries
+Arial runs ordinary fixtures; some conservative measurements may abstain. Use Noto Sans for the expanded feature smoke. Do not loosen thresholds for another font.
 
-This is a fictional-data local demo. Role switching is deliberately available to a sandbox visitor. It is NOT production authentication, verified human identity or independent human sign-off. Tokens are scoped to one workspace, stored as hashes and expire; private accounts are not implemented.
+### Linux
 
-The local command is loopback-bound. The hosting package is intended for a fictional-data hackathon demo. Public session quotas, ingress limits, sandbox cleanup, production auth and migrations remain work; hosted PostgreSQL, HTTPS, restart and private-window acceptance are pending. Do not send confidential content.
+Install Python, Node 24 and uv. On Debian/Ubuntu, install `tesseract-ocr tesseract-ocr-eng fonts-noto-core` through the package manager; other distributions provide equivalent packages.
 
-Rules are bounded, not general semantic understanding. Only the campaign main price and main date are represented. Monetary syntax and date recognition are limited; dates currently require ISO YYYY-MM-DD and terminology/required wording use literal case-insensitive matching. The engine does not yet resolve arbitrary commercial conditions, all currencies, translations, date prose, negation, typography or claim truth. Review status and human readiness are separate. Incomplete automation remains visible even if a reviewer explicitly records a manual-supplement approval. BrandProof records decisions; it does not control publication on external platforms.
+```bash
+git clone https://github.com/YogitaKanwar/BrandProof.git
+cd BrandProof
+uv sync --locked --extra dev
+cp .env.example .env
+export BRANDPROOF_TEST_FONT=/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf
+tesseract --version
+tesseract --list-langs
+cd frontend
+npm ci --no-audit --no-fund
+cd ..
+uv run uvicorn brandproof.main:create_app --factory --host 127.0.0.1 --port 8001 --no-access-log
+```
 
-The configured local Groq model has been exercised, but the reduced synthetic evaluation is not a successful heldout benchmark: one heldout output was rejected and two provider requests were unavailable. Original evidence is retained without tuning/retries. External contextual calls default off and require server-side configuration plus explicit consent per review; only caption and selected approved text are sent. Missing configuration, refusal, invalid output, quota limits and timeouts stay incomplete. No embeddings or vector database are claimed. Logo comparison is a conservative template candidate requiring manual verification, not certified visual compliance. Typography, contrast/accessibility and contextual poster claims still need manual review. A process crash may leave an in-flight running review; stop all workers before using python -m brandproof.recovery --older-than-seconds 300. Recovery marks contextual coverage unavailable and never approves content. This is not a durable job queue.
+Use the exact reviewed commit for acceptance. Open a second terminal for `cd frontend` then `npm run dev -- --host 127.0.0.1` (`npm.cmd` on Windows). Vite proxies API calls to port 8001. Open its printed URL. Swagger: `http://127.0.0.1:8001/docs`; health: `/api/v1/health`.
 
-## Deployment and operational evidence
+For one origin, build in `frontend` with `npm run build`, set `BRANDPROOF_FRONTEND_DIST=./frontend/dist`, then start the backend. Alternatively, `uv run python scripts/judge_demo_preview.py --port 8017` builds/serves loopback with its own `.cache/judge-demo-preview.db`, normal quotas and AI off.
 
-See docs/FREE_HOSTING.md for the current setup and docs/BACKEND_DEPLOYMENT.md for operational boundaries. The multi-stage Dockerfile builds React and includes Python/Tesseract in one service. PostgreSQL stores image bytes as well as review records. GitHub Actions run 40671322353 passed the image build and real PostgreSQL workflows on commit 2e369f1. Local Docker build/runtime is unavailable because daemon access is denied. Public deployment and restart persistence acceptance remain pending.
+## Environment
 
-## Team handoff
+Copy `.env.example` locally. Never commit `.env`, passwords or tokens.
 
-See docs/FRONTEND_HANDOFF.md for role permissions, API contracts and stale-state behaviour. docs/task-status.md records current integration verification. Yogita owns the frontend; Rushab owns backend/AI/OCR/database. The current branch combines the latest pushed frontend/OCR/logo work with session recovery.
+| Variable | Meaning / local value |
+| --- | --- |
+| `BRANDPROOF_DATABASE_URL` | `sqlite:///./data/brandproof.db`; PostgreSQL URLs use psycopg 3 |
+| `BRANDPROOF_DEMO_COOKIE_SECURE` | `false` only on local HTTP; `true` for HTTPS |
+| `BRANDPROOF_CORS_ORIGINS` | JSON array of exact frontend origins; no wildcard |
+| `BRANDPROOF_FRONTEND_DIST` | Optional built UI directory |
+| `BRANDPROOF_PUBLIC_ORIGIN` | Exact public origin behind a proxy; Render URL detected |
+| `BRANDPROOF_EXTERNAL_AI_ENABLED` | `false` by default |
+| `BRANDPROOF_AI_PROVIDER/MODEL/API_KEY` | Three separate optional server-only variables; see template |
+| `BRANDPROOF_DEMO_SESSIONS_HOURLY_LIMIT` | Default 20 new sessions/hour |
+| `BRANDPROOF_DEMO_OPERATIONS_HOURLY_LIMIT` | Default 300 expensive operations/hour |
+| `BRANDPROOF_TEST_FONT` | Real test font path; not a product setting |
 
-## Integrity and provenance
+External AI also requires explicit `external_ai_consent: true` per review. Never expose provider secrets via Vite variables. Current public acceptance reports AI unavailable.
 
-The project includes significant AI-assisted implementation and testing, including OpenAI models through Hermes Agent and Codex. Team members should review and understand the code they submit. Actual human contributions should be recorded separately from generated implementation.
+## Database and migrations
 
-Dependencies are declared in pyproject.toml; exact resolved versions are in uv.lock. Third-party libraries are reused components, not original team work. Track their licences and any later templates/services in the final submission. The team repository is https://github.com/YogitaKanwar/BrandProof; its current commit history is the publication record. A project licence has not yet been chosen.
+SQLite needs no server; startup creates `data`. Six ordered additive versions cover legacy tables, review leases, documents/evidence, descriptions, removals and advertising profiles. The older bootstrap-only README is obsolete.
+
+For PostgreSQL, create a dedicated development database and set its private URL in the environment. `postgres://`, `postgresql://` and `postgresql+psycopg://` are supported. Tests must use isolated fictional databases. Startup locks migrations and rejects unknown history/schema drift.
+
+`uv run python -m brandproof.migrations --check` is read-only: app construction does not enter startup lifespan. Before a reviewed upgrade, back up the actual database, stop old workers and inspect pending steps/recovery. Explicit `--apply` applies them; API startup also applies pending steps. Do not start a new executable against production as an informal probe. An older executable may reject newer history; deployment rollback is not proven schema recovery.
+
+## Docker / PostgreSQL CI
+
+```bash
+docker build --tag brandproof:local .
+docker run --rm -p 8000:8000 -e BRANDPROOF_DEMO_COOKIE_SECURE=false brandproof:local
+```
+
+This disposable SQLite container loses its database when removed. For durable development, supply a private URL for a dedicated PostgreSQL database reachable from the container. Never bake passwords into images. **No Compose file is supplied.**
+
+`.github/workflows/hosting-check.yml` is the complete PostgreSQL 16 recipe: image build, database health, real caption/parser/OCR/approval/session workflows, legacy upgrade/idempotence, feature smoke, full backend suite and frontend lint/tests/build. `scripts/postgres_migration_probe.py` requires `BRANDPROOF_EPHEMERAL_CI=1` and must only target its disposable CI database. Current executed/unrun gates are in [final QA](docs/ROUND3_FINAL_QA.md).
+
+## Tests
+
+```bash
+uv run pytest -q --tb=short
+uv run ruff check backend scripts
+uv run ruff format --check backend scripts
+cd frontend
+npm run lint
+npm test
+npm run build
+```
+
+With an isolated API on port 8001, run `npm run verify` in `frontend` for build/lint/unit and seven HTTP suites. Also run `node tests/removals-live.mjs` and `npm run test:pdf`. Override `BRANDPROOF_TEST_API_URL` for another port.
+
+From the root, with the same API:
+
+```bash
+uv run python scripts/smoke.py --base-url http://127.0.0.1:8001 --output .cache/review.json
+uv run python scripts/parser_smoke.py --base-url http://127.0.0.1:8001 --output .cache/parser.json
+uv run python scripts/workflow_smoke.py --base-url http://127.0.0.1:8001 --output .cache/workflow.json
+uv run python scripts/improvements_smoke.py --base-url http://127.0.0.1:8001
+```
+
+For genuine browser acceptance, start dedicated Chrome/Chromium with `--headless=new --remote-debugging-port=9223 --user-data-dir=<absolute disposable directory>`; never use a personal profile. Set `BRANDPROOF_TEST_URL=http://127.0.0.1:8017/#/demo` to match the local preview. Run `npm run test:demo`, `npm run test:improvements`, `npm run test:errors` in `frontend`. These use fresh browser contexts. The last is loopback-only and injects 503/timeouts. Only fictional screenshots/sanitized outcomes are saved. Historical `test:browser` uses its older Vite-preview setup; it is not substituted for the judge journeys.
+
+Eighteen optional antialiasing cases use Linux Noto Sans/Serif/Mono paths and skip if unavailable; ordinary tests remain required. No code coverage percentage or representative OCR/model accuracy is claimed.
+
+Generate the final report: `uv run --with reportlab python scripts/build_round3_report.py`. It reads [submission source](docs/ROUND3_SUBMISSION_CONTENT.md) and does not rewrite public guideline PDFs. Render/inspect the generated PDF before submission.
+
+## Judge workflow
+
+Demo → optional Workshop Campaign → References/PDF → Content → Results → Human Review → Governance Insights. Compact PDF: three rules; extended: seven. Both specify **INR 899**; flawed sample caption/poster use **INR 599**. Confirm inspected candidates explicitly; repeated imports create separate pending candidates and conflicting rules require reconciliation. Fixing a caption does not fix its poster. Source confirmation is not content approval. See [walkthrough](docs/JUDGE_FINAL_WALKTHROUGH.md).
+
+## Troubleshooting / verified boundaries
+
+- **Cold start, 502, timeout:** wait for health, then retry deliberately. After uncertain saves, reload saved state before resubmitting. Writes are not automatically replayed. Free-host availability is not guaranteed.
+- **Refresh/access:** frontend/API must share an origin and cookies must be enabled. Use the secure-cookie override only on local HTTP. Recovery lasts up to 24 hours and cannot restore expired/revoked access. Reset revokes old roles and starts a separate workspace.
+- **429:** respect demo quotas; **409:** reload/reconcile real revisions while preserving drafts.
+- **No PDF candidates:** scans and unsupported narrative rules need manual transcription. Limits: 5 MiB / 30 pages; supported explicit directives only.
+- **Partial OCR/measurements/logo:** small/rotated/noisy text, photos, gradients and bounded logo timeouts require human inspection. Do not interpret limited samples as complete conformity.
+- **Interrupted review:** there is no durable job queue. Stop workers before the recovery procedure in `docs/BACKEND_DEPLOYMENT.md`; recovery never approves content.
+
+Use **fictional, non-confidential content only**. Guest actors are synthetic roles, not verified identity, brand ownership or independent sign-off. Tokens stay in memory; a 24-hour HttpOnly/SameSite cookie supports recovery. Reset/logout revoke access but retain audit history. Removal hides a campaign, retains evidence and offers in-page Undo until reload. BrandProof records decisions; it does not control external publishing.
+
+[Known limitations](docs/ROUND3_KNOWN_LIMITATIONS.md) disclose bounded parsing, unavailable contextual AI, limited visual/legal scope, hosting retention and operational gaps. No full WCAG/brand/legal certification or restorable production backup is claimed.
+
+## Team and provenance
+
+Team-supplied ownership: **Yogita Kanwar**, frontend/integration; **Rushab Ramhari Patil**, backend/OCR/AI/database. Significant implementation/testing used coding-assistant support. No hours, percentages or independent user feedback are inferred. Dependencies are reused libraries; no project licence has been selected.
+
+Current records: [requirements matrix](docs/ROUND3_REQUIREMENTS_MATRIX.md), [final QA](docs/ROUND3_FINAL_QA.md), [configured runtime](docs/configured-backend-tests.md), [submission source](docs/ROUND3_SUBMISSION_CONTENT.md). Dated historical releases do not override current evidence.

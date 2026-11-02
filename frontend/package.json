@@ -12,6 +12,7 @@
     "test:demo": "node tests/judge-demo-browser.mjs",
     "test:pdf": "node tests/pdf-guidelines-live.mjs",
     "test:improvements": "node tests/improvements-browser.mjs",
+    "test:errors": "node tests/round3-errors-browser.mjs",
     "test:api": "node tests/backend-live.mjs",
     "test:sources": "node tests/sources-live.mjs",
     "test:reviews": "node tests/reviews-live.mjs",

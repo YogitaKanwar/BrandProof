@@ -1,0 +1,36 @@
+{
+  "observed_date": "2026-11-02",
+  "branch": "integration/round2-backend-pr1",
+  "fetched_main": "d251daac34361b97c88a6e2a8484a56b8c93a46b",
+  "deployed_sha": "e01f52b6ee02b6c85c480619cfc82cc486a56123",
+  "backend": {
+    "collected": 594,
+    "passed": 576,
+    "skipped": 18,
+    "failed": 0
+  },
+  "frontend": {
+    "passed": 62,
+    "failed": 0,
+    "skipped": 0
+  },
+  "local_http_suites": 9,
+  "python_workflow_smokes": 4,
+  "local_chromium_suites": 3,
+  "public_chromium_suites": 2,
+  "public_pdf_http_suite": true,
+  "public_description_manual_reload": true,
+  "candidate_description_race_fixed": true,
+  "candidate_container_ci": "not_run",
+  "production_changed": false,
+  "files": {
+    "frontend/src/api/client.ts": "4d5e8258886ed7efea86647426a9f88f2e3c17f5e1408347c21c55b40622da67",
+    "frontend/src/AltTextEditor.tsx": "c4b44712057da5a28a6090e2063ea698b2f67f0261d6e33d72c04d72481d4bee",
+    "frontend/tests/improvements-browser.mjs": "9b6de63ca20f79f91a402fdd7b05e2d2d26357912d21f20b699dda3b7b076654",
+    "frontend/tests/judge-demo-browser.mjs": "17e700314b170e8283f6ee0a3d75abab0abe2b5b6d632a9e6a15b232832bfed7",
+    "frontend/tests/round3-errors-browser.mjs": "e4d7c6e7ac285b85ca6d646dde8f00e467db917c59b2eb34b25f4227bc1c80e8",
+    "backend/tests/test_round3_acceptance.py": "4b55df217fbb2823096760d3f7bb337c27ef675cfa794f9a5e6e10f056902303",
+    "docs/openapi.json": "97febc8041aad1397cac88094f04adfcfb6a008c3c8d8fa72a509ef795cb82c1",
+    "frontend/tests/fixtures/measured-poster.png": "3a4ead0f0133af9cd55b28079631f28ca3d986754d3627e20d7792ec967f36b4"
+  }
+}
