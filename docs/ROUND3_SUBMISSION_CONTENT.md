@@ -96,7 +96,7 @@ Actual local process restart preserved ten compared resources, the recovery work
 
 ## Current public release and candidate
 
-Production Vercel and Render remain **e01f52b6ee02b6c85c480619cfc82cc486a56123**. Published candidate **5eac37660a7c4f53d17464dea3ced563486aa9bd** is in [PR 14](https://github.com/YogitaKanwar/BrandProof/pull/14). No production deployment, migration or main merge was performed.
+Production Vercel and Render remain **e01f52b6ee02b6c85c480619cfc82cc486a56123**. Candidate **5eac37660a7c4f53d17464dea3ced563486aa9bd** was merged by Yogita through [PR 14](https://github.com/YogitaKanwar/BrandProof/pull/14), creating main **1763f2e**. Release evidence follows in [PR 15](https://github.com/YogitaKanwar/BrandProof/pull/15). No production deployment or migration was performed; production approval remains separate.
 
 The [isolated full-stack preview](https://brandproof-round3-preview-20261102.onrender.com/#/demo) runs the candidate with its own disposable SQLite database, AI disabled and automatic deployment off. It passed all three browser suites, both-file PDF HTTP checks and measured-feature smoke. Later documentation commits preserve the tested application tree.
 

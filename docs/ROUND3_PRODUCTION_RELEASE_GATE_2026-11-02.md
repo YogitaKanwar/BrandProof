@@ -2,7 +2,7 @@
 
 **Recommendation: READY for an explicitly approved frontend-only release. Production is not deployed.**
 
-The deployment candidate is **`5eac37660a7c4f53d17464dea3ced563486aa9bd`**. It is pushed to `YogitaKanwar/BrandProof`, branch `integration/round2-backend-pr1`, in [PR #14 targeting main](https://github.com/YogitaKanwar/BrandProof/pull/14). Later release-evidence documentation commits retain the same application/test/container/contract tree. They do not silently replace the pinned production candidate.
+The deployment candidate is **`5eac37660a7c4f53d17464dea3ced563486aa9bd`**. It is pushed to `YogitaKanwar/BrandProof`, branch `integration/round2-backend-pr1`. **Yogita merged [implementation PR #14](https://github.com/YogitaKanwar/BrandProof/pull/14) during verification**, at 15:39:51 UTC / 21:09:51 IST, creating main `1763f2e1a750d99c82097f30c98cd39c379ea4b2`. The agent did not perform this merge or treat it as production approval. [PR #15](https://github.com/YogitaKanwar/BrandProof/pull/15) contains release-evidence documentation updates. Later documentation commits retain the same application/test/container/contract tree and do not silently replace the pinned production candidate.
 
 ## Exact-commit CI
 
@@ -68,7 +68,7 @@ Provider metadata confirms PostgreSQL 16 available on Free, expiry **27 November
 ## Approval gate / remaining limitations
 
 - **READY for approval:** CI green; all three promises accepted within scope; isolated preview passes; description workaround fixed in candidate; no new migrations; frontend rollback and unchanged-data path reviewed.
-- **HELD:** no production deployment, production migration or merge into main until the user explicitly approves the exact frontend release candidate. PR remains reviewable; merge permission is separate from preview permission.
+- **HELD:** no agent-initiated production deployment, production migration or further merge into main until the user explicitly approves the exact release action. PR #15 remains reviewable; merge permission is separate from preview permission. The user's independent PR #14 merge did not change production.
 - Known limits: cold starts/temporary proxy failures, free-database expiry, no verified full backup, external AI unavailable, text-layer PDFs only, bounded OCR/logo/visual/legal scope and synthetic actors. No unresolved new candidate defect affecting the exercised judge journey was observed.
 - Vercel's protected preview cannot be fetched through the current connector scope; do not weaken protection. If production promotion later encounters a permission error, resolve the account/project authorization before any alternate release action.
 
