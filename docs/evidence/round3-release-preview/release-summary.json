@@ -1,0 +1,30 @@
+{
+  "candidate": "5eac37660a7c4f53d17464dea3ced563486aa9bd",
+  "pr": "https://github.com/YogitaKanwar/BrandProof/pull/14",
+  "preview": "https://brandproof-round3-preview-20261102.onrender.com",
+  "preview_service": "srv-dbkati8ae00c738bl1h0",
+  "preview_deployment": "dep-dbkatioae00c738bl2p0",
+  "preview_plan": "free",
+  "preview_database": "isolated disposable SQLite; no production data",
+  "preview_auto_deploy": false,
+  "external_ai_enabled": false,
+  "ci_passed": true,
+  "backend_passed": 576,
+  "backend_skipped": 18,
+  "frontend_passed": 62,
+  "preview_browser_suites_passed": [
+    "judge",
+    "combined improvements without description reload",
+    "503/timeout/invalid inputs/duplicates"
+  ],
+  "preview_pdf_http_passed": true,
+  "feature_smoke_passed": true,
+  "production_sha": "e01f52b6ee02b6c85c480619cfc82cc486a56123",
+  "production_changed": false,
+  "new_migrations": false,
+  "database_backup_verified": false,
+  "production_schema_sql_read": "blocked by unchanged empty external IP allowlist",
+  "database_expiry": "2026-11-27T11:30:36.905505Z",
+  "recommendation": "READY for explicit frontend-only production approval; backend/database retained",
+  "tokens_written": false
+}

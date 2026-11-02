@@ -2,9 +2,11 @@
 
 **Outcome:** the three promised improvements are implemented and accepted within their documented scope. Final local backend: **576 passed, 18 optional skips, 0 failures** (594 collected). Frontend: **62 passed, 0 failures/skips**. Nine local HTTP suites, four Python workflow smokes, three local Chromium suites, two public Chromium journeys, public both-file PDF HTTP acceptance and an actual isolated process restart passed. This is not universal correctness, full accessibility certification or representative model/OCR accuracy.
 
-**Release boundary:** production remains `e01f52b6ee02b6c85c480619cfc82cc486a56123`; the frontend error-message patch, additional tests and final documentation are a separate local candidate. No deployment, provider enablement, production migration, destructive cleanup, main merge or official submission was performed. Fresh candidate Docker/PostgreSQL CI and explicit production approval remain release gates.
+**Publication/preview follow-up:** candidate `5eac37660a7c4f53d17464dea3ced563486aa9bd` is pushed to `integration/round2-backend-pr1`, with [PR #14](https://github.com/YogitaKanwar/BrandProof/pull/14) targeting main. Fresh push and PR CI passed both frontend and Docker/PostgreSQL/legacy-upgrade jobs: [41473172383](https://github.com/YogitaKanwar/BrandProof/actions/runs/41473172383), [41473406560](https://github.com/YogitaKanwar/BrandProof/actions/runs/41473406560). CI confirms **576 backend passes / 18 optional skips / 62 frontend passes**. The isolated [preview](https://brandproof-round3-preview-20261102.onrender.com/#/demo) passed three Chromium suites, both-file PDF HTTP acceptance and measured-feature smoke. This follow-up supersedes the initial local-only/unrun-CI state below. Full production gate: [release review](ROUND3_PRODUCTION_RELEASE_GATE_2026-11-02.md).
 
-**Tested code/test commit:** `61dfa47dc8c4d34b0a006280fb45253a52dd20db` on `integration/round2-backend-pr1`. A later documentation/PDF provenance commit may have a newer HEAD; application, tests, contracts and migration files remain identical to this tested commit. `git rev-parse HEAD` identifies the final local documentation commit. Neither commit is pushed or deployed. Primary-workspace pre-existing documentation additions were restored uncommitted; user test-kit artifacts were untouched.
+**Release boundary:** production remains `e01f52b6ee02b6c85c480619cfc82cc486a56123`. Only a new Free, isolated preview with its own SQLite database was deployed. No production deployment/migration, provider enablement, cleanup or official submission occurred. **Concurrent GitHub change:** Yogita merged implementation PR #14 on 2 November at 15:39:51 UTC / 21:09:51 IST, creating main `1763f2e1a750d99c82097f30c98cd39c379ea4b2`; the agent did not perform that merge or infer production approval from it. Release-documentation follow-up is [PR #15](https://github.com/YogitaKanwar/BrandProof/pull/15). The preview passes poster replacement → immediate description edit/save without the older live workaround. Recommended production change is frontend-only, pending explicit approval; backend/schema/dependencies/container code are identical to live.
+
+**Tested code/test commit:** `61dfa47dc8c4d34b0a006280fb45253a52dd20db`; published/CI-tested preview commit **5eac37660a7c4f53d17464dea3ced563486aa9bd** has identical application/tests. Later release-evidence documentation commits may have newer HEADs without changing that application. Primary-workspace pre-existing documentation additions remain uncommitted; user test-kit artifacts are untouched.
 
 ## State established before changes
 
@@ -96,9 +98,9 @@ No local Docker/psql executable is installed. The deployed source's successful G
 
 ## Release blockers and next action
 
-1. Run the existing container/PostgreSQL/legacy-upgrade CI on the exact candidate commit; this host cannot execute it. Do not substitute the successful e01f52b run.
+1. **Resolved:** exact 5eac376 push/PR CI passed container/PostgreSQL/legacy upgrades and frontend checks. Later documentation-only heads must also have green required checks before merge.
 2. Review the final patch and explicit partial limits, then obtain explicit production approval for that exact commit if a release is wanted. The current public baseline already delivers the three promises; this patch does not require a schema migration.
 3. Confirm current hosting retention and a recovery/backup plan before relying on continued availability. No full backup is verified; no new production migration is requested.
 4. Team leader reviews actual contribution declarations and submits the official form/PDF. No form submission has been performed.
 
-Final candidate/application provenance is pinned in the accompanying manifest/commit record. Production is still e01f52b; the final local commit and live commit **do not match**.
+Final candidate/application provenance is pinned in the accompanying manifest/commit record. Production is still e01f52b; candidate/preview and live commits **do not match**. No merge or production release is authorized until the user approves the concrete release gate.

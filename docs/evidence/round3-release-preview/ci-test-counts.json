@@ -1,0 +1,32 @@
+[
+  {
+    "log": "0_frontend.txt",
+    "test_summaries": [
+      "2026-11-02T15:36:13.9133316Z \u2139 tests 62",
+      "2026-11-02T15:36:13.9134738Z \u2139 pass 62",
+      "2026-11-02T15:36:13.9135944Z \u2139 fail 0",
+      "2026-11-02T15:36:13.9136477Z \u2139 skipped 0"
+    ]
+  },
+  {
+    "log": "frontend/6_Run npm test.txt",
+    "test_summaries": [
+      "2026-11-02T15:36:13.9133265Z \u2139 tests 62",
+      "2026-11-02T15:36:13.9134736Z \u2139 pass 62",
+      "2026-11-02T15:36:13.9135941Z \u2139 fail 0",
+      "2026-11-02T15:36:13.9136474Z \u2139 skipped 0"
+    ]
+  },
+  {
+    "log": "1_container-postgres.txt",
+    "test_summaries": [
+      "2026-11-02T15:38:29.1070347Z 576 passed, 18 skipped, 114 warnings in 94.06s (0:01:34)"
+    ]
+  },
+  {
+    "log": "container-postgres/9_Run the complete offline backend regression suite in the image.txt",
+    "test_summaries": [
+      "2026-11-02T15:38:29.1070338Z 576 passed, 18 skipped, 114 warnings in 94.06s (0:01:34)"
+    ]
+  }
+]
