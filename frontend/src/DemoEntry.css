@@ -114,17 +114,6 @@
   width:100%;
   max-width:460px;
 }
-.demo-tag {
-  display:inline-block;
-  color:#344568;
-  background:#fff0d9;
-  border:1px solid #e8d7b5;
-  padding:7px 10px;
-  border-radius:20px;
-  letter-spacing:.08em;
-  font-size:10px;
-  font-weight:700;
-}
 .demo-access h2 {
   font-size:clamp(30px,3vw,42px);
   line-height:1.14;
@@ -173,65 +162,27 @@
   color:#667084;
   margin:13px 0 28px;
 }
-.demo-credentials {
-  padding:20px 22px;
-  border:1px solid #deddd8;
-  background:white;
-  border-radius:12px;
-}
-.demo-credentials h3 {
-  font-size:14px;
-  margin:0 0 8px;
-}
-.demo-credentials>p {
+.demo-recovery {
+  margin-top:28px;
+  border-top:1px solid #deddd8;
+  padding-top:18px;
+  color:#53617a;
   font-size:12px;
-  color:#667084;
+}
+.demo-recovery summary {
+  cursor:pointer;
+  width:fit-content;
+  padding-block:6px;
+}
+.demo-recovery p {
+  font-size:12px;
   line-height:1.6;
-  margin-bottom:15px;
+  margin:12px 0;
 }
-.demo-role {
-  display:flex;
-  gap:14px;
-  align-items:center;
-  justify-content:space-between;
-  padding:13px 0;
-  border-top:1px solid #e3e6ec;
-}
-.demo-role div {
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-.demo-role strong {
-  font-size:13px;
-}
-.demo-role small {
-  color:#667084;
-  font-size:11px;
-  line-height:1.6;
-}
-.demo-role button {
-  padding:6px 10px;
-  font-size:11px;
-  color:#344568;
-  border-color:#deddd8;
-}
-.demo-credentials p.demo-role-note {
-  margin:8px 0 0;
-  font-size:11px;
-}
-.demo-copy-status:empty {
-  display:none;
-}
-.demo-credentials p.demo-copy-status {
-  color:#344568;
-  margin:10px 0 0;
-}
-.demo-privacy {
-  font-size:11px;
-  line-height:1.7;
-  color:#667084;
-  margin:20px 0 12px;
+.demo-recovery summary:focus-visible {
+  outline:2px solid #344568;
+  outline-offset:4px;
+  border-radius:3px;
 }
 .demo-local {
   padding:0;
@@ -248,30 +199,6 @@
 .demo-entry-message button {
   display:block;
   margin-top:10px;
-}
-.demo-mode-bar {
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-  padding:12px 30px;
-  background:#fff5e6;
-  border-bottom:1px solid #e8d7b5;
-  font-size:12px;
-  color:#344568;
-}
-.demo-mode-bar>strong {
-  letter-spacing:.06em;
-  font-size:10px;
-}
-.demo-mode-bar>span {
-  flex:1;
-}
-.demo-mode-bar button {
-  padding:6px 10px;
-  font-size:11px;
-  border-color:#d4d9e2;
-  background:white;
 }
 .demo-reset-confirm {
   padding:16px 30px;
@@ -318,7 +245,7 @@
   .demo-access h2 br {
     display:none;
   }
-  .demo-mode-bar,.demo-reset-confirm,.session-expiry {
+  .demo-reset-confirm,.session-expiry {
     padding:12px 18px;
   }
 }

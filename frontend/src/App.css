@@ -368,9 +368,11 @@ input:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px r
 .connection-status > summary::after { content: ''; width: 6px; height: 6px; margin: -3px 1px 0 3px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(45deg); }
 .connection-status > summary:hover, .connection-status[open] > summary { background: #35415e; border-color: #dc9750; color: #fff8ef; }
 .connection-status[open] > summary::after { transform: rotate(225deg); margin-top: 3px; }
+.connection-status[open] > summary { margin-bottom: 0; }
 .topbar :focus-visible { outline-color: var(--desert-sun); }
 .connection-popover :focus-visible { outline-color: var(--navy); }
-.connection-popover { z-index: 5; line-height: 1.6; }
+.connection-popover { z-index: 5; line-height: 1.6; display: grid; gap: 10px; }
+.connection-popover > button { width: 100%; text-align: left; }
 main { max-width: 1360px; padding: 42px 44px 64px; }
 .page-heading { gap: 28px; margin-bottom: 30px; }
 .page-heading h1 { font-size: clamp(27px, 3vw, 34px); font-weight: 600; line-height: 1.12; letter-spacing: -.05em; }
