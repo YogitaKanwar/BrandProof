@@ -296,7 +296,7 @@ export default function ReviewWorkspace() {
           <summary>{loading ? 'Connecting…' : result?.mode === 'backend' ? 'Demo workspace' : 'Preview mode'}</summary>
           <div className="connection-popover">
             {result?.mode === 'backend' ? <>
-              <p>Fictional data with synthetic Owner, Creator and Reviewer roles.</p>
+              <p>Passwordless demo with fictional data and synthetic Owner, Creator and Reviewer roles.</p>
               <p className="form-help">Saved work resumes in this browser for up to 24 hours.</p>
               <button type="button" disabled={loading||connecting||creatingExample||saving||deleting} onClick={event=>{setResetRequested(true);event.currentTarget.closest('details')?.removeAttribute('open')}}>Reset Demo</button>
               <button type="button" disabled={loading||connecting||creatingExample||saving||deleting} onClick={()=>void endDemo()}>Exit Demo</button>

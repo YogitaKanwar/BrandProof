@@ -1,10 +1,10 @@
 # Judge walkthrough - BrandProof Round 3
 
-Start at **https://brand-proof-tau.vercel.app/#/demo**. No password or registration is required. Use fictional content only. A sleeping free API can take up to 90 seconds; the page shows bounded startup progress. If startup fails, retry deliberately. After an uncertain save, reload saved reviews before submitting again.
+Start at **https://brandproof-round3-preview-20261102.onrender.com/#/demo**. No password or registration is required. Use fictional content only. A sleeping free API can take up to 90 seconds; the page shows bounded startup progress. If startup fails, retry deliberately. After an uncertain save, reload saved reviews before submitting again.
 
 ## 1. Enter and open a campaign
 
-Choose **Try Interactive Demo**, or **Continue Demo** to return to this browser's saved sandbox. On Your reviews, choose **Try an editable example**. Workshop Campaign contains genuine saved references/content, not precomputed findings. New Review also accepts a title and valid publication date. Refresh returns to the same campaign within the valid 24-hour recovery session. Separate fresh browser contexts receive isolated workspaces.
+In the reviewed local candidate, choose **Launch Workspace** to create or resume this browser's passwordless fictional demo workspace. Owner, Creator and Reviewer are synthetic roles, not organizational accounts or verified identities; this is also disclosed in the workspace status menu. The unchanged judge deployment still uses **Try Interactive Demo / Continue Demo** until a separate release is approved and completed. On Your reviews, choose **Try an editable example**. Workshop Campaign contains genuine saved references/content, not precomputed findings. New Review also accepts a title and valid publication date. Refresh returns to the same campaign within the valid 24-hour recovery session. Separate fresh browser contexts receive isolated workspaces.
 
 ## 2. References: inspect the PDF and confirm
 

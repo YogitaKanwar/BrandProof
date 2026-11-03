@@ -1,0 +1,23 @@
+{
+  "local_only": true,
+  "frontend_tests": {
+    "passed": 62,
+    "failed": 0,
+    "skipped": 0
+  },
+  "lint": "passed",
+  "build": "passed",
+  "local_judge_browser": "passed",
+  "launch_creates_real_workspace": true,
+  "launch_resumes_same_workspace": true,
+  "recovery_collapsed_initially": true,
+  "palette_preserved": true,
+  "passwordless_fictional_roles_disclosed_in_menu_and_judge_docs": true,
+  "deployed_or_pushed": false,
+  "backend_or_api_changed": false,
+  "screenshots_visually_inspected": [
+    "login-desktop.png",
+    "workspace-menu.png",
+    "login-mobile.png"
+  ]
+}

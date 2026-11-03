@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "sample": {
+    "caption": true,
+    "poster": true,
+    "ocr": "completed",
+    "ai": "unavailable"
+  },
+  "pdf_rules_match_confirmed_references": true,
+  "permissions": [
+    401,
+    404,
+    403
+  ],
+  "checks": [
+    "navy and sunshine palette",
+    "explicit demo route with restored session",
+    "simple demo screen without sample prompts",
+    "Launch Workspace creates or resumes the same sandbox",
+    "passwordless entry",
+    "credentials card, landing badge and full-width banner removed",
+    "session menu disclosure/reset/exit",
+    "recovery-menu local drafts",
+    "one primary Overview action",
+    "keyboard and mobile layout",
+    "one-click sandbox",
+    "required field validation",
+    "custom campaign and refresh",
+    "real sample caption and poster contradictions",
+    "explicit human request and reviewer changes decision",
+    "PDF pending extraction and matching reference values",
+    "separate judge cookies and workspace isolation",
+    "reset cancellation and revocation",
+    "stale tab recovery",
+    "logout and reload",
+    "direct sample entry",
+    "no browser credential storage"
+  ]
+}

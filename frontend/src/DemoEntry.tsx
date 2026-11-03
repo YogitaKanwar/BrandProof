@@ -1,6 +1,6 @@
 import './DemoEntry.css'
 
-export default function DemoEntry({busy,restoring,error,status,onTry,onSample,onLocal,onRetry,simple=false,hasSession=false}:{busy:boolean;restoring:boolean;error:string;status:string;onTry:()=>void;onSample:()=>void;onLocal:()=>void;onRetry:()=>void;simple?:boolean;hasSession?:boolean}) {
+export default function DemoEntry({busy,restoring,error,status,onTry,onSample,onLocal,onRetry,simple=false}:{busy:boolean;restoring:boolean;error:string;status:string;onTry:()=>void;onSample:()=>void;onLocal:()=>void;onRetry:()=>void;simple?:boolean;hasSession?:boolean}) {
   return <main className="demo-entry" id="main">
     <section className="demo-story" aria-labelledby="demo-title">
       <a className="demo-wordmark" href="#/"><span aria-hidden="true">B</span>BrandProof</a>
@@ -11,8 +11,8 @@ export default function DemoEntry({busy,restoring,error,status,onTry,onSample,on
       </div><small>Human judgment stays yours.</small>
     </section>
     <section className="demo-access" aria-labelledby="access-title" aria-busy={busy}>
-      <div className="demo-access-inner"><span className="demo-tag">INTERACTIVE DEMO</span><h2 id="access-title">Meet your next <br/>review workspace.</h2><p className="demo-intro">Explore BrandProof in your own isolated sandbox. No account or password needed.</p>
-        <button className="primary demo-cta" type="button" disabled={busy} onClick={onTry}>{busy&&<span className="spinner" aria-hidden="true"/>}{restoring?'Restoring your session…':busy?'Preparing your workspace…':hasSession?'Continue Demo':'Try Interactive Demo'}<span aria-hidden="true">↗</span></button>
+      <div className="demo-access-inner"><h2 id="access-title">Meet your next <br/>review workspace.</h2><p className="demo-intro">Review marketing content against approved brand guidelines, with evidence-backed findings and human decisions.</p>
+        <button className="primary demo-cta" type="button" disabled={busy} onClick={onTry}>{busy&&<span className="spinner" aria-hidden="true"/>}{restoring?'Restoring your session…':busy?'Preparing your workspace…':'Launch Workspace'}<span aria-hidden="true">↗</span></button>
         {!simple&&<button className="demo-sample" type="button" disabled={busy} onClick={onSample}>Explore Sample Review <span aria-hidden="true">→</span></button>}
         <p className="demo-explore">References → Content → Results → Human Review</p>
         {(error||status)&&<div className={error?'error demo-entry-message':'demo-entry-message'} role={error?'alert':'status'}>{error||status}{error&&<button type="button" disabled={busy} onClick={onRetry}>Retry session recovery</button>}</div>}

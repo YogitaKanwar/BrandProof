@@ -30,6 +30,10 @@ try{
   assert.equal(await evaluate(a,`document.querySelectorAll('.demo-role,.demo-credentials').length`),0)
   assert.equal(await evaluate(a,`document.body.textContent.includes('Demo Credentials')||document.body.textContent.includes('synthetic')`),false)
   assert.equal(await evaluate(a,`document.querySelector('.demo-recovery').open`),false)
+  assert.equal(await evaluate(a,`!!document.querySelector('.demo-tag')||document.body.textContent.includes('INTERACTIVE DEMO')`),false)
+  assert.equal(await evaluate(a,`document.querySelector('#access-title').textContent`),'Meet your next review workspace.')
+  assert.equal(await evaluate(a,`document.querySelector('.demo-intro').textContent`),'Review marketing content against approved brand guidelines, with evidence-backed findings and human decisions.')
+  assert.equal(await evaluate(a,`document.querySelector('.demo-cta').textContent.includes('Launch Workspace')`),true)
   assert.equal(await evaluate(a,`!!document.querySelector('input[type=password]')`),false)
   assert.equal(await evaluate(a,`getComputedStyle(document.querySelector('.demo-story')).backgroundColor==='rgb(30, 38, 64)'&&getComputedStyle(document.querySelector('.demo-cta')).backgroundColor==='rgb(220, 151, 80)'`),true)
   await screenshot(a,'login-desktop')
@@ -47,7 +51,7 @@ try{
   const headerHeight=await evaluate(a,`document.querySelector('.topbar').getBoundingClientRect().height`)
   await click(a,`document.querySelector('.connection-status > summary')`)
   assert.equal(await evaluate(a,`document.querySelector('.topbar').getBoundingClientRect().height`),headerHeight)
-  assert.match(await evaluate(a,`document.querySelector('.connection-popover').textContent`),/Fictional data with synthetic Owner, Creator and Reviewer roles/)
+  assert.match(await evaluate(a,`document.querySelector('.connection-popover').textContent`),/Passwordless demo with fictional data and synthetic Owner, Creator and Reviewer roles/)
   for(const name of ['Reset Demo','Exit Demo','Open local drafts'])assert.equal(await evaluate(a,`(${button(name)}).getBoundingClientRect().height>0`),true)
   await screenshot(a,'workspace-menu')
   for(const width of [390,320]){
@@ -66,9 +70,9 @@ try{
   assert.equal(await evaluate(b,`!document.querySelector('.demo-entry')`),true)
 
   await evaluate(a,`(async()=>{window.__entryWorkspace=(await (${access})()).workspace_id;location.hash='/demo'})()`)
-  await wait(a,`!!document.querySelector('.demo-entry')&&document.querySelector('.demo-cta').textContent.includes('Continue Demo')`)
+  await wait(a,`!!document.querySelector('.demo-entry')&&document.querySelector('.demo-cta').textContent.includes('Launch Workspace')`)
   assert.equal(await evaluate(a,`!document.querySelector('.demo-sample')&&!document.querySelector('.demo-evidence')`),true)
-  await reload(a);await wait(a,`!!document.querySelector('.demo-entry')&&document.querySelector('.demo-cta').textContent.includes('Continue Demo')`)
+  await reload(a);await wait(a,`!!document.querySelector('.demo-entry')&&document.querySelector('.demo-cta').textContent.includes('Launch Workspace')`)
   await screenshot(a,'direct-demo-entry')
   await evaluate(a,`(async()=>{window.__entryWorkspace=(await (${access})()).workspace_id})()`)
   await click(a,`document.querySelector('.demo-cta')`);await wait(a,`document.querySelector('.connection-status summary')?.textContent==='Demo workspace'&&!!document.querySelector('.reviews-empty')`)
@@ -129,7 +133,7 @@ try{
     await screenshot(pdf,'extended-guidelines')
   }finally{await control('Target.disposeBrowserContext',{browserContextId:pdf.browserContextId});pdf.socket.close()}
   // Save only sanitized evidence; do not serialize session credentials or workspace identifiers.
-  await writeFile(`${evidenceRoot}/browser-results.json`,JSON.stringify({passed:true,sample:sampleChecks,pdf_rules_match_confirmed_references:pdfMatches,permissions,checks:['navy and sunshine palette','explicit demo route with restored session','simple demo screen without sample prompts','continue preserves current sandbox','passwordless entry','credentials card and full-width banner removed','session menu disclosure/reset/exit','recovery-menu local drafts','one primary Overview action','keyboard and mobile layout','one-click sandbox','required field validation','custom campaign and refresh','real sample caption and poster contradictions','explicit human request and reviewer changes decision','PDF pending extraction and matching reference values','separate judge cookies and workspace isolation','reset cancellation and revocation','stale tab recovery','logout and reload','direct sample entry','no browser credential storage']},null,2)+'\n')
+  await writeFile(`${evidenceRoot}/browser-results.json`,JSON.stringify({passed:true,sample:sampleChecks,pdf_rules_match_confirmed_references:pdfMatches,permissions,checks:['navy and sunshine palette','explicit demo route with restored session','simple demo screen without sample prompts','Launch Workspace creates or resumes the same sandbox','passwordless entry','credentials card, landing badge and full-width banner removed','session menu disclosure/reset/exit','recovery-menu local drafts','one primary Overview action','keyboard and mobile layout','one-click sandbox','required field validation','custom campaign and refresh','real sample caption and poster contradictions','explicit human request and reviewer changes decision','PDF pending extraction and matching reference values','separate judge cookies and workspace isolation','reset cancellation and revocation','stale tab recovery','logout and reload','direct sample entry','no browser credential storage']},null,2)+'\n')
   assert.equal(a.errors.length+b.errors.length,0)
   console.log('PASS judge demo: real UI, OCR/evidence, human workflow, PDF, permissions, isolation, refresh, reset/revocation, expired/revoked recovery and logout. No credentials persisted.')
 } catch(error) { await screenshot(a,'failure');console.error(await evaluate(a,`document.querySelector('.live-sources .document-import')?.innerText||document.querySelector('main')?.innerText.slice(0,500)`));throw error }

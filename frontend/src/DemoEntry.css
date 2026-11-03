@@ -114,17 +114,6 @@
   width:100%;
   max-width:460px;
 }
-.demo-tag {
-  display:inline-block;
-  color:#344568;
-  background:#fff0d9;
-  border:1px solid #e8d7b5;
-  padding:7px 10px;
-  border-radius:20px;
-  letter-spacing:.08em;
-  font-size:10px;
-  font-weight:700;
-}
 .demo-access h2 {
   font-size:clamp(30px,3vw,42px);
   line-height:1.14;
