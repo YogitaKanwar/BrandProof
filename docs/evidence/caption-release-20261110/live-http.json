@@ -1,0 +1,40 @@
+{
+  "mode": "live",
+  "target": "https://brandproof-round3-preview-20261102.onrender.com",
+  "health": {
+    "status": "ok",
+    "database": "ok",
+    "version": "0.1.0"
+  },
+  "contractMatches": true,
+  "contractSha256": "fd3f8b5c60645d9aa99a01a9e2a4ca613cca40e33133d14fa130e7ef6ae19ca0",
+  "assets": [
+    {
+      "path": "/assets/index-Dzd-EswK.js",
+      "sha256": "379460ac9991da6ee4c8bac8f61bdbf50594fd84b5dd41dd4d707b40d0c12750",
+      "matchesLocal": true
+    },
+    {
+      "path": "/assets/index-DLMxeTXj.css",
+      "sha256": "5fdf7c5a196820f43b8421bbb14dd954e2d9c4ebcbe4ecfffe56c86dcebbb399",
+      "matchesLocal": true
+    }
+  ],
+  "pdfs": [
+    {
+      "path": "/demo/workshop-guidelines.pdf",
+      "sha256": "48318e6d3565cf314ff9512c1bcae41783a1934c87ea70abc7fbf2c95b15edc8",
+      "matchesLocal": true
+    },
+    {
+      "path": "/fictional-guidelines.pdf",
+      "sha256": "77107337b537c7c31217eeb6cb9e6f237f22cb587abfacb68a88ea0ec35339b0",
+      "matchesLocal": true
+    }
+  ],
+  "localAssets": [
+    "/assets/index-Dzd-EswK.js",
+    "/assets/index-DLMxeTXj.css"
+  ],
+  "expectedCommit": "8b4ceaa3f63abe20bde5341adf06de06b6ead84e"
+}

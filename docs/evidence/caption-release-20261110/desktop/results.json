@@ -1,0 +1,26 @@
+{
+  "freshIncognito": true,
+  "mobile": false,
+  "exampleFirst": true,
+  "setupTimingControlled": false,
+  "firstExample": {
+    "caption": "A cheap workshop on 2026-11-13. Book for INR 599. Guaranteed results in 30 days.",
+    "savedDetails": "Review detailsCampaign saved on server · Publication 2026-11-12 · Content revision 3 · Source revision 9.",
+    "summary": "partial checks · Current content · 5 findings",
+    "httpStatus": 201,
+    "manualReconciliation": false,
+    "captionClearPosts": 0
+  },
+  "refresh": {
+    "caption": "A cheap workshop on 2026-11-13. Book for INR 599. Guaranteed results in 30 days.",
+    "httpStatus": 201,
+    "manualReconciliation": false
+  },
+  "staleResponsePreservedEdit": false,
+  "reviewStatuses": [
+    201,
+    201
+  ],
+  "uncaughtExceptions": 0,
+  "storageEmpty": true
+}
