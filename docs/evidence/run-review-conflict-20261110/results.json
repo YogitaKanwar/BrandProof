@@ -1,0 +1,30 @@
+{
+  "scope": "Local frontend candidate with unchanged backend and isolated fictional SQLite database",
+  "deployment_performed": false,
+  "user_campaign_accessed": false,
+  "frontend_tests": {"passed": 62, "failed": 0, "build": "passed", "lint": "passed"},
+  "browser": {
+    "engine": "Chromium / Chrome",
+    "actual_api_responses": true,
+    "cases_passed": [
+      "First saved caption review without refresh",
+      "Selected poster upload and review without refresh",
+      "Saved poster and description revision review without refresh",
+      "Slow example setup blocks early editor mounting and permits first review",
+      "Genuine concurrent edit blocks stale review; direct comparison focuses saved version; Keep my text requires explicit save before successful rerun",
+      "390px mobile conflict recovery without horizontal overflow; Use saved version permits successful rerun",
+      "Genuine concurrent write after preflight causes review POST 409; comparison and explicit saved-version recovery succeed",
+      "Interrupted example setup exposes acknowledged partial campaign and permits explicit completion"
+    ],
+    "uncaught_exceptions": 0,
+    "local_and_session_storage_empty": true,
+    "screenshots_inspected": ["conflict-recovery-action.png", "saved-version-comparison.png", "conflict-recovery-mobile.png"]
+  },
+  "http_suites": {"reviews": "passed", "posters": "passed"},
+  "ocr": "unavailable (tool_missing); not an OCR acceptance pass",
+  "external_ai": "disabled",
+  "environment_notes": [
+    "First .venv Python launch blocked by Windows application control; existing .venv-check runtime started successfully",
+    "Restricted browser launches failed to start a usable renderer; approved isolated headless Chrome launch succeeded with browser sandbox retained"
+  ]
+}

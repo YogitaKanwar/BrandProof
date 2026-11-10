@@ -5,7 +5,7 @@ import {mkdir,writeFile} from 'node:fs/promises'
 const origin=process.env.BRANDPROOF_TEST_URL||'http://127.0.0.1:8017/'
 const targetOrigin=new URL(origin)
 const localTarget=targetOrigin.protocol==='http:'&&['127.0.0.1','localhost'].includes(targetOrigin.hostname)
-const authorizedPublicTarget=process.env.BRANDPROOF_ALLOW_PUBLIC_DEMO_TESTS==='1'&&targetOrigin.protocol==='https:'&&['brand-proof-tau.vercel.app','brandproof-api-slz9.onrender.com'].includes(targetOrigin.hostname)
+const authorizedPublicTarget=process.env.BRANDPROOF_ALLOW_PUBLIC_DEMO_TESTS==='1'&&targetOrigin.protocol==='https:'&&['brand-proof-tau.vercel.app','brandproof-api-slz9.onrender.com','brandproof-round3-preview-20261102.onrender.com'].includes(targetOrigin.hostname)
 assert.ok(localTarget||authorizedPublicTarget,'Public QA requires explicit opt-in and an authorized BrandProof host')
 const evidenceRoot=process.env.BRANDPROOF_DEMO_EVIDENCE_DIR||'../docs/evidence/judge-demo'
 const browser=await(await fetch('http://127.0.0.1:9223/json/version')).json()

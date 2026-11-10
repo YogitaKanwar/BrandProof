@@ -1,0 +1,18 @@
+﻿{
+    "status":  "completed",
+    "conclusion":  "success",
+    "id":  42758482501,
+    "jobs":  [
+                 {
+                     "name":  "frontend",
+                     "status":  "completed",
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "container-postgres",
+                     "status":  "completed",
+                     "conclusion":  "success"
+                 }
+             ],
+    "sha":  "8b4ceaa3f63abe20bde5341adf06de06b6ead84e"
+}

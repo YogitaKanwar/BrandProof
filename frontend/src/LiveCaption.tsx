@@ -11,6 +11,8 @@ import { useUnsavedChanges } from './unsavedChanges'
 import {copyCandidate} from './draftSuggestion'
 
 export default function LiveCaption({ api, campaign, onCampaignChange, onResultsAvailable,posterAttached,posterPending,preparePoster,onCaptionSaved,onDraftDirty,onStateChange,children }: { api: BackendClient; campaign: CampaignOut; onCampaignChange: (result: ReviewResult) => void; onResultsAvailable: (available: boolean) => void;posterAttached:boolean;posterPending:boolean;preparePoster:()=>Promise<CampaignOut>;onCaptionSaved:(previous:number,current:number)=>void;children?:ReactNode;onDraftDirty?:(dirty:boolean)=>void;onStateChange?:()=>void }) {
+  // ReviewWorkspace waits for the opening read before mounting this form.
+  // Later campaign props must not blindly reset an unsaved or conflicting draft.
   const [text, setText] = useState(campaign.caption)
   const [saved, setSaved] = useState(campaign.caption)
   const [revision, setRevision] = useState(campaign.content_revision)
@@ -83,6 +85,15 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
     } catch (error) { setError(describeError(error)) }
     finally { lock.current = false; setBusy(false) }
   }
+  async function showComparison() {
+    await loadServerCaption()
+    const panel = document.getElementById('caption-reconciliation')
+    if (panel instanceof HTMLDetailsElement) {
+      panel.open = true
+      panel.scrollIntoView({ block: 'center' })
+      panel.querySelector('summary')?.focus({ preventScroll: true })
+    }
+  }
   async function clearCaption() {
     if (lock.current || conflict || !posterAttached || !clearRequested) return
     lock.current = true; setBusy(true); setError(''); setStatus('Removing caption…')
@@ -99,9 +110,9 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
     } finally { lock.current = false; setBusy(false) }
   }
   function reconcile(useServer: boolean) {
-    if (!server) return
+    if (!server || lock.current) return
     if (useServer) setText(server.caption)
-    setSaved(server.caption); setRevision(server.content_revision); setConflict(false); setServer(null)
+    setSaved(server.caption); setRevision(server.content_revision); setConflict(false); setServer(null); setError('')
     setStatus(useServer ? 'Loaded server caption.' : 'Your text is preserved against the latest revision. Save it explicitly to update the server.')
   }
   async function run() {
@@ -113,13 +124,16 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
       const latest = result.data.reviews.find(record => record.campaignId === campaign.id)?.backendCampaign
       if (!latest) throw new Error('Campaign is unavailable.')
       onCampaignChange(result)
-      if (latest.content_revision !== expectedRevision || latest.caption !== saved) { setConflict(true); setServer(latest); throw new Error('Caption changed on the server. Reconcile before running a review.') }
+      if (latest.content_revision !== expectedRevision || latest.caption !== saved) { setConflict(true); setServer(latest); throw new Error('Saved content changed on the server. Compare versions before running a review.') }
       const review = await api.runReview(campaign.id, latest.content_revision, latest.source_revision,externalConsent)
       historyRequest.current++
       onResultsAvailable(true)
       setRuns(previous => [review, ...previous.filter(record => record.id !== review.id)]); setSelectedId(review.id); setReturnedRunId(review.id)
       setStatus(review.status === 'failed' ? 'Review failed. No successful verification is claimed.' : `Review returned ${review.status}. Readiness requires its separate human-review receipt.`)
-    } catch (error) { setError(describeError(error)); setStatus('Review did not complete successfully. No success is claimed.') }
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) { setConflict(true); setServer(null) }
+      setError(describeError(error)); setStatus('Review did not complete successfully. No success is claimed.')
+    }
     finally { lock.current = false; setBusy(false); setAction('other');setExternalConsent(false) }
   }
   async function refreshWorkflow(){setWorkflowEpoch(value=>value+1);const [result,records]=await Promise.all([api.get(campaign.id),api.listReviews(campaign.id)]);onCampaignChange(result);setRuns(records.sort((a,b)=>b.created_at.localeCompare(a.created_at)))}
@@ -138,13 +152,13 @@ export default function LiveCaption({ api, campaign, onCampaignChange, onResults
     <p id="live-caption-state" className="form-help">{busy ? 'Please wait for the current request to finish.' : conflict ? 'Saving is paused because the server version changed. Open “Having trouble saving?” below, compare versions, then choose which text to keep.' : !text.trim() ? 'Enter a caption to enable Save caption.' : dirty ? 'Unsaved changes. Save your caption to enable Run review.' : 'Caption saved. Edit the text to save changes, or select Run review below.'}</p>
     {posterAttached && !!saved.trim() && <button type="button" disabled={busy || conflict} onClick={()=>setClearRequested(true)}>Remove saved caption</button>}
     {clearRequested && <div className="correction-confirm" role="group" aria-label="Confirm caption removal"><h4>Review only the saved poster?</h4><p>This removes the saved caption and any unsaved caption edits. Previous text remains in revision history. Existing review decisions become historical.</p><button type="button" disabled={busy || conflict || !posterAttached} onClick={()=>void clearCaption()}>Confirm remove caption</button><button type="button" disabled={busy} onClick={()=>setClearRequested(false)}>Keep caption</button></div>}
-    <details className="caption-reconcile" open={conflict || undefined}><summary>Having trouble saving?</summary><button type="button" disabled={busy} onClick={() => void loadServerCaption()}>Compare with saved version</button>{conflict && <p className="form-help">Your edits are safe. Compare versions before choosing which to keep.</p>}{server && <div><h3>Saved version {server.content_revision}</h3><pre className="caption-snapshot">{server.caption || '(empty caption)'}</pre><button type="button" onClick={() => reconcile(true)}>Use saved version</button><button type="button" onClick={() => reconcile(false)}>Keep my text</button></div>}</details>
+    <details id="caption-reconciliation" className="caption-reconcile" open={conflict || undefined}><summary>Having trouble saving?</summary><button type="button" disabled={busy} onClick={() => void loadServerCaption()}>Compare with saved version</button>{conflict && <p className="form-help">Your edits are safe. Compare versions before choosing which to keep.</p>}{server && <div><h3>Saved version {server.content_revision}</h3><pre className="caption-snapshot">{server.caption || '(empty caption)'}</pre><button type="button" disabled={busy} onClick={() => reconcile(true)}>Use saved version</button><button type="button" disabled={busy} onClick={() => reconcile(false)}>Keep my text</button></div>}</details>
     {children}
     {posterDraft && <section className="unverified-draft"><label htmlFor="poster-copy-draft">Unverified poster wording draft</label><textarea id="poster-copy-draft" value={posterDraft} maxLength={1000} onChange={event=>setPosterDraft(event.target.value)}/><p className="form-help">This scratchpad does not change the saved image. Verify the wording, revise and reupload the poster, then run review.</p><button type="button" onClick={()=>setPosterDraft('')}>Discard poster wording draft</button></section>}
     <details className="ai-options"><summary>Optional AI check</summary><label className="ai-consent"><input type="checkbox" checked={externalConsent} disabled={busy} onChange={event=>setExternalConsent(event.target.checked)}/><span>Allow this review to send the caption, high-confidence extracted poster text and selected approved facts to the server-configured AI provider. Images and uncertain OCR text are not sent. Off unless you opt in; availability depends on server setup.</span></label></details>
     <div className="run-caption"><button type="button" className="primary" aria-busy={busy && action === 'review'} aria-describedby="run-review-help" disabled={busy || dirty || conflict || (!saved.trim()&&!posterAttached&&!posterPending)} onClick={() => void run()}>{busy && action === 'review' ? <><span className="spinner" aria-hidden="true"/>Reviewing…</> : posterPending ? 'Upload poster and run review' : 'Run review'}</button><small id="run-review-help">{dirty ? 'Save your caption first.' : posterPending ? 'This uploads your selected image privately, then reviews the saved content.' : conflict ? 'Resolve the saved-version conflict first.' : !saved.trim()&&!posterAttached ? 'Add a caption or upload a poster to start.' : 'Checks use saved content and confirmed facts.'}</small></div>
     <p role="status" className="live-review-status form-help">{status}</p>
-    {error && <p id="caption-workflow-error" className="error" role="alert" tabIndex={-1}>{error}</p>}
+    {error && <p id="caption-workflow-error" className="error" role="alert" tabIndex={-1}>{error}{conflict && <> Your text is preserved. <button type="button" disabled={busy} aria-controls="caption-reconciliation" onClick={() => void showComparison()}>Compare saved version</button></>}</p>}
     {historyError && <p className="error" role="alert">Could not load review history. {historyError}</p>}
     {runs.length > 0 && <section id="review-results" aria-labelledby="results-heading">
       <div className="section-heading"><h3 id="results-heading" tabIndex={-1}>Review results</h3><div className="results-actions"><a href="#human-review-heading" onClick={event=>{event.preventDefault();const target=document.getElementById('human-review-heading');target?.scrollIntoView();target?.focus({preventScroll:true})}}>Human review</a><button type="button" disabled={busy} onClick={()=>void refreshWorkflow().catch(error=>setError(describeError(error)))}>Refresh</button></div></div>
