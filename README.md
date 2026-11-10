@@ -2,7 +2,7 @@
 
 Evidence-first campaign review for **YOGI2KANWAR**, Codex 48. BrandProof compares saved captions and PNG/JPEG posters with owner-confirmed rules, preserves evidence/source versions, and records reasoned human decisions. Automated checks and human approval are separate.
 
-**[Passwordless judge demo](https://brand-proof-tau.vercel.app/#/demo)** · [Repository](https://github.com/YogitaKanwar/BrandProof) · [Final QA](docs/ROUND3_FINAL_QA.md) · [Walkthrough](docs/JUDGE_FINAL_WALKTHROUGH.md)
+**[Passwordless judge demo](https://brandproof-round3-preview-20261102.onrender.com/#/demo) · [Repository](https://github.com/YogitaKanwar/BrandProof) · [Final QA](docs/final-qa.md) · [Walkthrough](docs/walkthrough.md)** · [Repository](https://github.com/YogitaKanwar/BrandProof) · [Final QA](docs/ROUND3_FINAL_QA.md) · [Walkthrough](docs/JUDGE_FINAL_WALKTHROUGH.md)
 
 The public Vercel frontend proxies `/api/*` to the Render Docker API and PostgreSQL database. On 2 November 2026 both providers reported source `e01f52b6ee02b6c85c480619cfc82cc486a56123`. Yogita merged the tested implementation through PR #14 into main `1763f2e`; production still requires separate explicit approval. Historical reports retain their original scope.
 
