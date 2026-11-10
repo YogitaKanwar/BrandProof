@@ -55,6 +55,49 @@ test('caption removal uses an explicit creator write with the expected revision 
   assert.equal(removals,2)
 })
 function session() { return { workspace_id: 'w1', mode: 'synthetic_demo', notice: 'Synthetic demo', expires_at: '2099-01-01T00:00:00Z', actors: Object.fromEntries(['owner','creator','reviewer'].map(role => [role, {role,access_token: `test-${role}`}])) } }
+
+test('a delayed opening read cannot replace a newer acknowledged caption save', async () => {
+  let releaseRead
+  let current = campaign
+  globalThis.fetch = async (url, options) => {
+    if (url.endsWith('demo-sessions')) return Response.json(session())
+    if (url.endsWith('/campaigns')) return Response.json([current])
+    if (url.endsWith('/caption')) {
+      current = {...current, caption: JSON.parse(options.body).text, content_revision: 2}
+      return Response.json(current)
+    }
+    return new Promise(resolve => { releaseRead = () => resolve(Response.json(campaign)) })
+  }
+  const api = createBackendClient('http://test/api/v1')
+  await api.connect()
+  const delayed = api.get('c1')
+  await new Promise(resolve => setImmediate(resolve))
+  await api.saveCaption('c1', 'Explicit newer edit.', 1)
+  releaseRead()
+  const record = (await delayed).data.reviews[0].backendCampaign
+  assert.equal(record.caption, 'Explicit newer edit.')
+  assert.equal(record.content_revision, 2)
+})
+
+test('a delayed read cannot roll back source-only revisions; a newer opening read still hydrates empty cached content', async () => {
+  let releaseRead, reads = 0
+  const saved = {...campaign, caption: 'Saved example caption.', content_revision: 3, source_revision: 9}
+  globalThis.fetch = async url => {
+    if (url.endsWith('demo-sessions')) return Response.json(session())
+    if (url.endsWith('/campaigns')) return Response.json([campaign])
+    reads++
+    if (reads === 1) return new Promise(resolve => { releaseRead = () => resolve(Response.json(saved)) })
+    return Response.json({...saved, source_revision: 10})
+  }
+  const api = createBackendClient('http://test/api/v1')
+  await api.connect()
+  const delayed = api.get('c1')
+  await new Promise(resolve => setImmediate(resolve))
+  const newest = await api.get('c1')
+  assert.equal(newest.data.reviews[0].backendCampaign.caption, saved.caption)
+  releaseRead()
+  assert.equal((await delayed).data.reviews[0].backendCampaign.source_revision, 10)
+})
 test('bodyless session uses creator bearer; exact campaign payload and full revisions preserved', async () => {
   const calls = []
   globalThis.fetch = async (url, options) => {

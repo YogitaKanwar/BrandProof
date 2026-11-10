@@ -41,6 +41,12 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
       !Number.isInteger(value.content_revision) || !Number.isInteger(value.source_revision) || value.workspace_id !== session?.workspace_id) throw invalid()
     return value
   }
+  function rememberCampaign(record: CampaignOut) {
+    const previous = campaigns.get(record.id)
+    // A delayed opening read must not roll back an acknowledged save/upload.
+    // Both counters are monotonic; source-only updates count as newer too.
+    if (!previous || (record.content_revision >= previous.content_revision && record.source_revision >= previous.source_revision)) campaigns.set(record.id, record)
+  }
   function result(): ReviewResult {
     const records = [...campaigns.values()].sort((a, b) => b.created_at.localeCompare(a.created_at))
     return {
@@ -114,7 +120,7 @@ export function createBackendClient(base = '/api/v1', readiness?: ReadinessOptio
     },
     async get(id: string) {
       const record = validateCampaign(await requestJson<CampaignOut>(`${base}/campaigns/${encodeURIComponent(id)}`, { headers: auth() }))
-      campaigns.set(record.id, record)
+      rememberCampaign(record)
       return result()
     },
     async removeReview(id:string,snapshot:Snapshot){

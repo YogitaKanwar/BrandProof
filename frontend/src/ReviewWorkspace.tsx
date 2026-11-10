@@ -34,7 +34,7 @@ function WorkspaceIcon({ kind }: { kind: 'overview' | 'new' | 'insights' | 'proo
 }
 
 export default function ReviewWorkspace() {
-  const [route, setRoute] = useState(currentRoute)
+  const [route, setRoute] = useState(()=>({...currentRoute(),request:0}))
   const [result, setResult] = useState<ReviewResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [connectionNotice, setConnectionNotice] = useState('')
@@ -52,6 +52,8 @@ export default function ReviewWorkspace() {
   const [publicationDate, setPublicationDate] = useState('')
   const [connecting, setConnecting] = useState(false)
   const [creatingExample, setCreatingExample] = useState(false)
+  const [openingContent, setOpeningContent] = useState<{id:string;client:BackendClient;request:number;attempt:number;error:string;ready:boolean}|null>(null)
+  const [contentLoadAttempt, setContentLoadAttempt] = useState(0)
   const [entryOpen,setEntryOpen]=useState(!currentRoute().local)
   const [resetRequested,setResetRequested]=useState(false)
   const [sessionExpired,setSessionExpired]=useState(false)
@@ -83,20 +85,32 @@ export default function ReviewWorkspace() {
       }
       allowedHash.current = ''
       acceptedUrl.current = window.location.href
-      setRoute(currentRoute())
+      const next = currentRoute()
+      setRoute(previous=>({...next,request:previous.request + Number(previous.page!==next.page || previous.id!==next.id)}))
     }
     window.addEventListener('hashchange', update)
     return () => window.removeEventListener('hashchange', update)
   }, [confirmLeave])
   useEffect(() => { heading.current?.focus() }, [route.page, route.id])
   useEffect(() => {
-    const client = service.current
-    if (route.page !== 'draft' || !('get' in client)) return
+    if (route.page !== 'draft' || !sourceClient || loading || creatingExample) return
+    const client = sourceClient
+    const id = route.id
+    const request = route.request
+    const attempt = contentLoadAttempt
     let active = true
-    client.get(route.id).then(data => { if (active && client===service.current) setResult(data) })
-      .catch(error => { if (active && client===service.current) setNotice(describeError(error)) })
+    // Mount the caption form only after the opening read is acknowledged. Its
+    // editable state must never initialize from a partly prepared/cached example.
+    client.get(id).then(data => {
+      if (!active || client !== service.current) return
+      if (!data.data.reviews.some(row=>row.id===id && row.backendCampaign)) throw new Error('Saved content is unavailable.')
+      setResult(data)
+      setOpeningContent({id,client,request,attempt,error:'',ready:true})
+    }).catch(error => {
+      if (active && client === service.current) setOpeningContent({id,client,request,attempt,error:describeError(error),ready:false})
+    })
     return () => { active = false }
-  }, [route.page, route.id])
+  }, [route.page, route.id, route.request, sourceClient, loading, creatingExample, contentLoadAttempt])
   useEffect(() => {
     let active = true
     const version = ++workspaceLoadVersion.current
@@ -275,6 +289,10 @@ export default function ReviewWorkspace() {
   }
   const draft = result?.data.reviews.find(review => review.id === route.id)
   const campaign = result?.data.campaigns.find(item => item.id === draft?.campaignId)
+  const needsContent = route.page === 'draft' && !!sourceClient
+  const openingMatches = openingContent?.id === route.id && openingContent.client === sourceClient && openingContent.request === route.request && openingContent.attempt === contentLoadAttempt
+  const contentLoadError = needsContent && openingMatches ? openingContent.error : ''
+  const contentLoading = needsContent && (!openingMatches || !openingContent.ready) && !contentLoadError
   const pageName = route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Overview' : route.page === 'new' ? 'New review' : 'Content workspace'
   if(route.page==='demo'||(entryOpen&&!sourceClient))return <DemoEntry simple={route.page==='demo'} hasSession={!!sourceClient&&!sessionExpired} busy={loading||connecting||creatingExample} restoring={loading} error={loadError||notice} status={connectionNotice} onTry={()=>void enterDemo()} onSample={()=>void startExample()} onLocal={()=>void openLocalDrafts()} onRetry={()=>void retry()}/>
   return <UnsavedChangesContext.Provider value={register}><div className={`app-shell page-${route.page}`}>
@@ -318,7 +336,7 @@ export default function ReviewWorkspace() {
         <div role="status" className={notice ? 'notice' : ''}>{notice}</div>
         <div className="page-heading"><div><h1 ref={heading} tabIndex={-1}>{route.page==='insights'?'Governance Insights':route.page === 'home' ? 'Your reviews' : route.page === 'new' ? 'New review' : 'Review workspace'}</h1><p>{route.page==='insights'?'Trace repeated finding signals to their evidence and human decisions.':route.page === 'home' ? 'Review content against your confirmed references.' : route.page === 'new' ? 'Add a name, or continue straight to your brand information.' : 'Brand information first. Marketing content next.'}</p></div>{route.page === 'home' && <a className="button primary" href="#/new" onClick={event=>{event.preventDefault();void startReview()}} aria-disabled={connecting}>{connecting?'Connecting…':'New Review'}<WorkspaceIcon kind="new" /></a>}</div>
         {connectionNotice && <p className="form-help" role="status">{connectionNotice}</p>}
-        {loading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />Loading your workspace…</div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page==='insights'?<GovernanceInsights api={sourceClient}/>: route.page === 'home' ? <section aria-labelledby="drafts-heading">
+        {loading || creatingExample || contentLoading ? <div className="loading" role="status"><span className="spinner" aria-hidden="true" />{creatingExample ? 'Preparing your example…' : contentLoading ? 'Loading saved content…' : 'Loading your workspace…'}</div> : contentLoadError ? <div className="error" role="alert">Could not load saved content. {contentLoadError} <button onClick={()=>setContentLoadAttempt(value=>value+1)}>Retry loading content</button></div> : loadError ? <div className="error" role="alert">{loadError} <button onClick={() => void retry()}>Retry</button></div> : route.page==='insights'?<GovernanceInsights api={sourceClient}/>: route.page === 'home' ? <section aria-labelledby="drafts-heading">
           <div className="section-heading"><h2 id="drafts-heading">Recent Reviews</h2><span>{result?.data.reviews.length || 0} total</span><button type="button" disabled={deleting} onClick={()=>void retry()}>Reload recent reviews</button></div>{removedReview&&result?.mode==='backend'&&<div className="review-undo" role="status"><span>Deleted {removedReview.campaign.name}. Saved audit history is retained.</span><button type="button" disabled={deleting} onClick={()=>void undoDelete()}>Undo delete</button></div>}
           <div className="example-invitation"><div className="example-copy"><h3>New to BrandProof?</h3><p>Review an editable campaign with deliberate mistakes.</p></div><button type="button" disabled={loading || connecting || creatingExample || deleting} onClick={() => void startExample()}>{creatingExample ? 'Preparing example…' : 'Try an editable example'}</button></div>
           {!result?.data.reviews.length ? <div className="reviews-empty"><WorkspaceIcon kind="overview" /><h3>No reviews yet</h3><p>Your saved reviews will appear here.</p></div> : <div className="review-list">{result.data.reviews.map(review => <article className="campaign-card review-row" key={review.id}>
